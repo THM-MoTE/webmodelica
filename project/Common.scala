@@ -3,6 +3,7 @@ import sbt.Keys._
 
 object Common {
   def settings = Seq(
+    unmanagedResourceDirectories in Compile += baseDirectory.value / "conf",
     organization := "de.thm.mote",
     version := "0.1-snapshot",
     scalaVersion := "2.12.8",
@@ -24,6 +25,8 @@ object Common {
 }
 
 object Dependencies {
+  val finatraVersion = "19.1.0"
+
   val deps = Seq(
     "com.twitter"   %% "finatra-http"    % finatraVersion,
     "ch.qos.logback" % "logback-classic" % "1.2.3",

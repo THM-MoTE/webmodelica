@@ -13,13 +13,12 @@ resolvers += Resolver.sonatypeRepo("releases")
 
 // initialCommands in console := """""".stripMargin
 
-val finatraVersion = "19.1.0"
 val copyrightName = "N. Justus"
-val copyrightYear = "2018"
+val copyrightYear = "2019"
 val license = "MPLv2"
 
 lazy val root = (project in file("."))
-  .enablePlugins(BuildInfoPlugin).
+  .enablePlugins(BuildInfoPlugin)
   .settings(Common.settings)
   .settings(
     buildInfoKeys := Seq[BuildInfoKey](name, version,
