@@ -18,7 +18,7 @@ val copyrightYear = "2019"
 val license = "MPLv2"
 
 lazy val root = (project in file("."))
-  .enablePlugins(BuildInfoPlugin)
+  .enablePlugins(BuildInfoPlugin, JavaAppPackaging)
   .settings(Common.settings)
   .settings(
     buildInfoKeys := Seq[BuildInfoKey](name, version,
