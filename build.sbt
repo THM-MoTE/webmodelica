@@ -1,5 +1,6 @@
 fork in run := true
 connectInput in run := true
+cancelable in Global := true
 
 scalacOptions ++= Seq(
   "-unchecked",
