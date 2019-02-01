@@ -33,5 +33,6 @@ object Dependencies {
     "com.github.finagle" %% "finagle-oauth2" % finatraVersion,
     "org.typelevel" %% "cats-core" % "1.6.0",
     "javax.activation" % "activation" % "1.1.1", //java EE package needed for finagle because it's not provided anymore since java 11
+    "org.mongodb.scala" %% "mongo-scala-driver" % "2.5.0",
   )
 }

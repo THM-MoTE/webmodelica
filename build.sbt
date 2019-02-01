@@ -18,7 +18,7 @@ val copyrightYear = "2019"
 val license = "MPLv2"
 
 lazy val root = (project in file("."))
-  .enablePlugins(BuildInfoPlugin)
+  .enablePlugins(BuildInfoPlugin, JavaAppPackaging)
   .settings(Common.settings)
   .settings(
     buildInfoKeys := Seq[BuildInfoKey](name, version,
@@ -34,6 +34,3 @@ lazy val root = (project in file("."))
     //   "com.google.guava"         % "guava"  % "19.0"
     // ),
   )
-
-mainClass in assembly := (mainClass in Compile).value
-assemblyJarName in assembly := s"${name.value}-server-${version.value}-${Common.latestCommitHash()}.jar"
