@@ -1,0 +1,23 @@
+<configuration>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+        <pattern>%date{ISO8601} [%-5level] %logger{15} [%X{akkaSource}] - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>./log/webmodelica.log</file>
+    <encoder>
+      <pattern>%date{ISO8601} [%-5level] %logger{15} [%X{akkaSource}] - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+   <!-- typesafe classes -->
+   <logger name="com.typesafe" level="INFO">
+   </logger>
+
+   <root level="DEBUG">
+       <appender-ref ref="FILE"/>
+       <appender-ref ref="STDOUT"/>
+   </root>
+</configuration>
