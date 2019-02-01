@@ -21,13 +21,15 @@ lazy val root = (project in file("."))
     scalaVersion := "2.12.8",
     name := "webmodelica",
     organization := "de.thm.mote",
+    mainClass in Compile := Some("webmodelica.core.WMServerMain"),
     libraryDependencies ++= Seq(
       "com.twitter"   %% "finatra-http"    % finatraVersion,
       "ch.qos.logback" % "logback-classic" % "1.2.3",
       "com.github.finagle" %% "finagle-oauth2" % finatraVersion,
       "org.typelevel" %% "cats-core" % "1.6.0",
+      "javax.activation" % "activation" % "1.1.1", //java EE package needed for finagle because it's not provided anymore since java 11
     ),
-    dependencyOverrides ++= Seq(
-      "com.google.guava"         % "guava"  % "19.0"
-    ),
+    // dependencyOverrides ++= Seq(
+    //   "com.google.guava"         % "guava"  % "19.0"
+    // ),
   )
