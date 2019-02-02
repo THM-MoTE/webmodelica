@@ -1,0 +1,30 @@
+@startuml
+
+class User {
+  userName: String
+  name: String
+  email: String
+}
+
+class Project {
+  owner: User
+}
+
+
+class ModelicaFile {
+  project: Project
+  relativePath: Path
+  content: Text
+}
+
+class Session {
+  id: Long
+  project: Project
+  user: User
+  mopeEndpoint: Address
+}
+
+Project "*"--"1" ModelicaFile : has >
+User "1"--"*" Project : owns >
+
+@enduml
