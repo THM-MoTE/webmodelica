@@ -1,0 +1,9 @@
+version: '3'
+services:
+  mongo:
+    image: "mongo:3.4"
+    restart: always
+    ports:
+      - 9010:27017
+    volumes:
+      - /var/webmodelica/db:/data/db
