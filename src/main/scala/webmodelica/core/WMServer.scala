@@ -11,7 +11,7 @@ object WMServerMain extends WMServer
 
 class WMServer extends HttpServer {
 
-  override val modules = Seq()
+  override val modules = Seq(AppModule)
 
   override def configureHttp(router: HttpRouter) {
     router
