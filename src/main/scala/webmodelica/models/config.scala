@@ -1,5 +1,8 @@
 package webmodelica.models
 
+import java.nio.file.{Path,Paths}
+import pureconfig.ConfigReader
+
 package config {
   case class WMConfig(
     mope: MopeClientConfig,
@@ -11,6 +14,15 @@ package config {
   )
 
   case class MopeClientConfig(
-    address: String
+    address: String,
+    data: MopeDataConfig
   )
+  case class MopeDataConfig(
+    hostDirectory: Path,
+    bindDirectory: Path
+  )
+
+  object configReaders {
+    implicit val pathReader:ConfigReader[Path] = ConfigReader[String].map(s => Paths.get(s))
+  }
 }

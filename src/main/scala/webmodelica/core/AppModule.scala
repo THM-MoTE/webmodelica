@@ -15,6 +15,7 @@ object AppModule extends TwitterModule {
   def configProvider: WMConfig = {
     import com.typesafe.config.ConfigFactory
     import webmodelica.models.config.WMConfig
+    import webmodelica.models.config.configReaders._
     import pureconfig.generic.auto._
     val rootConfig = ConfigFactory.load("webmodelica.conf")
     pureconfig.loadConfigOrThrow[WMConfig](rootConfig.getConfig(env()))
