@@ -1,15 +1,15 @@
 @startuml
 
-[React-Client] #Green
+[JS-Client] #Green
 
 node "webmodelica-ui" {
   [Static File Server] #Green
-  [React-Client] --> [Static File Server]
+  [JS-Client] --> [Static File Server]
 }
 
 node "webmodelica" {
   () "HTTP-API" as wm_http
-  [React-Client] --> wm_http
+  [JS-Client] --> wm_http
   wm_http - [Routes] : "api calls"
 
   [Routes] - [Session Service]
@@ -31,27 +31,19 @@ node "mope" {
   mope_http - [Endpoint]
 }
 
-database "MongoDB" {
-  folder "users" {
-    [User]
-  }
-  folder "projects" {
-    [Project]
-  }
-  folder "files" {
-    [ModelicaFile] as doc_file
-  }
+database MongoDB {
+  storage User
+  storage Project
+  storage ModelicaFile as doc_file
 }
 
 database "filesystem" {
-  folder "project" {
-    [ModelicaFile] as fs_file
-  }
+  rectangle ModelicaFile as fs_file
 }
 note left of fs_file : the directory that mope "sees"
 
-[ProjectDBStore] --> [Project]
-[UserDBStore] --> [User]
+[ProjectDBStore] --> Project
+[UserDBStore] --> User
 [DocumentDBStore] --> doc_file
 [DocumentFSStore] --> fs_file : write project files
 
