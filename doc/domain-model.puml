@@ -24,7 +24,7 @@ class Session {
   mopeEndpoint: Address
 }
 
-Project "*"--"1" ModelicaFile : has >
+Project "1"--"*" ModelicaFile : has >
 User "1"--"*" Project : owns >
 
 @enduml
