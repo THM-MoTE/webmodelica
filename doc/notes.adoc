@@ -3,3 +3,4 @@
 - Google login: https://developers.google.com/identity/sign-in/web/backend-auth
 - JWT's? https://jwt.io/introduction/
 - code editor: https://microsoft.github.io/monaco-editor/api/index.html
+- use FutureCache as K-V store: https://twitter.github.io/util/docs/com/twitter/cache/FutureCache.html
