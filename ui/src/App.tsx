@@ -20,7 +20,7 @@ class App extends Component {
             Learn React
           </a>
         </header>
-        <button className="btn btn-primary">A test button</button>
+        <a className="btn btn-primary" href="api/ping">A test button</a>
       </div>
     );
   }

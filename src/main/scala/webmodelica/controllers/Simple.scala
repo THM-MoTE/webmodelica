@@ -8,7 +8,7 @@ class Simple
 
   case class PingResponse(msg:String, agent:String)
 
-  get("/ping") { request: Request =>
+  get("/api/ping") { request: Request =>
     PingResponse("pong", request.userAgent.get)
   }
 }
