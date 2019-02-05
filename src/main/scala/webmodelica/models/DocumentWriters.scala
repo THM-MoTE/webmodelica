@@ -1,10 +1,10 @@
 package webmodelica.models
 
+import org.mongodb.scala.bson.codecs.Macros._
+import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
+import org.bson.codecs.configuration.CodecRegistries.{ fromRegistries, fromProviders }
 
-import reactivemongo.bson.{
-  BSONDocumentWriter, BSONDocumentReader, Macros, document
-}
 
 trait DocumentWriters {
-  implicit val projectHandler = Macros.handler[Project]
+  val codecRegistry = fromRegistries(fromProviders(classOf[Project]), DEFAULT_CODEC_REGISTRY)
 }

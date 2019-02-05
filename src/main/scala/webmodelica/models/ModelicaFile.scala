@@ -1,11 +1,11 @@
 package webmodelica.models
 
 import java.nio.file.Path
-import reactivemongo.bson.BSONObjectID
+import org.mongodb.scala.bson.BsonObjectId
 
 case class ModelicaFileDocument (
-  id: BSONObjectID,
-  projectID: BSONObjectID,
+  id: BsonObjectId,
+  projectID: BsonObjectId,
   relativePath: Path,
   content: String,
 )

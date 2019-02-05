@@ -1,9 +1,9 @@
 package webmodelica.models
 
-import reactivemongo.bson.BSONObjectID
+import org.mongodb.scala.bson.BsonObjectId
 
 case class Project(
-  id: BSONObjectID,
+  id: BsonObjectId,
   owner: String,
   name: String,
 )

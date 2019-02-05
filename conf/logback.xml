@@ -18,7 +18,7 @@
    </logger>
    <logger name="com.twitter" level="INFO">
    </logger>
-   <logger name="reactivemongo" level="INFO">
+   <logger name="org.mongodb" level="INFO">
    </logger>
 
    <root level="DEBUG">

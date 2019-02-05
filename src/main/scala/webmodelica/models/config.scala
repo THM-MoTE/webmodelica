@@ -10,7 +10,8 @@ package config {
   )
 
   case class MongoDBConfig(
-    address: String
+    address: String,
+    database:String,
   )
 
   case class MopeClientConfig(

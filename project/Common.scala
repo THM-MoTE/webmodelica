@@ -34,9 +34,8 @@ object Dependencies {
     "com.github.pureconfig" %% "pureconfig" % "0.10.1",
     "org.typelevel" %% "cats-core" % "1.6.0",
     "javax.activation" % "activation" % "1.1.1", //java EE package needed for finagle because it's not provided anymore since java 11
-    "org.reactivemongo" %% "reactivemongo" % "0.16.1",
+    "org.mongodb.scala" %% "mongo-scala-driver" % "2.5.+",
     "com.github.pathikrit" %% "better-files" % "3.7.+",
-
     "org.scalatest" %% "scalatest" % "3.0.+" % "test",
   )
 }
