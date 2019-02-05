@@ -2,7 +2,7 @@ version: '3'
 services:
   mongo:
     image: "mongo:3.4"
-    restart: always
+    restart: on-failure
     ports:
       - 9010:27017
     volumes:
