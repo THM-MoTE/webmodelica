@@ -27,15 +27,19 @@ object Common {
 object Dependencies {
   val finatraVersion = "19.1.0"
 
+  val utils = Seq(
+    "com.github.pureconfig" %% "pureconfig" % "0.10.1",
+    "org.typelevel" %% "cats-core" % "1.6.0",
+    "com.github.pathikrit" %% "better-files" % "3.7.+",
+    "io.scalaland" %% "chimney" % "0.3.+",
+  )
+
   val deps = Seq(
     "com.twitter"   %% "finatra-http"    % finatraVersion,
     "ch.qos.logback" % "logback-classic" % "1.2.3",
     "com.github.finagle" %% "finagle-oauth2" % finatraVersion,
-    "com.github.pureconfig" %% "pureconfig" % "0.10.1",
-    "org.typelevel" %% "cats-core" % "1.6.0",
     "javax.activation" % "activation" % "1.1.1", //java EE package needed for finagle because it's not provided anymore since java 11
     "org.mongodb.scala" %% "mongo-scala-driver" % "2.5.+",
-    "com.github.pathikrit" %% "better-files" % "3.7.+",
     "org.scalatest" %% "scalatest" % "3.0.+" % "test",
-  )
+  ) ++ utils
 }

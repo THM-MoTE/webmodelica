@@ -13,5 +13,7 @@ case class ProjectRequest(
   name: String)
 
 object Project {
-  def apply(projectRequest: ProjectRequest): Project = Project(BsonObjectId(), projectRequest.owner, projectRequest.name)
+  import io.scalaland.chimney.dsl._
+  def apply(request: ProjectRequest): Project =
+    request.into[Project].withFieldComputed(_.id, _ => BsonObjectId()).transform
 }
