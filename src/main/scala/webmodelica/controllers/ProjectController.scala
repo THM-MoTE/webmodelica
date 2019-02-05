@@ -4,7 +4,7 @@ import com.google.inject.Inject
 import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
 import org.mongodb.scala.bson.BsonObjectId
-import webmodelica.models.{Project, ProjectRequest}
+import webmodelica.models.{JSProject, Project, ProjectRequest}
 import webmodelica.models.config.WMConfig
 import webmodelica.stores.ProjectStore
 
@@ -15,5 +15,14 @@ class ProjectController@Inject()(store:ProjectStore)
     logger.debug(s"got project $project")
     val newProj = Project(project)
     store.add(newProj).map(_ => newProj)
+  }
+
+  get("/projects/:id") { requ:Request =>
+    val id = requ.getParam("id")
+    store.findBy(BsonObjectId(id)).map(JSProject.apply)
+  }
+
+  get("/projects") { _: Request =>
+    store.all().map(_.map(JSProject.apply))
   }
 }
