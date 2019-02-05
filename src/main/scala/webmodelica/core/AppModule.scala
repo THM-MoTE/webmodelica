@@ -12,6 +12,18 @@ object AppModule
     with webmodelica.models.DocumentWriters {
   val env = flag(name="env", default="development", help="environment to use")
 
+  override def singletonStartup(injector: Injector) {
+    super.singletonStartup(injector)
+    // initialize JVM-wide resources
+    val _ = injector.instance(classOf[MongoDatabase])
+  }
+
+  override def singletonShutdown(injector: Injector): Unit = {
+    super.singletonShutdown(injector)
+    println("!!! SHUTDOWN CALLED")
+    injector.instance(classOf[MongoClient]).close()
+  }
+
   @Singleton
   @Provides
   def configProvider: WMConfig = {
@@ -20,7 +32,9 @@ object AppModule
     import webmodelica.models.config.configReaders._
     import pureconfig.generic.auto._
     val rootConfig = ConfigFactory.load("webmodelica.conf")
-    pureconfig.loadConfigOrThrow[WMConfig](rootConfig.getConfig(env()))
+    val conf = pureconfig.loadConfigOrThrow[WMConfig](rootConfig.getConfig(env()))
+    logger.info(s"config loaded: $conf")
+    conf
   }
 
   @Provides
@@ -33,6 +47,7 @@ object AppModule
   @Singleton
   @Provides
   def mongoDBProvider(dbConf:MongoDBConfig, client:MongoClient): MongoDatabase = {
+    println("!!!! MONGODB PROVIDER CALLED")
     client.getDatabase(dbConf.database)
       .withCodecRegistry(codecRegistry)
   }
