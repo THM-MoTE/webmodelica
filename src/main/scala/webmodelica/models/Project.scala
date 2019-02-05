@@ -7,3 +7,11 @@ case class Project(
   owner: String,
   name: String,
 )
+
+case class ProjectRequest(
+  owner: String,
+  name: String)
+
+object Project {
+  def apply(projectRequest: ProjectRequest): Project = Project(BsonObjectId(), projectRequest.owner, projectRequest.name)
+}

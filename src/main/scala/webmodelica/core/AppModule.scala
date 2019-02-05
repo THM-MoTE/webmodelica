@@ -1,15 +1,15 @@
 package webmodelica.core
 
 import webmodelica.models.config._
-import com.twitter.inject.TwitterModule
-import com.google.inject.{
-  Singleton,
-  Provides
-}
+import com.twitter.inject.{Injector, TwitterModule}
+import com.google.inject.{Provides, Singleton}
 import org.mongodb.scala._
+
 import scala.concurrent.ExecutionContext
 
-object AppModule extends TwitterModule with webmodelica.models.DocumentWriters {
+object AppModule
+  extends TwitterModule
+    with webmodelica.models.DocumentWriters {
   val env = flag(name="env", default="development", help="environment to use")
 
   @Singleton
@@ -28,9 +28,12 @@ object AppModule extends TwitterModule with webmodelica.models.DocumentWriters {
 
   @Singleton
   @Provides
-  def mongoProvider(dbConf:MongoDBConfig): MongoDatabase = {
-    MongoClient(dbConf.address)
-      .getDatabase(dbConf.database)
+  def mongoClientProvider(dbConf:MongoDBConfig): MongoClient = MongoClient(dbConf.address)
+
+  @Singleton
+  @Provides
+  def mongoDBProvider(dbConf:MongoDBConfig, client:MongoClient): MongoDatabase = {
+    client.getDatabase(dbConf.database)
       .withCodecRegistry(codecRegistry)
   }
 }
