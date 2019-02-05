@@ -18,5 +18,6 @@ class WMServer extends HttpServer {
       .filter[LoggingMDCFilter[Request, Response]]
       .filter[CommonFilters]
       .add[controllers.Simple]
+      .add[controllers.ProjectController]
   }
 }
