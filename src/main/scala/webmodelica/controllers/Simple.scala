@@ -22,6 +22,6 @@ class Simple @Inject()(config: WMConfig, store:ProjectStore, s:SessionService)
   }
 
   get("/connect") { _:Request =>
-    s.connect(Paths.get("/home/openmodelica/data/SHM"))
+    s.connect(config.mope.data.bindDirectory.toAbsolutePath.resolve("SHM"))
   }
 }
