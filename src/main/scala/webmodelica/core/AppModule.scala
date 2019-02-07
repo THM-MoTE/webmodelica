@@ -39,11 +39,11 @@ object AppModule
 
   @Provides
   def dbConfigProvider(wm:WMConfig): MongoDBConfig = wm.mongodb
-
+  @Provides
+  def mopeConfigProvider(wm:WMConfig): MopeClientConfig = wm.mope
   @Singleton
   @Provides
   def mongoClientProvider(dbConf:MongoDBConfig): MongoClient = MongoClient(dbConf.address)
-
   @Singleton
   @Provides
   def mongoDBProvider(dbConf:MongoDBConfig, client:MongoClient): MongoDatabase = {
