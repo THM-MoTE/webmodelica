@@ -9,6 +9,8 @@ import com.twitter.util.Future
 class FSStore(root:Path) {
   import webmodelica.constants.encoding
 
+  mkdirs(File(root))
+
   def update(file:ModelicaFile): Future[Unit] = {
     val fd = File(root.resolve(file.relativePath))
     mkdirs(fd/`..`)
