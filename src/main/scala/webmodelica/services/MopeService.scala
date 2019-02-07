@@ -9,15 +9,13 @@ import com.twitter.finatra.json.FinatraObjectMapper
 import java.net.URL
 
 import com.twitter.io.Buf
-import featherbed.request.ErrorResponse
+import featherbed._
 
 case class Connect(path: String, outputDirectory:String="target")
 
 trait MopeService {
-  def mope: Service[Request,Response]
   def json:FinatraObjectMapper
-  def baseUri:String
-  private lazy val client = new featherbed.Client(new URL(baseUri+"mope/"))
+  val client: featherbed.Client
 
   def connect(path:Path) = {
     val con = json.writeValueAsString(Connect(path.toString))
@@ -25,7 +23,7 @@ trait MopeService {
       .withContent(Buf.Utf8(con), "application/json")
       .send[Response]()
       .handle {
-        case ErrorResponse(req,resp) =>
+        case request.ErrorResponse(req,resp) =>
           throw new Exception(s"Error response $resp to request $req")
       }
   }

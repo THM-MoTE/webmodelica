@@ -1,9 +1,10 @@
 package webmodelica.models
 
 import webmodelica.stores.FSStore
+import java.util.UUID
 
 case class Session(
   owner: String,
   project: Project,
-  fsStore: FSStore,
+  id: UUID = UUID.randomUUID(),
 )

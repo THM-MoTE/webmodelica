@@ -4,7 +4,7 @@ import webmodelica.models.config._
 import com.twitter.inject.{Injector, TwitterModule}
 import com.google.inject.{Provides, Singleton}
 import org.mongodb.scala._
-
+import webmodelica.models._
 import scala.concurrent.ExecutionContext
 
 object AppModule
@@ -51,4 +51,7 @@ object AppModule
     client.getDatabase(dbConf.database)
       .withCodecRegistry(codecRegistry)
   }
+
+  @Provides
+  def session:Session = Session("test proj", Project(ProjectRequest("nico", "awesome title")))
 }
