@@ -13,4 +13,4 @@ services:
     ports:
       - 9015:3000
     volumes:
-      - /var/webmodelica/data:/home/openmodelica/data
+      - ./data:/home/openmodelica/data
