@@ -9,7 +9,8 @@ services:
       - /var/webmodelica/db:/data/db
   mope-server:
     image: "thmmote/mope-server:0.6.5"
+    user: openmodelica:openmodelica
     ports:
       - 9015:3000
     volumes:
-      - /var/webmodelica/data:/data
+      - /var/webmodelica/data:/home/openmodelica/data
