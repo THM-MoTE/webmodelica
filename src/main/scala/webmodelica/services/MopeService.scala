@@ -14,11 +14,14 @@ import featherbed._
 case class Connect(path: String, outputDirectory:String="target")
 
 trait MopeService {
+  this: com.twitter.inject.Logging =>
+
   def json:FinatraObjectMapper
   val client: featherbed.Client
 
   def connect(path:Path) = {
     val con = json.writeValueAsString(Connect(path.toString))
+    info(s"connecting: $con")
     client.post("connect")
       .withContent(Buf.Utf8(con), "application/json")
       .send[Response]()

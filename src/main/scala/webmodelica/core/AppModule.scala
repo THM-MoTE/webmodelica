@@ -53,5 +53,5 @@ object AppModule
   }
 
   @Provides
-  def session:Session = Session("test proj", Project(ProjectRequest("nico", "awesome title")))
+  def session:Session = Session(Project(ProjectRequest("nico", "awesome title")))
 }

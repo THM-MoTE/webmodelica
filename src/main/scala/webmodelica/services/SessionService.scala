@@ -13,7 +13,8 @@ class SessionService @Inject()(
   val conf:MopeClientConfig,
   val session:Session,
 override val json:FinatraObjectMapper)
-    extends MopeService {
+    extends MopeService
+  with com.twitter.inject.Logging {
   override lazy val client = new featherbed.Client(new java.net.URL(conf.address+"mope/"))
 
   val fsStore = new FSStore(conf.data.hostDirectory.resolve(session.id.toString))
