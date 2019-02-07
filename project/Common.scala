@@ -22,6 +22,15 @@ object Common {
     import scala.sys.process._
     ("git rev-parse HEAD" !!).take(8).trim
   }
+
+  def consoleInit:String =
+    """import webmodelica._
+|import webmodelica.models._
+|import webmodelica.stores._
+|import webmodelica.services._
+|import webmodelica.core._
+""".stripMargin
+
 }
 
 object Dependencies {
@@ -41,5 +50,6 @@ object Dependencies {
     "javax.activation" % "activation" % "1.1.1", //java EE package needed for finagle because it's not provided anymore since java 11
     "org.mongodb.scala" %% "mongo-scala-driver" % "2.5.+",
     "org.scalatest" %% "scalatest" % "3.0.+" % "test",
+    "io.github.finagle" %% "featherbed" % "0.3.+",
   ) ++ utils
 }
