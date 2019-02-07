@@ -6,8 +6,12 @@ services:
     ports:
       - 9010:27017
     volumes:
-      - /var/webmodelica/db:/data/db
-  mope-server:
+      - ./db:/data/db
+  ui:
+    image: "thmmote/webmodelica-ui:0.0.1"
+    ports:
+      - 9005:3000
+  mope:
     image: "thmmote/mope-server:0.6.5"
     user: openmodelica:openmodelica
     ports:
