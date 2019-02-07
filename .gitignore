@@ -15,5 +15,6 @@
 *.DS_Store
 
 bin
+data
 target
 project/target
