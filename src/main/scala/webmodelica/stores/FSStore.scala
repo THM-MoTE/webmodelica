@@ -6,7 +6,8 @@ import java.nio.file.Path
 import webmodelica.models._
 import com.twitter.util.Future
 
-class FSStore(root:Path) {
+class FSStore(root:Path)
+  extends FileStore {
   import webmodelica.constants.encoding
 
   mkdirs(File(root))
@@ -17,8 +18,5 @@ class FSStore(root:Path) {
     fd.createIfNotExists()
       .write(file.content)(charset=encoding)
     Future.value(())
-  }
-  def update(files:Seq[ModelicaFile]):Future[Unit] = {
-    Future.join(files.map(update))
   }
 }
