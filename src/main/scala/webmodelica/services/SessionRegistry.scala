@@ -23,11 +23,11 @@ class SessionRegistry(conf:MopeClientConfig, json:FinatraObjectMapper)
     }
   }
 
-  def create(p:Project): UUIDStr = sync {
+  def create(p:Project): Session = sync {
     val s = Session(p)
     info(s"creating session $s")
     registry += (s.idString -> new SessionService(conf, s, json))
-    s.idString
+    s
   }
 
   def get(id:UUIDStr): Option[SessionService] = sync{ registry.get(id) }
