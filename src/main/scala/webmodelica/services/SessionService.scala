@@ -37,6 +37,6 @@ override val json:FinatraObjectMapper)
       else hostPath.resolve(p)
   }
 
-
+  override def rootDir: Path = fsStore.rootDir
   override def update(file: ModelicaFile): Future[Unit] = fsStore.update(file)
 }
