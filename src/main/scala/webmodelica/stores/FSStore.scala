@@ -12,6 +12,7 @@ class FSStore(root:Path)
 
   mkdirs(File(root))
 
+  def rootDir: Path = root
   def update(file:ModelicaFile): Future[Unit] = {
     val fd = File(root.resolve(file.relativePath))
     mkdirs(fd/`..`)

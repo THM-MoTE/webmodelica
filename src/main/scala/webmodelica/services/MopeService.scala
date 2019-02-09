@@ -18,7 +18,14 @@ case class Connect(path: String, outputDirectory:String="target")
 trait MopeService {
   this: com.twitter.inject.Logging =>
 
+  trait PathMapper {
+    def relativize(p:Path): Path
+    def toBindPath(p:Path): Path
+    def toHostPath(p:Path): Path
+  }
+
   def json:FinatraObjectMapper
+  def pathMapper:PathMapper
   val client: featherbed.Client
 
   private def postJson[O:Manifest](path:String)(in:Any): Future[O] = {
