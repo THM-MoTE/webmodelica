@@ -5,8 +5,8 @@ object requests {
   /** A description for projects */
   case class ProjectDescription(
     path: String,
-    outputDirectory: String,
-    buildScript: Option[String])
+    outputDirectory: String="out",
+    buildScript: Option[String]=None)
 
   case class Complete(file: String,
     position: FilePosition,
