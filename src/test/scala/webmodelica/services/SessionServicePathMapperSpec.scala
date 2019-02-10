@@ -27,6 +27,11 @@ class SessionServicePathMapperSpec
     val absolute = hostRoot.resolve(relative)
     mapper.toBindPath(absolute) shouldBe bindRoot.resolve(relative)
   }
+  it should "convert path's with spaces to docker-bind path's" in {
+    val relative = "a/b/c x d/test.mo"
+    val absolute = hostRoot.resolve(relative)
+    mapper.toBindPath(absolute) shouldBe bindRoot.resolve(relative)
+  }
   it should "convert docker-bind path's to host path's" in {
     val relative = "a/b/c/test.mo"
     mapper.toHostPath(bindRoot.resolve(relative)) shouldBe hostRoot.resolve(relative)
