@@ -13,7 +13,7 @@ object responses {
     val Type, Variable, Function, Keyword, Package, Model, Class, Property = Value
   }
 
-  case class Suggestion(kind: Kind.Value,
+  case class Suggestion(kind: String,
     name: String,
     parameters: Option[Seq[String]],
     classComment: Option[String],

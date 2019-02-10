@@ -12,12 +12,14 @@ import java.nio.file._
 import better.files._
 import com.twitter.finatra.json.modules.FinatraJacksonModule
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.twitter.finatra.json.FinatraObjectMapper
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import com.twitter.util.{Future,Await}
 
 class MopeIntegration
     extends webmodelica.WMSpec {
-  val json = FinatraJacksonModule.provideCamelCaseFinatraObjectMapper(new ObjectMapper with ScalaObjectMapper)
+  // val json = FinatraJacksonModule.provideCamelCaseFinatraObjectMapper(new ObjectMapper with ScalaObjectMapper)
+  val json = FinatraObjectMapper.create()
   val conf = AppModule.configProvider.mope
   val session = Session(Project(ProjectRequest("nico", "awesome project")))
   val service = new SessionService(conf,session,json)
@@ -53,21 +55,23 @@ class MopeIntegration
     )
   )
 
+  println("setup complete, starting tests ...")
+
   "The MopeSession" should "connect to mope service" in {
-    Await.result(service.connect(service.rootDir)) shouldBe an[Int]
+    Await.result(service.connect()) shouldBe an[Int]
   }
   it should "generate the error modelica files" in {
     Await.result(service.update(errFiles))
   }
   it should "compile the files" in {
-    val errors = Await.result(service.compile(files.head.relativePath))
+    val errors = Await.result(service.compile(errFiles(1).relativePath))
     errors should not be empty
   }
   it should "generate the files" in {
     Await.result(service.update(files))
   }
   it should "complete symbols" in {
-    val completions = Await.result(service.complete(Complete("a/b/simple.mo", FilePosition(1, 5), "Mod")))
+    val completions = Await.result(service.complete(Complete("a/b/simple.mo", FilePosition(1, 5), "Modelica.")))
     completions should not be empty
     completions.size should be >(4)
   }

@@ -11,6 +11,9 @@ import webmodelica.models.{ModelicaFile, Session}
 import webmodelica.stores.{FSStore, FileStore}
 import java.nio.file._
 
+import scala.concurrent.{ Future => SFuture, Promise =>  SPromise }
+import scala.concurrent.ExecutionContext.Implicits.global
+
 class SessionService @Inject()(
   val conf:MopeClientConfig,
   val session:Session,
@@ -18,7 +21,8 @@ override val json:FinatraObjectMapper)
   extends FileStore
     with MopeService
   with com.twitter.inject.Logging {
-  override lazy val client = new featherbed.Client(new java.net.URL(conf.address+"mope/"))
+  override val client = new featherbed.Client(new java.net.URL(conf.address+"mope/"))
+  override lazy val projIdPromise: SPromise[Int] = SPromise[Int]()
 
   val fsStore = new FSStore(conf.data.hostDirectory.resolve(session.id.toString))
 

@@ -15,12 +15,16 @@ import com.twitter.util.{
   Future,
   Promise
 }
+import scala.concurrent.{ Future => SFuture, Promise =>  SPromise }
+import scala.concurrent.ExecutionContext.Implicits.global
+
 import com.twitter.io.Buf
 import featherbed._
 import scala.reflect.Manifest
 import webmodelica.models.mope._
 import webmodelica.models.mope.requests._
 import webmodelica.models.mope.responses._
+import webmodelica.conversions.futures._
 
 trait MopeService {
   this: com.twitter.inject.Logging =>
@@ -29,52 +33,91 @@ trait MopeService {
   def pathMapper: MopeService.PathMapper
   val client: featherbed.Client
 
-  private val projectId: Promise[Int] = Promise[Int]
+  // private lazy val projIdPromise: Promise[Int] = new Promise[Int]()
+  val projIdPromise: SPromise[Int]
+  private def projectId: Future[Int] = projIdPromise.future.asTwitter
+  // private def projectId: Future[Int] = Future {
+  //   Thread.sleep(5000)
+  //   0
+  // }
 
-  private def postJson[O:Manifest](path:String)(in:Any): Future[O] = {
+  private def postJson[O:Manifest, I](path:String)(in:I): Future[O] = {
     val str = json.writeValueAsString(in)
-    info(s"sending: $in")
+    println(s"calling: $path with $str")
     client.post(path)
       .withContent(Buf.Utf8(str), "application/json")
       .send[Response]()
       .map { r => json.parse(r.content) }
-  }
-
-  def connect(path:Path):Future[Int] = {
-    postJson[Int]("connect")(ProjectDescription(pathMapper.toBindPath(path).toString))
-      .map { id =>
-        projectId.setValue(id)
-        id
-      }
       .handle {
         case request.ErrorResponse(req,resp) =>
           val str = s"Error response $resp to request $req"
           throw new Exception(str)
+        case e:Exception =>
+          error(s"error while connecting ${e.getMessage}")
+          throw e
+      }
+  }
+
+
+  import featherbed.circe._
+  import io.circe.generic.auto._
+
+  def connect():Future[Int] = {
+    val path = pathMapper.projectDirectory
+    val descr = ProjectDescription(path.toString)
+    info(s"connecting with $descr")
+    val req = client.post("connect")
+      .withContent(descr, "application/json")
+      .accept("application/json")
+
+    req.send[Int]().map { id =>
+        info(s"registered id $id")
+        projIdPromise.success(id)
+        id
+    }
+      .handle {
+        case request.ErrorResponse(req,resp) =>
+          val str = s"Error response $resp to request $req"
+          throw new Exception(str)
+        case e:Exception =>
+          error(s"error while connecting ${e.getMessage}")
+          throw e
       }
   }
 
   def compile(path:Path): Future[Seq[CompilerError]] = {
+    val fp = FilePath(pathMapper.toBindPath(path).toString)
     projectId.flatMap { id =>
-    postJson[Seq[CompilerError]](s"project/$id/compile")(FilePath(pathMapper.toBindPath(path).toString))
-    }
+      info(s"compiling $fp")
+      val req = client.post(s"project/$id/compile")
+        .withContent(fp, "application/json")
+        .accept("application/json")
+      req.send[Seq[CompilerError]]()
       .handle {
         case request.ErrorResponse(req,resp) =>
           val str = s"Error response $resp to request $req"
           throw new Exception(str)
       }
-
+    }
   }
 
   def complete(c:Complete): Future[Seq[Suggestion]] = {
     val cNew = c.copy(file=pathMapper.toBindPath(Paths.get(c.file)).toString)
-    projectId.flatMap{ id =>
-      postJson(s"project/$id/completion")(cNew)
-    }
+    projectId.flatMap { id =>
+      info(s"complete $cNew")
+      val req = client.post(s"project/$id/completion")
+        .withContent(cNew, "application/json")
+        .accept("application/json")
+      req.send[Seq[Suggestion]]()
       .handle {
         case request.ErrorResponse(req,resp) =>
           val str = s"Error response $resp to request $req"
           throw new Exception(str)
       }
+    }
+  }
+}
+
 object MopeService {
   trait PathMapper {
     def relativize(p:Path): Path
