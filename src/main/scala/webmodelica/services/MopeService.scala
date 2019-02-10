@@ -25,14 +25,8 @@ import webmodelica.models.mope.responses._
 trait MopeService {
   this: com.twitter.inject.Logging =>
 
-  trait PathMapper {
-    def relativize(p:Path): Path
-    def toBindPath(p:Path): Path
-    def toHostPath(p:Path): Path
-  }
-
   def json:FinatraObjectMapper
-  def pathMapper:PathMapper
+  def pathMapper: MopeService.PathMapper
   val client: featherbed.Client
 
   private val projectId: Promise[Int] = Promise[Int]
@@ -81,5 +75,25 @@ trait MopeService {
           val str = s"Error response $resp to request $req"
           throw new Exception(str)
       }
+object MopeService {
+  trait PathMapper {
+    def relativize(p:Path): Path
+    def toBindPath(p:Path): Path
+    def toHostPath(p:Path): Path
+    def projectDirectory: Path
+  }
+  def pathMapper(hostPath:Path, bindPath:Path): PathMapper = new PathMapper() {
+    private val stripPath = (from:Path, other:Path) => from.subpath(other.getNameCount, from.getNameCount)
+    override def projectDirectory: Path = bindPath
+    override def relativize(p:Path): Path =
+      if(p.startsWith(hostPath)) stripPath(p, hostPath)
+      else stripPath(p, bindPath)
+    override def toBindPath(p:Path): Path = {
+      if(p.isAbsolute) bindPath.resolve(stripPath(p, hostPath))
+      else bindPath.resolve(p)
+    }
+    override def toHostPath(p:Path): Path =
+      if(p.isAbsolute) hostPath.resolve(stripPath(p, bindPath))
+      else hostPath.resolve(p)
   }
 }

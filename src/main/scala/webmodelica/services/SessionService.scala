@@ -22,20 +22,7 @@ override val json:FinatraObjectMapper)
 
   val fsStore = new FSStore(conf.data.hostDirectory.resolve(session.id.toString))
 
-  override val pathMapper = new PathMapper() {
-    val hostPath = fsStore.rootDir.toAbsolutePath
-    val bindPath = conf.data.bindDirectory.resolve(hostPath.getFileName())
-    private val stripPath = (from:Path, other:Path) => from.subpath(other.getNameCount, from.getNameCount)
-    override def relativize(p:Path): Path =
-      if(p.startsWith(hostPath)) stripPath(p, hostPath)
-      else stripPath(p, bindPath)
-    override def toBindPath(p:Path): Path =
-      if(p.isAbsolute) bindPath.resolve(stripPath(p, hostPath))
-      else bindPath.resolve(p)
-    override def toHostPath(p:Path): Path =
-      if(p.isAbsolute) hostPath.resolve(stripPath(p, bindPath))
-      else hostPath.resolve(p)
-  }
+  override val pathMapper = MopeService.pathMapper(fsStore.rootDir.toAbsolutePath, conf.data.bindDirectory.resolve(fsStore.rootDir.toAbsolutePath.getFileName()))
 
   override def rootDir: Path = fsStore.rootDir
   override def update(file: ModelicaFile): Future[Unit] = fsStore.update(file)
