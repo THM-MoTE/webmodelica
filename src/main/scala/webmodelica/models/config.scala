@@ -24,6 +24,6 @@ package config {
   )
 
   object configReaders {
-    implicit val pathReader:ConfigReader[Path] = ConfigReader[String].map(s => Paths.get(s))
+    implicit val pathReader:ConfigReader[Path] = ConfigReader[String].map(s => Paths.get(s).toAbsolutePath)
   }
 }
