@@ -33,13 +33,8 @@ trait MopeService {
   def pathMapper: MopeService.PathMapper
   val client: featherbed.Client
 
-  // private lazy val projIdPromise: Promise[Int] = new Promise[Int]()
-  val projIdPromise: SPromise[Int]
-  private def projectId: Future[Int] = projIdPromise.future.asTwitter
-  // private def projectId: Future[Int] = Future {
-  //   Thread.sleep(5000)
-  //   0
-  // }
+  private lazy val projIdPromise: Promise[Int] = new Promise[Int]()
+  private def projectId: Future[Int] = projIdPromise
 
   private def postJson[O:Manifest, I](path:String)(in:I): Future[O] = {
     val str = json.writeValueAsString(in)
@@ -72,7 +67,7 @@ trait MopeService {
 
     req.send[Int]().map { id =>
         info(s"registered id $id")
-        projIdPromise.success(id)
+        projIdPromise setValue id
         id
     }
       .handle {

@@ -22,7 +22,6 @@ override val json:FinatraObjectMapper)
     with MopeService
   with com.twitter.inject.Logging {
   override val client = new featherbed.Client(new java.net.URL(conf.address+"mope/"))
-  override lazy val projIdPromise: SPromise[Int] = SPromise[Int]()
 
   val fsStore = new FSStore(conf.data.hostDirectory.resolve(session.id.toString))
 
