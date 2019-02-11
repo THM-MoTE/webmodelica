@@ -53,4 +53,10 @@ class SessionController@Inject()(projectStore:ProjectStore, sessionRegistry: Ses
       service.update(ModelicaFile(req.path,req.content))
     }
   }
+
+  post("/sessions/:sessionId/compile")  { req:CompileRequest =>
+    withSession(req.sessionId) { service =>
+      service.compile(req.path)
+    }
+  }
 }

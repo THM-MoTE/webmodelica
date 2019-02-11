@@ -22,3 +22,9 @@ data['content'] = "model err e err;"
 requ = req.Request(f"{baseUrl}sessions/{sessionId}/files/update", data=json.dumps(data).encode(), headers=headers, method='POST')
 resp = req.urlopen(requ)
 print("updated file: ", resp.getcode(), resp.read().decode())
+
+
+compileData = {'path': 'a/simple.mo'}
+requ = req.Request(f"{baseUrl}sessions/{sessionId}/compile", data=json.dumps(compileData).encode(), headers=headers, method='POST')
+resp = req.urlopen(requ)
+print("compiled session: ", resp.getcode(), resp.read().decode())
