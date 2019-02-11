@@ -7,18 +7,21 @@ class User {
 }
 
 class Project {
+  id: ObjectId
   owner: User
+  name: String
 }
 
 
 class ModelicaFile {
-  project: Project
+  id: ObjectId
+  projectID: ObjectId
   relativePath: Path
   content: Text
 }
 
 class Session {
-  id: Long
+  id: UUID
   project: Project
   user: User
   mopeEndpoint: Address

@@ -11,6 +11,7 @@ object WMServerMain extends WMServer
 
 class WMServer extends HttpServer {
 
+  override def jacksonModule = JsonConfigModule
   override val modules = Seq(AppModule)
 
   override def configureHttp(router: HttpRouter) {
@@ -18,5 +19,8 @@ class WMServer extends HttpServer {
       .filter[LoggingMDCFilter[Request, Response]]
       .filter[CommonFilters]
       .add[controllers.Simple]
+      .add[controllers.ProjectController]
+      .add[controllers.SessionController]
+      .add[controllers.InfoController]
   }
 }

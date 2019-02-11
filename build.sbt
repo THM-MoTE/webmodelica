@@ -11,7 +11,7 @@ scalacOptions ++= Seq(
 
 resolvers += Resolver.sonatypeRepo("releases")
 
-// initialCommands in console := """""".stripMargin
+initialCommands in console := Common.consoleInit
 
 val copyrightName = "N. Justus"
 val copyrightYear = "2019"
