@@ -20,5 +20,6 @@ class WMServer extends HttpServer {
       .filter[CommonFilters]
       .add[controllers.Simple]
       .add[controllers.ProjectController]
+      .add[controllers.SessionController]
   }
 }
