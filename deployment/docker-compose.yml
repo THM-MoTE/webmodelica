@@ -6,7 +6,8 @@ services:
     ports:
       - 9010:27017
     volumes:
-      - ../db:/data/db
+      #- ../db:/data/db
+      - /var/webmodelica/db:/data/db
   ui:
     image: "thmmote/webmodelica-ui:0.0.1"
     ports:

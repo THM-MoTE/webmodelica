@@ -18,5 +18,5 @@ class ProjectStore @Inject()(db:MongoDatabase)
 
   def add(p:Project): TFuture[Unit] = collection.insertOne(p).head().map(_ => ()).asTwitter
   def all(): TFuture[Seq[Project]] = collection.find().toFuture().asTwitter
-  def findBy(id:BsonObjectId): TFuture[Project] = collection.find(Filters.equal("id", id)).head().asTwitter
+  def findBy(id:BsonObjectId): TFuture[Project] = collection.find(Filters.equal("_id", id)).head().asTwitter
 }

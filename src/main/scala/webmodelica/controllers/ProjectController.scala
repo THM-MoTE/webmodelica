@@ -14,7 +14,7 @@ class ProjectController@Inject()(store:ProjectStore)
   post("/projects") { project:ProjectRequest =>
     logger.debug(s"got project $project")
     val newProj = Project(project)
-    store.add(newProj).map(_ => newProj)
+    store.add(newProj).map(_ => JSProject(newProj))
   }
 
   get("/projects/:id") { requ:Request =>
