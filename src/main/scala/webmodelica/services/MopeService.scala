@@ -29,30 +29,11 @@ import webmodelica.conversions.futures._
 trait MopeService {
   this: com.twitter.inject.Logging =>
 
-  def json:FinatraObjectMapper
   def pathMapper: MopeService.PathMapper
   val client: featherbed.Client
 
   private lazy val projIdPromise: Promise[Int] = new Promise[Int]()
   private def projectId: Future[Int] = projIdPromise
-
-  private def postJson[O:Manifest, I](path:String)(in:I): Future[O] = {
-    val str = json.writeValueAsString(in)
-    println(s"calling: $path with $str")
-    client.post(path)
-      .withContent(Buf.Utf8(str), "application/json")
-      .send[Response]()
-      .map { r => json.parse(r.content) }
-      .handle {
-        case request.ErrorResponse(req,resp) =>
-          val str = s"Error response $resp to request $req"
-          throw new Exception(str)
-        case e:Exception =>
-          error(s"error while connecting ${e.getMessage}")
-          throw e
-      }
-  }
-
 
   import featherbed.circe._
   import io.circe.generic.auto._

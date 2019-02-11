@@ -47,7 +47,6 @@ object AppModule
   @Singleton
   @Provides
   def mongoDBProvider(dbConf:MongoDBConfig, client:MongoClient): MongoDatabase = {
-    println("!!!! MONGODB PROVIDER CALLED")
     client.getDatabase(dbConf.database)
       .withCodecRegistry(codecRegistry)
   }

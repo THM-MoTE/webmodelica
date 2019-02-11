@@ -11,7 +11,7 @@ class SessionServicePathMapperSpec
   val tmpDir = File.newTemporaryDirectory("mapperspec-tmp")
   val conf = MopeClientConfig("http://localhost:9015/", MopeDataConfig(tmpDir.path, Paths.get("/data/wm")))
   val session = Session(Project(ProjectRequest("nico", "testproj")))
-  val service = new SessionService(conf, session, null)
+  val service = new SessionService(conf, session)
   val mapper = service.pathMapper
   val bindRoot = conf.data.bindDirectory.resolve(session.idString)
   val hostRoot = service.fsStore.rootDir

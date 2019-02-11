@@ -16,8 +16,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class SessionService @Inject()(
   val conf:MopeClientConfig,
-  val session:Session,
-override val json:FinatraObjectMapper)
+  val session:Session)
   extends FileStore
     with MopeService
   with com.twitter.inject.Logging {
@@ -27,6 +26,8 @@ override val json:FinatraObjectMapper)
 
   override val pathMapper = MopeService.pathMapper(fsStore.rootDir.toAbsolutePath, conf.data.bindDirectory.resolve(fsStore.rootDir.toAbsolutePath.getFileName()))
 
+  info(s"mapper: $pathMapper")
+  info(s"fsStore: $fsStore")
   override def rootDir: Path = fsStore.rootDir
   override def update(file: ModelicaFile): Future[Unit] = fsStore.update(file)
 }

@@ -8,11 +8,10 @@ import webmodelica.core.AppModule
 import webmodelica.models._
 
 class SessionRegistrySpec extends WMSpec {
-  val json = FinatraJacksonModule.provideCamelCaseFinatraObjectMapper(new ObjectMapper with ScalaObjectMapper)
   val conf = AppModule.configProvider.mope
 
   "The SessionRegistry" should "assign unique ids" in {
-    val registry = new SessionRegistry(conf, json)
+    val registry = new SessionRegistry(conf)
     val sessions = Seq(registry.create(Project(ProjectRequest("nico", "awesome project"))),
       registry.create(Project(ProjectRequest("nico", "awesome project"))),
       registry.create(Project(ProjectRequest("nico", "awesome project"))))
@@ -22,7 +21,7 @@ class SessionRegistrySpec extends WMSpec {
     forAll(sessions) { s => set(s) }
   }
   it should "retrieve sessions" in {
-    val registry = new SessionRegistry(conf, json)
+    val registry = new SessionRegistry(conf)
     val session = registry.create(Project(ProjectRequest("nico", "awesome project")))
     registry.get(session.idString) should not be empty
   }

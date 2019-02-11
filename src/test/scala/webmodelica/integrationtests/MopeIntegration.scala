@@ -18,11 +18,9 @@ import com.twitter.util.{Future,Await}
 
 class MopeIntegration
     extends webmodelica.WMSpec {
-  // val json = FinatraJacksonModule.provideCamelCaseFinatraObjectMapper(new ObjectMapper with ScalaObjectMapper)
-  val json = FinatraObjectMapper.create()
   val conf = AppModule.configProvider.mope
   val session = Session(Project(ProjectRequest("nico", "awesome project")))
-  val service = new SessionService(conf,session,json)
+  val service = new SessionService(conf,session)
 
   val files = Seq(
     ModelicaFile(

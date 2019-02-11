@@ -9,7 +9,7 @@ import webmodelica.models.{Project, Session}
 
 import scala.collection.concurrent
 
-class SessionRegistry @Inject()(conf:MopeClientConfig, json:FinatraObjectMapper)
+class SessionRegistry @Inject()(conf:MopeClientConfig)
   extends com.twitter.inject.Logging {
 
   private val lock:java.util.concurrent.locks.Lock = new java.util.concurrent.locks.ReentrantLock()
@@ -27,7 +27,7 @@ class SessionRegistry @Inject()(conf:MopeClientConfig, json:FinatraObjectMapper)
   def create(p:Project): Session = sync {
     val s = Session(p)
     info(s"creating session $s")
-    registry += (s.idString -> new SessionService(conf, s, json))
+    registry += (s.idString -> new SessionService(conf, s))
     s
   }
 
