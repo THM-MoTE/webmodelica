@@ -13,7 +13,7 @@ services:
     ports:
       - 9005:3000
   mope:
-    image: "thmmote/mope-server:0.6.5"
+    image: "thmmote/mope-server:0.6.5-bugfix"
     user: openmodelica:openmodelica
     ports:
       - 9015:3000
