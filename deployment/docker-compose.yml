@@ -8,10 +8,6 @@ services:
     volumes:
       #- ../db:/data/db
       - /var/webmodelica/db:/data/db
-  ui:
-    image: "thmmote/webmodelica-ui:0.0.1"
-    ports:
-      - 9005:3000
   mope:
     image: "thmmote/mope-server:0.6.5-bugfix"
     user: openmodelica:openmodelica

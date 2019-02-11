@@ -1,0 +1,36 @@
+version: '3'
+services:
+  traefik:
+    image: traefik
+    command: --api --docker
+    ports:
+      - "80:80"     # The HTTP port
+      - "8080:8080" # The Web UI (enabled by --api)
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
+  backend:
+    image: "thmmote/webmodelica:0.0.2"
+    ports:
+      - 9002:3000
+    labels:
+      - "traefik.frontend.rule=PathPrefixStrip:/api"
+      - "traefik.backend=webmodelica-backend"
+      - "traefik.port=3000"
+    volumes:
+      - /var/webmodelica/data:/data
+  ui:
+    image: "thmmote/webmodelica-ui:0.0.1"
+    ports:
+      - 9003:3000
+    labels:
+      - "traefik.frontend.rule=PathPrefixStrip:/"
+      - "traefik.backend=webmodelica-ui"
+      - "traefik.port=3000"
+  mope:
+    image: "thmmote/mope-server:0.6.5-bugfix"
+    user: openmodelica:openmodelica
+    ports:
+      - 9015:3000
+    volumes:
+      - /var/webmodelica/data:/home/openmodelica/data
+      - ./mope.conf:/home/openmodelica/.config/mope/mope.conf
