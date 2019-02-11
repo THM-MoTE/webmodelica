@@ -11,7 +11,7 @@ class App extends Component {
         <div>
           <Route exact path="/editor" component={CodeEditor} />
           <Route exact path="/project-view" component={ProjectView} />
-          <Route component={Landing} />
+          <Route exact path="/" component={Landing} />
         </div>
       </Router>
     )
