@@ -1,12 +1,18 @@
 package webmodelica.controllers
 
 import com.google.inject.Inject
-import com.twitter.util.Future
+import com.twitter.util.{
+  Future,
+  FuturePool
+}
 import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
 import org.mongodb.scala.bson.BsonObjectId
 import webmodelica.models._
-import webmodelica.services.SessionRegistry
+import webmodelica.services.{
+  SessionRegistry,
+  SessionService
+}
 import webmodelica.stores.ProjectStore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.twitter.finatra.request._
@@ -16,9 +22,19 @@ case class NewFileRequest(
   @JsonProperty() path: java.nio.file.Path,
   @JsonProperty() content: String,
 )
+case class CompileRequest(
+  @RouteParam() sessionId: String,
+  @JsonProperty() path: java.nio.file.Path,
+)
 
 class SessionController@Inject()(projectStore:ProjectStore, sessionRegistry: SessionRegistry)
   extends Controller {
+
+  def withSession[A](id:webmodelica.UUIDStr)(fn: SessionService => Future[A]): Future[_] =
+    FuturePool.unboundedPool(sessionRegistry.get(id)).flatMap {
+      case Some(service) => fn(service)
+      case None => Future.value(response.notFound.body(s"Can't find a session for: $id"))
+    }
 
   post("/projects/:projectId/sessions/new") { requ:Request =>
     val id = requ.getParam("projectId")
@@ -29,9 +45,8 @@ class SessionController@Inject()(projectStore:ProjectStore, sessionRegistry: Ses
   }
 
   post("/sessions/:sessionId/files/update") { req:NewFileRequest =>
-    sessionRegistry.get(req.sessionId) match {
-      case Some(service) => service.update(ModelicaFile(req.path,req.content))
-          case None => response.notFound.body(s"Can't find a session for: $req.sessionId")
+    withSession(req.sessionId) { service =>
+      service.update(ModelicaFile(req.path,req.content))
     }
   }
 }
