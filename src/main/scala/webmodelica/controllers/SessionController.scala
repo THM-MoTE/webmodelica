@@ -41,7 +41,11 @@ class SessionController@Inject()(projectStore:ProjectStore, sessionRegistry: Ses
     for {
       project <- projectStore.findBy(BsonObjectId(id))
       _ = require(project ne null, "searched project can't be null!")
-    } yield JSSession(sessionRegistry.create(project))
+      session <- FuturePool.unboundedPool(sessionRegistry.create(project))
+    } yield {
+      withSession(session.idString)(_.connect())
+      JSSession(session)
+    }
   }
 
   post("/sessions/:sessionId/files/update") { req:NewFileRequest =>
