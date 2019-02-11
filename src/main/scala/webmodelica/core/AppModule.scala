@@ -10,7 +10,9 @@ import scala.concurrent.ExecutionContext
 object AppModule
   extends TwitterModule
     with webmodelica.models.DocumentWriters {
+  private val confDefault = "webmodelica.conf"
   val env = flag(name="env", default="development", help="environment to use")
+  val configFile = flag(name="configFile", default=confDefault, help="the config file to use")
 
   override def singletonStartup(injector: Injector) {
     super.singletonStartup(injector)
@@ -31,7 +33,9 @@ object AppModule
     import webmodelica.models.config.WMConfig
     import webmodelica.models.config.configReaders._
     import pureconfig.generic.auto._
-    val rootConfig = ConfigFactory.load("webmodelica.conf")
+    val rootConfig =
+      if(configFile() == confDefault) ConfigFactory.load("webmodelica.conf")
+      else ConfigFactory.parseFile(new java.io.File(configFile()))
     val conf = pureconfig.loadConfigOrThrow[WMConfig](rootConfig.getConfig(env()))
     logger.info(s"config loaded: $conf")
     conf
