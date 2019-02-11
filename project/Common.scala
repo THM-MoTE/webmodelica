@@ -29,7 +29,8 @@ object Common {
 |import webmodelica.stores._
 |import webmodelica.services._
 |import webmodelica.core._
-""".stripMargin
+|import java.nio.file._
+|import better.files._""".stripMargin
 
 }
 

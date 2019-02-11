@@ -9,7 +9,7 @@ class SessionServicePathMapperSpec
     extends webmodelica.WMSpec {
 
   val tmpDir = File.newTemporaryDirectory("mapperspec-tmp")
-  val conf = MopeClientConfig("localhost:9015", MopeDataConfig(tmpDir.path, Paths.get("/data/wm")))
+  val conf = MopeClientConfig("http://localhost:9015/", MopeDataConfig(tmpDir.path, Paths.get("/data/wm")))
   val session = Session(Project(ProjectRequest("nico", "testproj")))
   val service = new SessionService(conf, session, null)
   val mapper = service.pathMapper
@@ -40,5 +40,10 @@ class SessionServicePathMapperSpec
     val absolute = hostRoot.resolve("a/b/c/test.mo")
     val fn: Path => Path = mapper.toBindPath _ andThen mapper.toHostPath _
     fn(absolute) shouldBe absolute
+  }
+  it should "relativize bind-path's" in {
+    val relative = "a/b/c/test.mo"
+    val absolute = bindRoot.resolve(relative)
+    mapper.relativize(absolute) shouldBe Paths.get(relative)
   }
 }

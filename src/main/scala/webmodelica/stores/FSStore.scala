@@ -20,4 +20,6 @@ class FSStore(root:Path)
       .write(file.content)(charset=encoding)
     Future.value(())
   }
+
+  override def toString:String = s"FSStore($root)"
 }

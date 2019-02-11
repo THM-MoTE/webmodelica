@@ -88,7 +88,11 @@ trait MopeService {
         .withContent(fp, "application/json")
         .accept("application/json")
       req.send[Seq[CompilerError]]()
-      .handle {
+        .map { xs =>
+          info(s"compiling returned $xs - ${pathMapper.relativize(xs.head.file)}")
+          xs.map { error => error.copy(file=pathMapper.relativize(error.file).toString) }
+        }
+        .handle {
         case request.ErrorResponse(req,resp) =>
           val str = s"Error response $resp to request $req"
           throw new Exception(str)
@@ -116,6 +120,7 @@ trait MopeService {
 object MopeService {
   trait PathMapper {
     def relativize(p:Path): Path
+    def relativize(p:String): Path = relativize(Paths.get(p))
     def toBindPath(p:Path): Path
     def toHostPath(p:Path): Path
     def projectDirectory: Path
@@ -124,8 +129,8 @@ object MopeService {
     private val stripPath = (from:Path, other:Path) => from.subpath(other.getNameCount, from.getNameCount)
     override def projectDirectory: Path = bindPath
     override def relativize(p:Path): Path =
-      if(p.startsWith(hostPath)) stripPath(p, hostPath)
-      else stripPath(p, bindPath)
+        if (p.startsWith(hostPath)) hostPath.relativize(p)
+        else bindPath.relativize(p)
     override def toBindPath(p:Path): Path = {
       if(p.isAbsolute) bindPath.resolve(stripPath(p, hostPath))
       else bindPath.resolve(p)
@@ -133,5 +138,6 @@ object MopeService {
     override def toHostPath(p:Path): Path =
       if(p.isAbsolute) hostPath.resolve(stripPath(p, bindPath))
       else hostPath.resolve(p)
+    override def toString: String = s"PathMapper(host:$hostPath, bind:$bindPath)"
   }
 }
