@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {Project} from '../models/project'
+import {Container} from '../layouts'
 
 export class ProjectView extends Component<any,any> {
 
@@ -7,26 +8,39 @@ export class ProjectView extends Component<any,any> {
 
   constructor(props:any)  {
     super(props)
-    this.projectBaseAddress = location.protocol+"//"+location.host+"/projects"
+    this.projectBaseAddress = location.protocol+"//"+location.host+"/api/projects"
     this.state = {projects:[]}
   }
 
-  copmonentDidMount() {
-    fetch(this.projectBaseAddress)
-        .then(res => res.json())
+  private fetchJson(addr:string):Promise<Project[]> {
+    return fetch(addr, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+    .then(res => res.json())
+  }
+
+  public componentDidMount() {
+    const addr = "/projects"
+    console.log("fetching projects from:", addr)
+    this.fetchJson(addr)
         .then(result => {
           this.setState({projects:result})
         })
   }
 
-  render () {
+  public render () {
     return (
-      <ul className="list-group">
-      {
-        this.state && this.state.projects.map((p:Project) =>
-          (<li className="list-group-item">{p.name}</li>))
-        }
-      </ul>
+      <Container>
+        <ul className="list-group">
+        {
+          this.state.projects && this.state.projects.map((p:Project) =>
+            (<li className="list-group-item">{p.owner} - {p.name}</li>))
+          }
+        </ul>
+      </Container>
     )
   }
 }
