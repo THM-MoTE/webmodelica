@@ -13,7 +13,10 @@ class UserStoreSpec extends DBSpec(Some(constants.userCollection)) {
     Await.result(store.add(user))
   }
   it should "find the user by name" in {
-    Await.result(store.findBy(user.username)) shouldBe user
+    Await.result(store.findBy(user.username)).get shouldBe user
+  }
+  it should "return none if username not defined" in {
+    Await.result(store.findBy("blup")) shouldBe None
   }
   it should "throw an UsernameAlreadyInUse" in {
     val user2 = user.copy(email="nico2@test.example")

@@ -24,9 +24,10 @@ class UserStore @Inject()(db:MongoDatabase)
       case e:MongoWriteException if e.getError.getCategory == ErrorCategory.DUPLICATE_KEY =>
         throw UsernameAlreadyInUse(u.username)
     }
-  def findBy(username: String): Future[User] =
-    collection.find(Filters.equal("_id", username)).head()
-      .map(User.apply)
+  def findBy(username: String): Future[Option[User]] =
+    collection.find(Filters.equal("_id", username))
+      .headOption()
+      .map(_.map(User.apply))
       .asTwitter
 }
 object UserStore {
