@@ -22,5 +22,6 @@ class WMServer extends HttpServer {
       .add[controllers.ProjectController]
       .add[controllers.SessionController]
       .add[controllers.InfoController]
+      .add[controllers.UserController]
   }
 }

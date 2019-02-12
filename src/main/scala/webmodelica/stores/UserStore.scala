@@ -1,5 +1,7 @@
 package webmodelica.stores
 
+import java.security.MessageDigest
+
 import scala.concurrent.ExecutionContext
 import ExecutionContext.Implicits.global
 import com.google.inject.Inject
@@ -26,4 +28,13 @@ class UserStore @Inject()(db:MongoDatabase)
     collection.find(Filters.equal("_id", username)).head()
       .map(User.apply)
       .asTwitter
+}
+object UserStore {
+  def hashString(digest:MessageDigest)(s:String): String = {
+    val hashBytes = digest.digest(s.getBytes(constants.encoding))
+    new String(hashBytes, constants.encoding)
+  }
+  def securePassword(digest:MessageDigest)(u:User): User = {
+    u.copy(hashedPassword = hashString(digest)(u.hashedPassword))
+  }
 }
