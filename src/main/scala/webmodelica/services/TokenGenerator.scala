@@ -4,8 +4,10 @@ import pdi.jwt.{Jwt, JwtAlgorithm, JwtClaim, JwtHeader, JwtOptions}
 import webmodelica.models.User
 
 import scala.concurrent.duration._
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 import java.time.Instant
+
+import com.twitter.util.Future
 
 case class UserTokenPayload(username: String)
 case class UserToken(username:String, iat: Long, exp: Long)
@@ -23,9 +25,13 @@ class TokenGenerator(secret:String) {
     val claim = JwtClaim(payload).issuedNow.expiresIn(expiration)
     Jwt.encode(claim, secret, algorithm)
   }
-  def decode(token:String): Try[UserToken] = {
-    Jwt.decodeAll(token, secret, Seq(algorithm)).flatMap {
+  def decode(token:String): Future[UserToken] = {
+    val decodedTry = Jwt.decodeAll(token, secret, Seq(algorithm)).flatMap {
       case (_, payload,_) => parser.decode[UserToken](payload).toTry
+    }
+    decodedTry match {
+      case Success(ut) => Future.value(ut)
+      case Failure(ex) => Future.exception(ex)
     }
   }
   def isValid(token:String): Boolean = Jwt.isValid(token, secret, Seq(algorithm))

@@ -5,4 +5,5 @@ object constants {
   val encoding = StandardCharsets.UTF_8
   val projectCollection = "projects"
   val userCollection = "users"
+  val authorizationHeader = "Authorization"
 }

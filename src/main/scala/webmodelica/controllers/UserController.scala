@@ -4,11 +4,13 @@ import java.security.MessageDigest
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.google.inject.Inject
+import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
 import com.twitter.util.Future
-import webmodelica.services.TokenGenerator
+import webmodelica.services.{TokenGenerator, UserToken}
 import webmodelica.stores.{ProjectStore, UserStore}
 import io.scalaland.chimney.dsl._
+import webmodelica.constants
 import webmodelica.models.{User, errors}
 
 case class RegisterRequest(
@@ -29,7 +31,7 @@ class UserController@Inject()(userStore:UserStore,
                               digest: MessageDigest)
   extends Controller {
 
-  private def tokenResponse(token:String) = response.ok(TokenResponse(token)).header("Authorization", token)
+  private def tokenResponse(token:String) = response.ok(TokenResponse(token)).header(constants.authorizationHeader, token)
 
   post("/users/register") { req:RegisterRequest =>
     val user = req.toSecureUser(digest)
@@ -40,7 +42,6 @@ class UserController@Inject()(userStore:UserStore,
   }
 
   post("/users/login") { req: LoginRequest =>
-    //TODO handle filter errors !
     userStore.findBy(req.username)
       .flatMap {
         case Some(dbUser) if dbUser.hashedPassword == UserStore.hashString(digest)(req.password) => Future.value(dbUser)
@@ -52,4 +53,13 @@ class UserController@Inject()(userStore:UserStore,
         case errors.CredentialsError => response.unauthorized(errors.CredentialsError.getMessage)
       }
   }
+
+  filter[JwtFilter]
+    .post("/users/refresh") { req:Request =>
+      val token = req.headerMap.getOrNull(constants.authorizationHeader)
+      for {
+        token <- tokenGenerator.decode(token)
+        user <- userStore.findBy(token.username).flatMap(errors.notFoundExc("web-token contains invalid user informations!"))
+      } yield tokenResponse(tokenGenerator.newToken(user))
+    }
 }
