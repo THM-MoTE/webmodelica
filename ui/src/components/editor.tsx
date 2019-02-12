@@ -23,7 +23,9 @@ export class CodeEditor extends Component {
 
   render() {
     return (
-      <div id={this.containerName} className="editor"></div>
+      <Container>
+        <div id={this.containerName} className="editor"></div>
+      </Container>
     )
   }
 }
