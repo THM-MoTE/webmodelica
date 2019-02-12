@@ -1,10 +1,14 @@
 package webmodelica.core
 
+import java.security.MessageDigest
+
 import webmodelica.models.config._
 import com.twitter.inject.{Injector, TwitterModule}
 import com.google.inject.{Provides, Singleton}
 import org.mongodb.scala._
 import webmodelica.models._
+import webmodelica.services.TokenGenerator
+
 import scala.concurrent.ExecutionContext
 
 object AppModule
@@ -57,4 +61,11 @@ object AppModule
 
   @Provides
   def session:Session = Session(Project(ProjectRequest("nico", "awesome title")))
+
+  @Provides
+  def tokenGenerator(conf:WMConfig): TokenGenerator = new TokenGenerator(conf.secret)
+
+  @Provides
+  @Singleton
+  def digestHasher: MessageDigest = MessageDigest.getInstance("SHA-256")
 }

@@ -42,6 +42,7 @@ object Dependencies {
     "org.typelevel" %% "cats-core" % "1.6.0",
     "com.github.pathikrit" %% "better-files" % "3.7.+",
     "io.scalaland" %% "chimney" % "0.3.+",
+    "com.pauldijou" %% "jwt-core" % "1.1.+",
   )
 
   val deps = Seq(
