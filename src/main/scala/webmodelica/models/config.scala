@@ -7,6 +7,7 @@ package config {
   case class WMConfig(
     mope: MopeClientConfig,
     mongodb: MongoDBConfig,
+    secret: String,
   )
 
   case class MongoDBConfig(

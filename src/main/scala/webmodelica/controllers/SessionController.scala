@@ -39,7 +39,7 @@ class SessionController@Inject()(projectStore:ProjectStore, sessionRegistry: Ses
   post("/projects/:projectId/sessions/new") { requ:Request =>
     val id = requ.getParam("projectId")
     for {
-      project <- projectStore.findBy(BsonObjectId(id))
+      project <- projectStore.findBy(BsonObjectId(id)).flatMap(errors.notFoundExc(s"project with $id not found!"))
       _ = require(project ne null, "searched project can't be null!")
       session <- FuturePool.unboundedPool(sessionRegistry.create(project))
     } yield {

@@ -6,5 +6,5 @@ import org.bson.codecs.configuration.CodecRegistries.{ fromRegistries, fromProvi
 
 
 trait DocumentWriters {
-  val codecRegistry = fromRegistries(fromProviders(classOf[Project]), DEFAULT_CODEC_REGISTRY)
+  val codecRegistry = fromRegistries(fromProviders(classOf[Project]), fromProviders(classOf[UserDocument]), DEFAULT_CODEC_REGISTRY)
 }
