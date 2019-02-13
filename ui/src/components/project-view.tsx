@@ -1,46 +1,40 @@
 import React, { Component } from 'react';
 import {Project} from '../models/project'
 import {Container} from '../layouts'
+import {ApiClient} from '../services/api-client'
+import {ListGroup, Card} from 'react-bootstrap'
 
 export class ProjectView extends Component<any,any> {
-
-  projectBaseAddress: string
+  private api:ApiClient
 
   constructor(props:any)  {
     super(props)
-    this.projectBaseAddress = location.protocol+"//"+location.host+"/api/projects"
-    this.state = {projects:[]}
-  }
-
-  private fetchJson(addr:string):Promise<Project[]> {
-    return fetch(addr, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json'
-      }
-    })
-    .then(res => res.json())
+    this.api = props.api
+    this.state = {projects:[], selectedProject: undefined}
   }
 
   public componentDidMount() {
-    const addr = "/projects"
-    console.log("fetching projects from:", addr)
-    this.fetchJson(addr)
-        .then(result => {
-          this.setState({projects:result})
-        })
+    this.api.projects()
+      .then(ps => this.setState({projects: ps}))
+  }
+
+  private newSession(ev:any, p:Project): void {
+    console.log("project clicked", p)
+    console.log("history", this.props.history)
+    this.props.history.push("/editor")
   }
 
   public render () {
-    return (
-      <Container>
-        <ul className="list-group">
-        {
-          this.state.projects && this.state.projects.map((p:Project) =>
-            (<li className="list-group-item">{p.owner} - {p.name}</li>))
-          }
-        </ul>
-      </Container>
-    )
+      return (<Container>
+          <Card>
+            <Card.Header>Your Projects</Card.Header>
+            <ListGroup variant="flush">
+            {
+              this.state.projects && this.state.projects.map((p:Project) =>
+                (<ListGroup.Item action href={"#"+p.id} onClick={(ev:any) => this.newSession(ev, p)} key={p.id}>{p.owner} - {p.name}</ListGroup.Item>))
+              }
+              </ListGroup>
+            </Card>
+        </Container>)
   }
 }
