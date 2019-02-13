@@ -18,7 +18,8 @@ export class FileView extends React.Component<any, any> {
           {files.map((f: File) =>
             <ListGroup.Item action
               key={f.relativePath}
-              onClick={(ev: any) => fileClicked(f)}>
+              onClick={(ev: any) => fileClicked(f)}
+              className="small">
               {f.relativePath}
             </ListGroup.Item>)
           }
