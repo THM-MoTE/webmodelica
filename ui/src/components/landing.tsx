@@ -1,17 +1,21 @@
 import React, { Component } from 'react';
 import {Container} from '../layouts'
 import {Button, Form} from 'react-bootstrap'
+import {ApiClient} from '../services/api-client'
 
-export class Landing extends Component {
+export class Landing extends Component<any,any> {
   private username:string = ''
   private password:string = ''
+  private api:ApiClient
 
   constructor(props:any) {
     super(props)
+    this.api = props.api
   }
 
   private handleSubmit() {
     console.log("name", this.username, "pw", this.password)
+    this.api.login(this.username, this.password).then(res => console.log("response:", res))
   }
 
   render() {
