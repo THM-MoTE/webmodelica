@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import * as monaco from 'monaco-editor';
-import {Container} from '../layouts'
+import { Container } from '../layouts'
 
 export class CodeEditor extends Component {
 
@@ -8,14 +8,15 @@ export class CodeEditor extends Component {
   private containerName: string
   private monacoEditor: any = undefined
 
-  constructor(props:any) {
+  constructor(props: any) {
     super(props)
     this.file = "example.mo"
     this.containerName = `editor-${this.file}`
   }
+
   componentDidMount() {
-    if(!this.monacoEditor) {
-      this.monacoEditor =  monaco.editor.create(document.getElementById(this.containerName) as HTMLElement, {
+    if (!this.monacoEditor) {
+      this.monacoEditor = monaco.editor.create(document.getElementById(this.containerName) as HTMLElement, {
         value: "// First line\nfunction hello() {\n\talert('Hello world!');\n}\n// Last line",
         language: "typescript"
       })
