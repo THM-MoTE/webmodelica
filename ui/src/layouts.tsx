@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
+import { Nav } from 'react-bootstrap'
 
-export function Container(props:any) {
+export function Container(props: any) {
   return (
     <React.Fragment>
-      <ul className="nav">
-        <li className="nav-itm"><a className="nav-link" href="/project-view">Dashboard</a></li>
-        <li className="nav-itm"><a className="nav-link" href="#">New</a></li>
-      </ul>
-
+      <Nav className="justify-content-end">
+        <Nav.Item><Nav.Link href="/projects">Projects</Nav.Link></Nav.Item>
+        <Nav.Item><Nav.Link href="/logout">Logout</Nav.Link></Nav.Item>
+      </Nav>
       <div className="container-fluid">
         {props.children}
       </div>
