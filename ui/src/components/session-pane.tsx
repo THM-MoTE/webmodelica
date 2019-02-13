@@ -12,7 +12,7 @@ export class SessionPane extends React.Component<any, any> {
     super(props)
     console.log("props", props)
     this.api = props.api
-    this.state = { files: [] }
+    this.state = { files: [], editingFiles: [] }
   }
 
   public componentDidMount() {
@@ -20,13 +20,21 @@ export class SessionPane extends React.Component<any, any> {
       .then(files => this.setState({ files: files }))
   }
 
+  private handleFileClicked(f: File): void {
+    console.log("SessionPane: file clicked", f)
+    this.setState({ editingFiles: [f] })
+  }
+
   render() {
     console.log("state", this.state)
     return (
       <Container>
         <Row>
-          <FileView files={this.state.files} />
-          <EditorsPane />
+          <FileView
+            files={this.state.files}
+            onFileClicked={(f: File) => this.handleFileClicked(f)} />
+          <EditorsPane
+            files={this.state.editingFiles} />
         </Row>
       </Container>
     )
