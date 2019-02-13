@@ -4,19 +4,10 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import * as monaco from 'monaco-editor';
-import { ModelicaTokenizer } from './models/modelica-syntax';
+import { languageName, tokenizer } from './models/modelica-syntax';
 
-monaco.languages.register({ id: 'modelica' });
-monaco.languages.setMonarchTokensProvider('modelica', {
-  tokenizer: {
-    root: [
-      [/algorithm/, "keyword"],
-      [/model/, "keyword"],
-      [/function/, "keyword"],
-      [/end/, "keyword"],
-    ]
-  }
-})
+monaco.languages.register({ id: languageName() });
+monaco.languages.setMonarchTokensProvider(languageName(), tokenizer())
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
