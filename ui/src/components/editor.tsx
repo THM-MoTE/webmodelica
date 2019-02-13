@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import * as monaco from 'monaco-editor';
+import {Container} from '../layouts'
 
 export class CodeEditor extends Component {
 
