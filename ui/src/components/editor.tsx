@@ -18,9 +18,8 @@ export class CodeEditor extends Component<any, any> {
   componentDidMount() {
     if (!this.monacoEditor) {
       this.monacoEditor = monaco.editor.create(document.getElementById(this.containerName) as HTMLElement, {
-        // value: "// First line\nfunction hello() {\n\talert('Hello world!');\n}\n// Last line",
         value: this.file.content,
-        language: "typescript"
+        language: "modelica"
       })
     }
   }
