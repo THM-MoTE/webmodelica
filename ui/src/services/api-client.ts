@@ -1,25 +1,26 @@
 
-import {Project} from '../models/project'
-import {TokenWrapper} from '../models/token'
+import { Project } from '../models/project'
+import { File } from '../models/file'
+import { TokenWrapper } from '../models/token'
 
 export class ApiClient {
 
   private base: string
   private token?: string
 
-  constructor(baseUri:string) {
+  constructor(baseUri: string) {
     this.base = baseUri
     this.token = undefined
   }
 
-  private userUri():string {
-    return this.base+"users"
+  private userUri(): string {
+    return this.base + "users"
   }
-  private projectUri():string {
-    return this.base+"projects"
+  private projectUri(): string {
+    return this.base + "projects"
   }
 
-  public login(user:string, pw:string): Promise<TokenWrapper> {
+  public login(user: string, pw: string): Promise<TokenWrapper> {
     // return fetch(this.userUri()+"/login", {
     //   method: 'POST',
     //   headers: {
@@ -29,10 +30,10 @@ export class ApiClient {
     //   body: JSON.stringify({username: user, password: pw})
     // })
     // .then(res => res.json())
-    return Promise.resolve({token: "abcdef"})
+    return Promise.resolve({ token: "abcdef" })
   }
 
-  public projects():Promise<Project[]> {
+  public projects(): Promise<Project[]> {
     // return fetch(this.projectUri(), {
     //   method: 'GET',
     //   headers: {
@@ -41,9 +42,16 @@ export class ApiClient {
     // })
     // .then(res => res.json())
     return Promise.resolve([
-      {id: "123456", name:"Project 1" , owner: "Nico"},
-      {id: "23456", name:"Project 2" , owner: "Nico"},
-      {id: "11-11-b", name:"Project 3" , owner: "Nico"}
+      { id: "123456", name: "Project 1", owner: "Nico" },
+      { id: "23456", name: "Project 2", owner: "Nico" },
+      { id: "11-11-b", name: "Project 3", owner: "Nico" }
+    ])
+  }
+
+  public getFiles(): Promise<File[]> {
+    return Promise.resolve([
+      { relativePath: "a/b/simple.mo", content: "simple" },
+      { relativePath: "factor.mo", content: "function factor end factor;" }
     ])
   }
 }
