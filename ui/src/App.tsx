@@ -12,8 +12,8 @@ class App extends Component {
       <Router>
         <div>
           <Route exact path="/editor" component={CodeEditor} />
-          <Route exact path="/project-view" component={ProjectView} />
-          <Route exact path="/" component={() => <Landing api={this.apiClient}/> } />
+          <Route exact path="/projects" render={({history}) => <ProjectView history={history} api={this.apiClient}/> } />
+          <Route exact path="/" render={({history}) => <Landing history={history} api={this.apiClient}/> } />
         </div>
       </Router>
     )
