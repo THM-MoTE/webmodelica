@@ -2,6 +2,7 @@
 import { Project } from '../models/project'
 import { File } from '../models/file'
 import { TokenWrapper } from '../models/token'
+import React, { Component } from 'react';
 
 export class ApiClient {
 

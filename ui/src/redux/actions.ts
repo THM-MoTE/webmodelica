@@ -1,3 +1,5 @@
+import {UserAuth} from '../models/state'
+
 export enum ActionTypes {
     Login,
     Logout
@@ -8,4 +10,4 @@ export interface Action {
   payload?: any
 }
 
-export const login: () => Action = () => { return {type: ActionTypes.Login} }
+export const login: (pl:UserAuth) => Action = (pl:UserAuth) => { return {type: ActionTypes.Login, payload: pl} }

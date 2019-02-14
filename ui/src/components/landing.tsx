@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {Container} from '../layouts'
 import {Button, Form} from 'react-bootstrap'
-import {ApiClient} from '../services/api-client'
+import {ApiClient, defaultClient} from '../services/api-client'
 import {Redirect} from 'react-router'
 import {defaultMapDispatchToProps, mapAuthenticationToProps} from '../redux'
 import {Action, login} from '../redux/actions'
@@ -10,12 +10,11 @@ import {connect} from 'react-redux'
 class LandingCon extends Component<any,any> {
   private username:string = ''
   private password:string = ''
-//  private api:ApiClient
+  private api:ApiClient
 
   constructor(props:any) {
     super(props)
-    //this.api = defaultClient
-    console.log("props",props)
+    this.api = defaultClient
   }
 
   componentDidMount() {
@@ -26,10 +25,11 @@ class LandingCon extends Component<any,any> {
   private handleSubmit() {
     const props = this.props
     console.log("name", this.username, "pw", this.password)
-    this.props.dispatch(login())
-    // this.api.login(this.username, this.password)
-    //   .then(res => console.log("response:", res))
-    //   .then(() => props.history.push('/projects') )
+    const username = this.username
+    const pw = this.password
+    this.api.login(username, pw)
+      .then(res => this.props.dispatch(login({username:username, jwtToken: res.token})))
+      .then(() => props.history.push('/projects'))
   }
 
   render() {

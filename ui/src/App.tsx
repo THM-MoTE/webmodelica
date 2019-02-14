@@ -27,7 +27,9 @@ class App extends Component {
             <Route path="/session/:sessionId" component={SessionPane} />
           </div>
         </Router>
+
       </Provider>
+
     )
   }
 }
