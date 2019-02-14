@@ -1,21 +1,28 @@
 import React, { Component } from 'react';
 import { Project } from '../models/project'
+import {AppState} from '../models/state'
+import {Action, setProjects} from '../redux/actions'
 import { Container } from '../layouts'
-import { ApiClient } from '../services/api-client'
+import { ApiClient, defaultClient } from '../services/api-client'
 import { ListGroup, Card } from 'react-bootstrap'
+import {connect} from 'react-redux'
+import * as R from 'ramda'
 
-export class ProjectView extends Component<any, any> {
-  // private api: ApiClient
+class ProjectViewCon extends Component<any, any> {
+  private api: ApiClient
 
   constructor(props: any) {
     super(props)
-    // this.api = props.api
-    this.state = { projects: [], selectedProject: undefined }
+    this.api = defaultClient
+    this.state = { projects: this.props.projects, selectedProject: undefined }
   }
 
   public componentDidMount() {
-    // this.api.projects()
-    //   .then(ps => this.setState({ projects: ps }))
+    this.api.projects()
+      .then(ps => {
+        //console.log("projects:", ps)
+        this.props.setProjects(ps)
+      })
   }
 
   private newSession(ev: any, p: Project): void {
@@ -38,3 +45,14 @@ export class ProjectView extends Component<any, any> {
     </Container>)
   }
 }
+
+function mapToProps(state:AppState) {
+  return { projects: state.projects }
+}
+function dispatchToProps(dispatch: (a:Action) => void) {
+  return {
+    setProjects: R.compose(dispatch, setProjects)
+  }
+}
+const ProjectView = connect(mapToProps, dispatchToProps)(ProjectViewCon)
+export default ProjectView;
