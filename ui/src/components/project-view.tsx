@@ -14,14 +14,14 @@ class ProjectViewCon extends Component<any, any> {
   constructor(props: any) {
     super(props)
     this.api = defaultClient
-    this.state = { projects: this.props.projects, selectedProject: undefined }
+    this.state = { projects: this.props.projects }
   }
 
   public componentDidMount() {
     this.api.projects()
       .then(ps => {
-        //console.log("projects:", ps)
         this.props.setProjects(ps)
+        this.setState({ projects: ps})
       })
   }
 
