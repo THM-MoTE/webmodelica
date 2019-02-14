@@ -6,18 +6,18 @@ import { ApiClient } from '../services/api-client'
 import { Row } from 'react-bootstrap'
 
 export class SessionPane extends React.Component<any, any> {
-  private api: ApiClient
+  // private api: ApiClient
 
   constructor(props: any) {
     super(props)
     console.log("props", props)
-    this.api = props.api
+    // this.api = props.api
     this.state = { files: [], editingFiles: [] }
   }
 
   public componentDidMount() {
-    this.api.getFiles()
-      .then(files => this.setState({ files: files }))
+    // this.api.getFiles()
+    //   .then(files => this.setState({ files: files }))
   }
 
   private handleFileClicked(f: File): void {

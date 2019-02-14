@@ -55,3 +55,5 @@ export class ApiClient {
     ])
   }
 }
+
+export const defaultClient = new ApiClient(window.location.toString())

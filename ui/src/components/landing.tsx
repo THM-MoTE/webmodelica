@@ -3,23 +3,28 @@ import {Container} from '../layouts'
 import {Button, Form} from 'react-bootstrap'
 import {ApiClient} from '../services/api-client'
 import {Redirect} from 'react-router'
+import {defaultMapDispatchToProps} from '../redux'
+import {Action, login} from '../redux/actions'
+import {connect} from 'react-redux'
 
-export class Landing extends Component<any,any> {
+class LandingCon extends Component<any,any> {
   private username:string = ''
   private password:string = ''
-  private api:ApiClient
+//  private api:ApiClient
 
   constructor(props:any) {
     super(props)
-    this.api = props.api
+    //this.api = defaultClient
+    console.log("props",props)
   }
 
   private handleSubmit() {
     const props = this.props
     console.log("name", this.username, "pw", this.password)
-    this.api.login(this.username, this.password)
-      .then(res => console.log("response:", res))
-      .then(() => props.history.push('/projects') )
+    this.props.dispatch(login())
+    // this.api.login(this.username, this.password)
+    //   .then(res => console.log("response:", res))
+    //   .then(() => props.history.push('/projects') )
   }
 
   render() {
@@ -49,3 +54,6 @@ export class Landing extends Component<any,any> {
     </Container>)
   }
 }
+
+const Landing = connect(null, defaultMapDispatchToProps)(LandingCon)
+export default Landing;

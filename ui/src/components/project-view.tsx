@@ -5,17 +5,17 @@ import { ApiClient } from '../services/api-client'
 import { ListGroup, Card } from 'react-bootstrap'
 
 export class ProjectView extends Component<any, any> {
-  private api: ApiClient
+  // private api: ApiClient
 
   constructor(props: any) {
     super(props)
-    this.api = props.api
+    // this.api = props.api
     this.state = { projects: [], selectedProject: undefined }
   }
 
   public componentDidMount() {
-    this.api.projects()
-      .then(ps => this.setState({ projects: ps }))
+    // this.api.projects()
+    //   .then(ps => this.setState({ projects: ps }))
   }
 
   private newSession(ev: any, p: Project): void {
