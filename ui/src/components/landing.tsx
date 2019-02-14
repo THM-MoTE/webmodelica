@@ -3,7 +3,7 @@ import {Container} from '../layouts'
 import {Button, Form} from 'react-bootstrap'
 import {ApiClient} from '../services/api-client'
 import {Redirect} from 'react-router'
-import {defaultMapDispatchToProps} from '../redux'
+import {defaultMapDispatchToProps, mapAuthenticationToProps} from '../redux'
 import {Action, login} from '../redux/actions'
 import {connect} from 'react-redux'
 
@@ -16,6 +16,11 @@ class LandingCon extends Component<any,any> {
     super(props)
     //this.api = defaultClient
     console.log("props",props)
+  }
+
+  componentDidMount() {
+    if(this.props.authentication)
+      this.props.history.push("/projects")
   }
 
   private handleSubmit() {
@@ -55,5 +60,5 @@ class LandingCon extends Component<any,any> {
   }
 }
 
-const Landing = connect(null, defaultMapDispatchToProps)(LandingCon)
+const Landing = connect(mapAuthenticationToProps, defaultMapDispatchToProps)(LandingCon)
 export default Landing;

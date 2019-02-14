@@ -21,6 +21,7 @@ export interface AppState {
 export function initialState(): AppState {
   return {
     authentication: undefined,
+    // authentication: {username: "nico", jwtToken: "12345"},
     projects:[],
     session: {
       files: [],
