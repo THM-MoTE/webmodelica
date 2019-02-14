@@ -1,23 +1,29 @@
 import React from 'react';
+import { bindActionCreators } from 'redux'
+import {connect} from 'react-redux'
 import { Container } from '../layouts'
 import { FileView } from './file-view'
 import { EditorsPane } from './editors-pane'
-import { ApiClient } from '../services/api-client'
+import { ApiClient, defaultClient } from '../services/api-client'
 import { Row } from 'react-bootstrap'
+import {AppState} from '../models/state'
+import {Action, updateSessionFiles} from '../redux/actions'
 
-export class SessionPane extends React.Component<any, any> {
-  // private api: ApiClient
+class SessionPaneCon extends React.Component<any, any> {
+  private api: ApiClient
 
   constructor(props: any) {
     super(props)
-    console.log("props", props)
-    // this.api = props.api
-    this.state = { files: [], editingFiles: [] }
+    this.api = defaultClient
+    this.state = {editingFiles: []}
   }
 
   public componentDidMount() {
-    // this.api.getFiles()
-    //   .then(files => this.setState({ files: files }))
+    this.api.getFiles()
+      .then(files => {
+        console.log("new files", files)
+        this.props.updateSessionFiles(files)
+      })
   }
 
   private handleFileClicked(f: File): void {
@@ -26,12 +32,12 @@ export class SessionPane extends React.Component<any, any> {
   }
 
   render() {
-    console.log("state", this.state)
+    console.log("state", this.state, "props", this.props)
     return (
       <Container>
         <Row>
           <FileView
-            files={this.state.files}
+            files={this.props.files}
             onFileClicked={(f: File) => this.handleFileClicked(f)} />
           <EditorsPane
             files={this.state.editingFiles} />
@@ -40,3 +46,14 @@ export class SessionPane extends React.Component<any, any> {
     )
   }
 }
+
+function mapProps(state:AppState) {
+  console.log("session props", state.session.files)
+  return { files: state.session.files }
+}
+
+function dispatchToProps(dispatch: (a:Action) => any) {
+  return bindActionCreators({updateSessionFiles}, dispatch)
+}
+
+export const SessionPane = connect(mapProps, dispatchToProps)(SessionPaneCon)
