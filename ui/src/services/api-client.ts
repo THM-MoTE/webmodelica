@@ -47,6 +47,13 @@ export class ApiClient {
     ])
   }
 
+  public newProject(user: string, title: string): Promise<Project> {
+    if (user.length > 0 && title.length > 0)
+      return Promise.resolve({ owner: user, name: title, id: "aabbcc" })
+    else
+      return Promise.reject("username & title must be provided and not empty!")
+  }
+
   public getFiles(): Promise<File[]> {
     return Promise.resolve([
       { relativePath: "a/b/simple.mo", content: "simple" },
