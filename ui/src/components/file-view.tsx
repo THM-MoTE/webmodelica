@@ -1,6 +1,6 @@
 import React from 'react'
 import { Col, ListGroup } from 'react-bootstrap'
-import { File } from '../models/file'
+import { File } from '../models/index'
 
 export class FileView extends React.Component<any, any> {
 

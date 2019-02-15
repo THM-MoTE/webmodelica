@@ -1,6 +1,4 @@
-import {UserAuth} from '../models/state'
-import {Project} from '../models/project'
-import {File} from '../models/file'
+import {UserAuth, Project, File} from '../models/index'
 
 export enum ActionTypes {
     Login,

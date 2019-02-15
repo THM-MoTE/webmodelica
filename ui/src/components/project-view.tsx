@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { Project } from '../models/project'
-import {AppState} from '../models/state'
-import {Action, setProjects} from '../redux/actions'
+import { AppState, Project } from '../models/index'
+import {Action, setProjects} from '../redux/index'
 import { Container } from '../layouts'
 import { ApiClient, defaultClient } from '../services/api-client'
 import { ListGroup, Card, Button } from 'react-bootstrap'

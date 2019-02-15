@@ -2,9 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { BrowserRouter as Router, Route } from 'react-router-dom'
-import ProjectView from './components/project-view'
-import {SessionPane} from './components/session-pane'
-import Landing from './components/landing'
+import {ProjectView, Landing, SessionPane} from './components/index'
 import { ApiClient } from './services/api-client'
 import {rootReducer} from './redux/reducers'
 import { createStore } from "redux";

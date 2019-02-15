@@ -1,6 +1,5 @@
 
-import {Project} from './project'
-import {File} from './file'
+import {File, Project} from './index'
 
 export interface UserAuth {
   username:string,

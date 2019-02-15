@@ -55,4 +55,5 @@ function dispatchToProps(dispatch: (a:Action) => any) {
   return bindActionCreators({updateSessionFiles}, dispatch)
 }
 
-export const SessionPane = connect(mapProps, dispatchToProps)(SessionPaneCon)
+const SessionPane = connect(mapProps, dispatchToProps)(SessionPaneCon)
+export default SessionPane

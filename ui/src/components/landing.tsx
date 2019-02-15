@@ -4,7 +4,7 @@ import {Button, Form} from 'react-bootstrap'
 import {ApiClient, defaultClient} from '../services/api-client'
 import {Redirect} from 'react-router'
 import {defaultMapDispatchToProps, mapAuthenticationToProps} from '../redux'
-import {Action, login} from '../redux/actions'
+import {Action, login} from '../redux/index'
 import {connect} from 'react-redux'
 
 class LandingCon extends Component<any,any> {

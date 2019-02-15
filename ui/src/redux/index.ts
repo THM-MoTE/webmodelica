@@ -1,3 +1,5 @@
+export * from './actions'
+export * from './reducers'
 import {Action} from './actions'
 import {AppState} from '../models/state'
 
