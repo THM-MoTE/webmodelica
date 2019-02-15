@@ -21,7 +21,7 @@ class SessionPaneCon extends React.Component<any, any> {
   public componentDidMount() {
     this.api.getFiles()
       .then(files => {
-        console.log("new files", files)
+        // console.log("new files", files)
         this.props.updateSessionFiles(files)
       })
   }
@@ -32,7 +32,7 @@ class SessionPaneCon extends React.Component<any, any> {
   }
 
   render() {
-    console.log("state", this.state, "props", this.props)
+    console.log("state", this.state)
     return (
       <Container>
         <Row>
@@ -48,7 +48,6 @@ class SessionPaneCon extends React.Component<any, any> {
 }
 
 function mapProps(state:AppState) {
-  console.log("session props", state.session.files)
   return { files: state.session.files }
 }
 
