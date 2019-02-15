@@ -1,6 +1,5 @@
 import React from 'react'
 import { Col } from 'react-bootstrap'
-import { CodeEditor } from './editor'
 import * as monaco from 'monaco-editor';
 
 export class EditorsPane extends React.Component<any, any> {

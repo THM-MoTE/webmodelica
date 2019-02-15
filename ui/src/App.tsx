@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { BrowserRouter as Router, Route } from 'react-router-dom'
-import {CodeEditor} from './components/editor'
 import ProjectView from './components/project-view'
 import {SessionPane} from './components/session-pane'
 import Landing from './components/landing'
@@ -22,7 +21,6 @@ class App extends Component {
       <Provider store={store}>
         <Router>
           <div>
-            <Route exact path="/editor" component={CodeEditor} />
             <Route exact path="/projects" component={ProjectView} />
             <Route exact path="/" component={Landing} />
             <Route exact path="/logout" component={Landing} />
