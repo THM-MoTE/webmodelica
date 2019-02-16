@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { AppState, Project } from '../models/index'
-import { Action, setProjects, addProject } from '../redux/index'
+import { Action, setProjects, addProject, setSession } from '../redux/index'
 import { Container } from '../layouts'
 import { ApiClient, defaultClient } from '../services/api-client'
 import { ListGroup, Card, Form, Button, Col } from 'react-bootstrap'
@@ -26,7 +26,13 @@ class ProjectViewCon extends Component<any, any> {
   private newSession(ev: any, p: Project): void {
     console.log("project clicked", p)
     console.log("history", this.props.history)
-    this.props.history.push("/session/" + p.id)
+    //TODO: use session ide provided by backend ;)
+    this.api.newSession(p)
+      .then(s => {
+        this.props.setSession(s)
+        return s
+      })
+      .then(s => this.props.history.push("/session/" + s.id))
     ev.preventDefault()
   }
 
@@ -62,7 +68,7 @@ function mapToProps(state: AppState) {
   return { projects: state.projects, username: state.authentication!.username }
 }
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({ setProjects, addProject }, dispatch)
+  return bindActionCreators({ setProjects, addProject, setSession }, dispatch)
 }
 const ProjectView = connect(mapToProps, dispatchToProps)(ProjectViewCon)
 export default ProjectView;

@@ -1,5 +1,5 @@
 
-import { File, Project, TokenWrapper } from '../models'
+import { File, Project, TokenWrapper, Session } from '../models'
 import React, { Component } from 'react';
 
 export class ApiClient {
@@ -54,11 +54,12 @@ export class ApiClient {
       return Promise.reject("username & title must be provided and not empty!")
   }
 
-  public getFiles(): Promise<File[]> {
-    return Promise.resolve([
+  public newSession(project: Project): Promise<Session> {
+    let files = [
       { relativePath: "a/b/simple.mo", content: "simple" },
       { relativePath: "factor.mo", content: "function factor end factor;" }
-    ])
+    ]
+    return Promise.resolve({ project, files, openedFiles: [], id: "session-project-" + project.id })
   }
 }
 

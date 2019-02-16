@@ -1,30 +1,28 @@
 
-import {File, Project} from './index'
+import { File, Project } from './index'
 
 export interface UserAuth {
-  username:string,
-  jwtToken:string
+  username: string,
+  jwtToken: string
 }
 
 export interface Session {
+  project: Project,
+  id: string,
   files: File[],
   openedFiles: File[]
 }
 
 export interface AppState {
-  authentication: UserAuth | undefined,
-  projects:Project[],
-  session: Session
+  authentication?: UserAuth
+  projects: Project[],
+  session?: Session
 }
 
 export function initialState(): AppState {
   return {
     authentication: undefined,
-    // authentication: {username: "nico", jwtToken: "12345"},
-    projects:[],
-    session: {
-      files: [],
-      openedFiles: []
-    }
+    projects: [],
+    session: undefined
   }
 }

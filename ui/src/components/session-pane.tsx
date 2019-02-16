@@ -1,29 +1,24 @@
 import React from 'react';
 import { bindActionCreators } from 'redux'
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import { Container } from '../layouts'
 import { FileView } from './file-view'
 import { EditorsPane } from './editors-pane'
 import { ApiClient, defaultClient } from '../services/api-client'
 import { Row } from 'react-bootstrap'
-import {AppState} from '../models/state'
-import {Action, updateSessionFiles} from '../redux/actions'
+import { AppState } from '../models/state'
+import { Action, updateSessionFiles } from '../redux/actions'
 
 class SessionPaneCon extends React.Component<any, any> {
-  private api: ApiClient
+  private readonly api: ApiClient
 
   constructor(props: any) {
     super(props)
     this.api = defaultClient
-    this.state = {editingFiles: []}
+    this.state = { editingFiles: [] }
   }
 
   public componentDidMount() {
-    this.api.getFiles()
-      .then(files => {
-        // console.log("new files", files)
-        this.props.updateSessionFiles(files)
-      })
   }
 
   private handleFileClicked(f: File): void {
@@ -37,7 +32,7 @@ class SessionPaneCon extends React.Component<any, any> {
       <Container>
         <Row>
           <FileView
-            files={this.props.files}
+            files={this.props.session.files}
             onFileClicked={(f: File) => this.handleFileClicked(f)} />
           <EditorsPane
             files={this.state.editingFiles} />
@@ -47,12 +42,12 @@ class SessionPaneCon extends React.Component<any, any> {
   }
 }
 
-function mapProps(state:AppState) {
-  return { files: state.session.files }
+function mapProps(state: AppState) {
+  return { session: state.session }
 }
 
-function dispatchToProps(dispatch: (a:Action) => any) {
-  return bindActionCreators({updateSessionFiles}, dispatch)
+function dispatchToProps(dispatch: (a: Action) => any) {
+  return bindActionCreators({ updateSessionFiles }, dispatch)
 }
 
 const SessionPane = connect(mapProps, dispatchToProps)(SessionPaneCon)
