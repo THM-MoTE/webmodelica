@@ -9,9 +9,20 @@ import { createStore } from "redux";
 import { Provider } from "react-redux";
 import { login } from './redux/actions'
 import { withApi } from './partials/api-wrapper';
+import { AppState } from './models';
 
-const store = createStore(rootReducer)
-store.subscribe(() => console.log("state changed:", store.getState()))
+
+const stateKey = "wm-redux-State"
+function persistedStore() {
+  const item = localStorage.getItem(stateKey)
+  return (item) ? JSON.parse(item) : undefined
+}
+const store = createStore(rootReducer, persistedStore())
+store.subscribe(() => {
+  const state = store.getState()
+  console.log("state changed:", state)
+  localStorage.setItem(stateKey, JSON.stringify(state))
+})
 
 const client = new ApiClient(window.location.toString(), store)
 

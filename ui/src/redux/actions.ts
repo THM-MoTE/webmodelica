@@ -7,7 +7,8 @@ export enum ActionTypes {
   AddProject,
   UpdateSessionFiles,
   SetSession,
-  UpdateWsToken
+  UpdateWsToken,
+  CreateNewFile
 }
 
 export interface Action {
@@ -21,3 +22,5 @@ export const addProject = (p: Project) => ({ type: ActionTypes.AddProject, paylo
 export const setProjects: (ps: Project[]) => Action = (ps: Project[]) => { return { type: ActionTypes.SetProjects, payload: ps } }
 export const updateSessionFiles: (fs: File[]) => Action = (fs: File[]) => ({ type: ActionTypes.UpdateSessionFiles, payload: fs })
 export const setSession = (s: Session) => ({ type: ActionTypes.SetSession, payload: s })
+
+export const newFile = (f: File) => ({ type: ActionTypes.CreateNewFile, payload: f })

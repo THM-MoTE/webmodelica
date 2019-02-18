@@ -2,7 +2,7 @@ import React from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Container } from '../layouts'
-import { FileView } from './file-view'
+import { FileView } from './index'
 import { EditorsPane } from './editors-pane'
 import { ApiClient } from '../services/api-client'
 import { Row } from 'react-bootstrap'
@@ -32,7 +32,6 @@ class SessionPaneCon extends React.Component<any, any> {
       <Container>
         <Row>
           <FileView
-            files={this.props.session.files}
             onFileClicked={(f: File) => this.handleFileClicked(f)} />
           <EditorsPane
             files={this.state.editingFiles} />
