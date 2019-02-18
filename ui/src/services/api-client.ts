@@ -27,16 +27,16 @@ export class ApiClient {
   }
 
   public login(user: string, pw: string): Promise<TokenWrapper> {
-    // return fetch(this.userUri()+"/login", {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     "Accept": 'application/json'
-    //   },
-    //   body: JSON.stringify({username: user, password: pw})
-    // })
-    // .then(res => res.json())
-    return Promise.resolve({ token: "abcdef" })
+    return fetch(this.userUri() + "/login", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        "Accept": 'application/json'
+      },
+      body: JSON.stringify({ username: user, password: pw })
+    })
+      .then(rejectError)
+      .then(res => res.json())
   }
 
   public projects(): Promise<Project[]> {
