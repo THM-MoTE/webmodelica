@@ -24,7 +24,7 @@ class LandingCon extends Component<any, any> {
       this.props.history.push("/projects")
   }
 
-  private handleSubmit() {
+  private handleSubmit(ev: any) {
     const props = this.props
     console.log("name", this.username, "pw", this.password)
     const username = this.username
@@ -36,6 +36,7 @@ class LandingCon extends Component<any, any> {
         console.error("login error:", err)
         this.setState({ errors: [err] })
       })
+    ev.preventDefault()
   }
 
   render() {
@@ -60,7 +61,7 @@ class LandingCon extends Component<any, any> {
                   <p>{this.state.errors.join("\n")}</p>
                 </Alert>)
               }
-              <Button variant="primary" onClick={this.handleSubmit.bind(this)}>
+              <Button variant="primary" type="submit" onClick={this.handleSubmit.bind(this)}>
                 Submit
                 </Button>
             </Form>
