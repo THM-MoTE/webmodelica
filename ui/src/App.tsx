@@ -13,18 +13,28 @@ import { AppState } from './models';
 
 
 const stateKey = "wm-redux-State"
-function persistedStore() {
-  const item = localStorage.getItem(stateKey)
-  return (item) ? JSON.parse(item) : undefined
-}
 const store = createStore(rootReducer, persistedStore())
+const client = new ApiClient(window.location.toString(), store)
+/** on every state-update, update the localStorage.
+ * TODO: this is really inefficient.
+ */
 store.subscribe(() => {
   const state = store.getState()
   console.log("state changed:", state)
   localStorage.setItem(stateKey, JSON.stringify(state))
 })
 
-const client = new ApiClient(window.location.toString(), store)
+/** read state from localStorage.  */
+function persistedStore() {
+  const item = localStorage.getItem(stateKey)
+  return (item) ? JSON.parse(item) : undefined
+}
+/** Performs logout by clearing localStorage and reloading base path.*/
+function destroySession() {
+  localStorage.clear()
+  window.location.href = "/"
+  return (<span>logout..</span>)
+}
 
 class App extends Component {
   render() {
@@ -34,13 +44,11 @@ class App extends Component {
           <div>
             <Route exact path="/projects" component={withApi(client, ProjectView)} />
             <Route exact path="/" component={withApi(client, Landing)} />
-            <Route exact path="/logout" component={withApi(client, Landing)} />
+            <Route exact path="/logout" render={() => destroySession()} />
             <Route path="/session/:sessionId" component={withApi(client, SessionPane)} />
           </div>
         </Router>
-
       </Provider>
-
     )
   }
 }
