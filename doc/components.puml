@@ -10,19 +10,25 @@ node "webmodelica-ui" {
 node "webmodelica" {
   () "HTTP-API" as wm_http
   [JS-Client] --> wm_http
+  [ProjectService] #Grey
+  [UserService] #Grey
+  [DocumentDBStore] #Grey
   wm_http - [Routes] : "api calls"
 
-  [Routes] - [Session Service]
-  [Routes] - [Project Service]
-  [Routes] - [User Service]
+  [Routes] --> [SessionService]
+  [Routes] --> [SessionRegistry]
+  [Routes] --> [ProjectService]
+  [Routes] --> [UserService]
+  [Routes] --> [(JW-)Token Generator]
 
-  [Project Service] --> [ProjectDBStore]
-  [User Service] --> [UserDBStore]
+  [ProjectService] --> [ProjectDBStore]
+  [UserService] --> [UserDBStore]
 
-  [Session Service] --> [DocumentFSStore]
-  [Session Service] --> [DocumentDBStore]
-  [Session Service] --> [MopeClient]
+  [SessionRegistry] --> [SessionService]
 
+  [SessionService] --> [DocumentFSStore]
+  [SessionService] --> [DocumentDBStore]
+  [SessionService] --> [MopeClient]
 }
 
 node "mope" {
@@ -47,5 +53,5 @@ note left of fs_file : the directory that mope "sees"
 [DocumentDBStore] --> doc_file
 [DocumentFSStore] --> fs_file : write project files
 
-[Endpoint] --> fs_file : read project files
+[Endpoint] <-- fs_file : read project files
 @enduml
