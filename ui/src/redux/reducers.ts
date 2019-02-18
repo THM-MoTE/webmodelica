@@ -15,7 +15,7 @@ const reducerMap = {
       return state
     }
   },
-  [ActionTypes.AddProject.toString()]: (state: AppState, data: Project) => ({ ...state, projects: R.append(data, state.projects) }),
+  [ActionTypes.AddProject.toString()]: (state: AppState, data: Project) => ({ ...state, projects: R.prepend(data, state.projects) }),
   [ActionTypes.SetSession.toString()]: (state: AppState, session: Session) => ({ ...state, session: session })
 }
 
