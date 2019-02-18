@@ -7,6 +7,7 @@ import { updateToken, login } from '../redux/index';
 function rejectError(res: Response): Promise<Response> {
   if (res.ok) return Promise.resolve(res)
   else {
+    console.error("ajax error:", res)
     return res.text().then(txt => Promise.reject(txt || res.statusText))
   }
 }
@@ -15,12 +16,12 @@ const authHeader = "Authorization"
 
 export class ApiClient {
 
-  private base: string
-  private store: Store<AppState>
+  private readonly base: string
+  private readonly store: Store<AppState>
 
-  constructor(baseUri: string, store: Store<AppState>) {
-    this.base = baseUri
+  constructor(store: Store<AppState>) {
     this.store = store
+    this.base = window.location.protocol + "//" + window.location.host + "/"
   }
 
   private userUri(): string {
@@ -30,7 +31,7 @@ export class ApiClient {
     return this.base + "projects"
   }
   private sessionUri(): string {
-    return this.base + "projects"
+    return this.base + "sessions"
   }
 
   private updateWSToken(res: Response): Response {
@@ -124,7 +125,7 @@ export class ApiClient {
       })
         .then(rejectError)
         .then(this.updateWSToken.bind(this))
-        .then(res => res.json())
+        .then(res => file)
     } else {
       return Promise.reject("can't create a file if there is no session!")
     }

@@ -14,7 +14,7 @@ import { AppState } from './models';
 
 const stateKey = "wm-redux-State"
 const store = createStore(rootReducer, persistedStore())
-const client = new ApiClient(window.location.toString(), store)
+const client = new ApiClient(store)
 /** on every state-update, update the localStorage.
  * TODO: this is really inefficient.
  */
