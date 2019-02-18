@@ -36,7 +36,7 @@
     "not ie <= 11",
     "not op_mini all"
   ],
-  "proxy": "http://localhost:9002/",
+  "proxy": "http://localhost:8888/",
   "devDependencies": {
     "@types/ramda": "^0.25.50",
     "@types/react-redux": "^7.0.1",
