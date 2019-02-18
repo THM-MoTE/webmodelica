@@ -9,6 +9,8 @@ function rejectError(res: Response): Promise<Response> {
   }
 }
 
+const authHeader = "Authorization"
+
 export class ApiClient {
 
   private base: string
@@ -26,6 +28,15 @@ export class ApiClient {
     return this.base + "projects"
   }
 
+  private updateWSToken(res: Response): Response {
+    //TODO: consider saving the token into store directly in here..
+    //TODO: provide the store to this client ..
+    const headerOpt = res.headers.get(authHeader)
+    this.token = headerOpt || this.token
+    console.log("new token is:", this.token)
+    return res
+  }
+
   public login(user: string, pw: string): Promise<TokenWrapper> {
     return fetch(this.userUri() + "/login", {
       method: 'POST',
@@ -36,6 +47,7 @@ export class ApiClient {
       body: JSON.stringify({ username: user, password: pw })
     })
       .then(rejectError)
+      .then(this.updateWSToken.bind(this))
       .then(res => res.json())
   }
 
@@ -43,16 +55,29 @@ export class ApiClient {
     return fetch(this.projectUri(), {
       method: 'GET',
       headers: {
+        'Authentication': this.token!,
         'Accept': 'application/json'
       }
     })
       .then(rejectError)
+      .then(this.updateWSToken.bind(this))
       .then(res => res.json())
   }
 
   public newProject(user: string, title: string): Promise<Project> {
-    if (user.length > 0 && title.length > 0)
-      return Promise.resolve({ owner: user, name: title, id: "aabbcc" })
+    if (user.length > 0 && title.length > 0) {
+      return fetch(this.projectUri(), {
+        method: 'POST',
+        headers: {
+          'Authentication': this.token!,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ owner: user, name: title })
+      })
+        .then(rejectError)
+        .then(this.updateWSToken.bind(this))
+        .then(res => res.json())
+    }
     else
       return Promise.reject("username & title must be provided and not empty!")
   }
