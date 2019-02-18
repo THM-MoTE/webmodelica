@@ -25,6 +25,9 @@ export class EditorsPane extends React.Component<any, any> {
   }
 
   render() {
+
+    const tabSelected = (key: string) => console.log("editor tab selected:", key)
+
     const file = this.props.files.length > 0 && this.props.files[0]
     if (EditorsPane.monacoEditor && file) {
       const model = monaco.editor.createModel(file.content, "modelica")
@@ -35,8 +38,8 @@ export class EditorsPane extends React.Component<any, any> {
 
     return (
       <Col>
-        <Nav className="justify-content-center" activeKey={tabTitle}>
-          <Nav.Link href={tabTitle} active={true}>{tabTitle}</Nav.Link>
+        <Nav className="justify-content-center" activeKey={tabTitle} onSelect={tabSelected}>
+          <Nav.Link href={tabTitle}>{tabTitle}</Nav.Link>
         </Nav>
         <div id={EditorsPane.editorName} className="editor"></div>
       </Col>

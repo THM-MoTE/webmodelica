@@ -58,7 +58,7 @@ class FileViewCon extends React.Component<any, any> {
             <Form.Group controlId="formModeltype">
               <Form.Label>Type</Form.Label>
               <Form.Control as="select">
-                {this.fileTypes.map(tpe => <option onClick={() => handleFileTypeSelect(tpe)}>{tpe}</option>)}
+                {this.fileTypes.map(tpe => <option key={tpe} onClick={() => handleFileTypeSelect(tpe)}>{tpe}</option>)}
               </Form.Control>
             </Form.Group>
           </Form>
@@ -82,7 +82,7 @@ class FileViewCon extends React.Component<any, any> {
         <Nav className="flex-column border">
           <h5 className="text-secondary">Files</h5>
           <Nav.Link href="#" onSelect={newFileClicked}>New File</Nav.Link>
-          {this.props.files.map((f: File) => <Nav.Link href="#" onSelect={() => fileClicked(f)}>{f.relativePath}</Nav.Link>)}
+          {this.props.files.map((f: File) => <Nav.Link href="#" key={f.relativePath} onSelect={() => fileClicked(f)}>{f.relativePath}</Nav.Link>)}
         </Nav>
       </Col >
       {this.newFileDialog()}
