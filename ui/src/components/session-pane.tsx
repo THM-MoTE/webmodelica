@@ -32,7 +32,8 @@ class SessionPaneCon extends React.Component<any, any> {
       <Container>
         <Row>
           <FileView
-            onFileClicked={(f: File) => this.handleFileClicked(f)} />
+            onFileClicked={(f: File) => this.handleFileClicked(f)}
+            api={this.api} />
           <EditorsPane
             files={this.state.editingFiles} />
         </Row>

@@ -29,6 +29,9 @@ export class ApiClient {
   private projectUri(): string {
     return this.base + "projects"
   }
+  private sessionUri(): string {
+    return this.base + "projects"
+  }
 
   private updateWSToken(res: Response): Response {
     const headerOpt = res.headers.get(authHeader)
@@ -105,5 +108,25 @@ export class ApiClient {
         return s
       }
       )
+  }
+
+  public updateFile(file: File): Promise<File> {
+    const session = this.store.getState().session
+    if (session) {
+      return fetch(this.sessionUri() + `/${session.id}/files/update`, {
+        method: 'POST',
+        headers: {
+          'Authentication': this.token(),
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(file)
+      })
+        .then(rejectError)
+        .then(this.updateWSToken.bind(this))
+        .then(res => res.json())
+    } else {
+      return Promise.reject("can't create a file if there is no session!")
+    }
   }
 }

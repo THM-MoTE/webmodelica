@@ -5,10 +5,12 @@ import { connect } from 'react-redux'
 import * as R from 'ramda'
 import { File, AppState } from '../models/index'
 import { newFile, Action } from '../redux/index'
+import { ApiClient } from '../services/api-client';
 
 class FileViewCon extends React.Component<any, any> {
   private newFilename?: string = undefined
 
+  private readonly api: ApiClient
   private readonly fileTypes = [
     "Model", "Function", "Connector", "Class"
   ]
@@ -16,6 +18,7 @@ class FileViewCon extends React.Component<any, any> {
 
   constructor(props: any) {
     super(props)
+    this.api = this.props.api
     this.state = { showNewFileDialog: false }
   }
 
@@ -33,7 +36,10 @@ class FileViewCon extends React.Component<any, any> {
       const name = extractModelname(suffixStripped)
       const path = createFilename(suffixStripped)
       const content = `${tpe} ${name}\nend ${name};`
-      this.props.newFile({ relativePath: path, content: content })
+      this.api
+        .updateFile({ relativePath: path, content: content })
+        .then(this.props.newFile)
+        .catch(er => console.log("file creation failed: ", er))
     } else {
       console.error("can't create a new file without name & type!")
     }
