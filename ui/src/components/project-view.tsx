@@ -52,7 +52,7 @@ class ProjectViewCon extends Component<any, any> {
     const newProjectNameChanged = (ev: any) => this.newProjectName = ev.target.value
 
     return (<Container>
-      <Alert show={!R.isEmpty(this.state.errors)} variant="danger">
+      <Alert show={!R.isEmpty(this.state.errors)} variant="danger" onClose={() => undefined}>
         {this.state.errors.join("\n")}
       </Alert>
       <Card>
