@@ -83,11 +83,23 @@ export class ApiClient {
   }
 
   public newSession(project: Project): Promise<Session> {
-    let files = [
-      { relativePath: "a/b/simple.mo", content: "simple" },
-      { relativePath: "factor.mo", content: "function factor end factor;" }
-    ]
-    return Promise.resolve({ project, files, openedFiles: [], id: "session-project-" + project.id })
+    return fetch(this.projectUri() + `/${project.id}/sessions/new`, {
+      method: 'POST',
+      headers: {
+        'Authentication': this.token!,
+        'Accept': 'application/json'
+      }
+    })
+      .then(rejectError)
+      .then(this.updateWSToken.bind(this))
+      .then(res => res.json())
+      .then((s: Session) => {
+        //TODO: use files from backend!
+        s.files = [{ relativePath: "a/b/simple.mo", content: "simple" },
+        { relativePath: "factor.mo", content: "function factor end factor;" }]
+        return s
+      }
+      )
   }
 }
 
