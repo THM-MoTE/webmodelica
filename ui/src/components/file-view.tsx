@@ -1,5 +1,5 @@
 import React from 'react'
-import { Col, ListGroup } from 'react-bootstrap'
+import { Col, ListGroup, Nav } from 'react-bootstrap'
 import { File } from '../models/index'
 
 export class FileView extends React.Component<any, any> {
@@ -14,16 +14,10 @@ export class FileView extends React.Component<any, any> {
     const fileClicked = this.props.onFileClicked
     return (
       <Col lg="2">
-        <ListGroup variant="flush">
-          {files.map((f: File) =>
-            <ListGroup.Item action
-              key={f.relativePath}
-              onClick={(ev: any) => fileClicked(f)}
-              className="small">
-              {f.relativePath}
-            </ListGroup.Item>)
-          }
-        </ListGroup>
+        <Nav className="flex-column border">
+          <h5 className="text-secondary">Files</h5>
+          {this.props.files.map((f: File) => <Nav.Link href="#">{f.relativePath}</Nav.Link>)}
+        </Nav>
       </Col >
     )
   }
