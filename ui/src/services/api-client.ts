@@ -40,18 +40,14 @@ export class ApiClient {
   }
 
   public projects(): Promise<Project[]> {
-    // return fetch(this.projectUri(), {
-    //   method: 'GET',
-    //   headers: {
-    //     'Accept': 'application/json'
-    //   }
-    // })
-    // .then(res => res.json())
-    return Promise.resolve([
-      { id: "123456", name: "Project 1", owner: "Nico" },
-      { id: "23456", name: "Project 2", owner: "Nico" },
-      { id: "11-11-b", name: "Project 3", owner: "Nico" }
-    ])
+    return fetch(this.projectUri(), {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+      .then(rejectError)
+      .then(res => res.json())
   }
 
   public newProject(user: string, title: string): Promise<Project> {
