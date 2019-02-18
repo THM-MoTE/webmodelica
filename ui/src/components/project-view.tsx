@@ -3,7 +3,8 @@ import { AppState, Project } from '../models/index'
 import { Action, setProjects, addProject, setSession } from '../redux/index'
 import { Container } from '../layouts'
 import { ApiClient, defaultClient } from '../services/api-client'
-import { ListGroup, Card, Form, Button, Col } from 'react-bootstrap'
+// import * as alerts from './partials/alerts'
+import { ListGroup, Card, Form, Button, Col, Alert } from 'react-bootstrap'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as R from 'ramda'
@@ -16,11 +17,16 @@ class ProjectViewCon extends Component<any, any> {
     super(props)
     this.api = defaultClient
     this.newProjectName = ''
+    this.state = { errors: [] }
   }
 
   public componentDidMount() {
     this.api.projects()
       .then(this.props.setProjects)
+  }
+
+  private clearErrors(): void {
+    this.setState({ errors: [] })
   }
 
   private newSession(ev: any, p: Project): void {
@@ -39,12 +45,17 @@ class ProjectViewCon extends Component<any, any> {
   private newProject() {
     this.api.newProject(this.props.username, this.newProjectName)
       .then(this.props.addProject)
+      .then(this.clearErrors.bind(this))
+      .catch(er => this.setState({ errors: [er] }))
   }
 
   public render() {
     const newProjectNameChanged = (ev: any) => this.newProjectName = ev.target.value
 
     return (<Container>
+      <Alert show={!R.isEmpty(this.state.errors)} variant="danger">
+        {this.state.errors.join("\n")}
+      </Alert>
       <Card>
         <Card.Header>Your Projects</Card.Header>
         <ListGroup variant="flush">
