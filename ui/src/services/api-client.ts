@@ -2,6 +2,13 @@
 import { File, Project, TokenWrapper, Session } from '../models'
 import React, { Component } from 'react';
 
+function rejectError(res: Response): Promise<Response> {
+  if (res.ok) return Promise.resolve(res)
+  else {
+    return res.text().then(txt => Promise.reject(txt || res.statusText))
+  }
+}
+
 export class ApiClient {
 
   private base: string
