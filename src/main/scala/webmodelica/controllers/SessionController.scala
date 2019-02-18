@@ -19,7 +19,7 @@ import com.twitter.finatra.request._
 
 case class NewFileRequest(
   @RouteParam() sessionId: String,
-  @JsonProperty() path: java.nio.file.Path,
+  @JsonProperty() relativePath: java.nio.file.Path,
   @JsonProperty() content: String,
 )
 case class CompileRequest(
@@ -50,7 +50,7 @@ class SessionController@Inject()(projectStore:ProjectStore, sessionRegistry: Ses
 
   post("/sessions/:sessionId/files/update") { req:NewFileRequest =>
     withSession(req.sessionId) { service =>
-      service.update(ModelicaFile(req.path,req.content))
+      service.update(ModelicaFile(req.relativePath,req.content))
     }
   }
 
