@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Container } from '../layouts'
 import { Button, Form, Alert } from 'react-bootstrap'
-import { ApiClient, defaultClient } from '../services/api-client'
+import { ApiClient } from '../services/api-client'
 import { Redirect } from 'react-router'
 import { defaultMapDispatchToProps, mapAuthenticationToProps } from '../redux'
 import { Action, login } from '../redux/index'
@@ -30,7 +30,6 @@ class LandingCon extends Component<any, any> {
     const username = this.username
     const pw = this.password
     this.api.login(username, pw)
-      .then(res => this.props.dispatch(login({ username: username, jwtToken: res.token })))
       .then(() => props.history.push('/projects'))
       .catch(err => {
         console.error("login error:", err)

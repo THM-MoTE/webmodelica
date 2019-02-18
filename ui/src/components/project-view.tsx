@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { AppState, Project } from '../models/index'
 import { Action, setProjects, addProject, setSession } from '../redux/index'
 import { Container } from '../layouts'
-import { ApiClient, defaultClient } from '../services/api-client'
+import { ApiClient } from '../services/api-client'
 // import * as alerts from './partials/alerts'
 import { ListGroup, Card, Form, Button, Col, Alert } from 'react-bootstrap'
 import { connect } from 'react-redux'

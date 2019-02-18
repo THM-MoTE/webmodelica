@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 import { ProjectView, Landing, SessionPane } from './components/index'
-import { ApiClient, defaultClient } from './services/api-client'
+import { ApiClient } from './services/api-client'
 import { rootReducer } from './redux/reducers'
 import { createStore } from "redux";
 import { Provider } from "react-redux";
@@ -13,7 +13,7 @@ import { withApi } from './partials/api-wrapper';
 const store = createStore(rootReducer)
 store.subscribe(() => console.log("state changed:", store.getState()))
 
-const client = defaultClient
+const client = new ApiClient(window.location.toString(), store)
 
 class App extends Component {
   render() {

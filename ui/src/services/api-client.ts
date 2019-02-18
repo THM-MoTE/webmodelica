@@ -1,6 +1,8 @@
 
-import { File, Project, TokenWrapper, Session } from '../models'
+import { File, Project, TokenWrapper, Session, AppState, UserAuth } from '../models'
 import React, { Component } from 'react';
+import { Store } from 'redux';
+import { updateToken, login } from '../redux/index';
 
 function rejectError(res: Response): Promise<Response> {
   if (res.ok) return Promise.resolve(res)
@@ -14,11 +16,11 @@ const authHeader = "Authorization"
 export class ApiClient {
 
   private base: string
-  private token?: string
+  private store: Store<AppState>
 
-  constructor(baseUri: string) {
+  constructor(baseUri: string, store: Store<AppState>) {
     this.base = baseUri
-    this.token = undefined
+    this.store = store
   }
 
   private userUri(): string {
@@ -29,13 +31,13 @@ export class ApiClient {
   }
 
   private updateWSToken(res: Response): Response {
-    //TODO: consider saving the token into store directly in here..
-    //TODO: provide the store to this client ..
     const headerOpt = res.headers.get(authHeader)
-    this.token = headerOpt || this.token
-    console.log("new token is:", this.token)
+    if (headerOpt) {
+      this.store.dispatch(updateToken(headerOpt))
+    }
     return res
   }
+  private token(): string { return this.store.getState().authentication!.jwtToken }
 
   public login(user: string, pw: string): Promise<TokenWrapper> {
     return fetch(this.userUri() + "/login", {
@@ -47,15 +49,18 @@ export class ApiClient {
       body: JSON.stringify({ username: user, password: pw })
     })
       .then(rejectError)
-      .then(this.updateWSToken.bind(this))
       .then(res => res.json())
+      .then((t: TokenWrapper) => {
+        this.store.dispatch(login({ username: user, jwtToken: t.token }))
+        return t
+      })
   }
 
   public projects(): Promise<Project[]> {
     return fetch(this.projectUri(), {
       method: 'GET',
       headers: {
-        'Authentication': this.token!,
+        'Authentication': this.token(),
         'Accept': 'application/json'
       }
     })
@@ -69,7 +74,7 @@ export class ApiClient {
       return fetch(this.projectUri(), {
         method: 'POST',
         headers: {
-          'Authentication': this.token!,
+          'Authentication': this.token(),
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ owner: user, name: title })
@@ -86,7 +91,7 @@ export class ApiClient {
     return fetch(this.projectUri() + `/${project.id}/sessions/new`, {
       method: 'POST',
       headers: {
-        'Authentication': this.token!,
+        'Authentication': this.token(),
         'Accept': 'application/json'
       }
     })
@@ -102,5 +107,3 @@ export class ApiClient {
       )
   }
 }
-
-export const defaultClient = new ApiClient(window.location.toString())

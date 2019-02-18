@@ -16,7 +16,8 @@ const reducerMap = {
     }
   },
   [ActionTypes.AddProject.toString()]: (state: AppState, data: Project) => ({ ...state, projects: R.prepend(data, state.projects) }),
-  [ActionTypes.SetSession.toString()]: (state: AppState, session: Session) => ({ ...state, session: session })
+  [ActionTypes.SetSession.toString()]: (state: AppState, session: Session) => ({ ...state, session: session }),
+  [ActionTypes.UpdateWsToken.toString()]: (state: AppState, token: string) => ({ ...state, authentication: { username: state.authentication!.username, jwtToken: token } })
 }
 
 export function rootReducer(state: AppState = initialState(), action: Action): AppState {
