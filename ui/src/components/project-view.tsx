@@ -15,7 +15,7 @@ class ProjectViewCon extends Component<any, any> {
 
   constructor(props: any) {
     super(props)
-    this.api = defaultClient
+    this.api = this.props.api
     this.newProjectName = ''
     this.state = { errors: [] }
   }
