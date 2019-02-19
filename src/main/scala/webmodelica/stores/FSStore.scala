@@ -28,6 +28,7 @@ class FSStore(root:Path)
         .filterNot(_.isDirectory)
         .map(f => ModelicaFile(root.relativize(f.path), f.contentAsString))
         .toList
+        .sortBy(_.relativePath)
     )
   }
 
