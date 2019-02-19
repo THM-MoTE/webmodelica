@@ -18,7 +18,6 @@ class WMServer extends HttpServer {
     router
       .filter[LoggingMDCFilter[Request, Response]]
       .filter[CommonFilters]
-      .add[controllers.Simple]
       .add[controllers.ProjectController]
       .add[controllers.SessionController]
       .add[controllers.InfoController]

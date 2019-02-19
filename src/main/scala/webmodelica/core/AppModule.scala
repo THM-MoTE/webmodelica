@@ -7,7 +7,7 @@ import com.twitter.inject.{Injector, TwitterModule}
 import com.google.inject.{Provides, Singleton}
 import org.mongodb.scala._
 import webmodelica.models._
-import webmodelica.services.TokenGenerator
+import webmodelica.services._
 
 import scala.concurrent.ExecutionContext
 
@@ -59,8 +59,9 @@ object AppModule
       .withCodecRegistry(codecRegistry)
   }
 
+  @Singleton
   @Provides
-  def session:Session = Session(Project(ProjectRequest("nico", "awesome title")))
+  def sessionRegistry(conf:MopeClientConfig):SessionRegistry = new SessionRegistry(conf)
 
   @Provides
   def tokenGenerator(conf:WMConfig): TokenGenerator = new TokenGenerator(conf.secret)
