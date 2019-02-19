@@ -22,7 +22,7 @@ class SessionRegistrySpec extends WMSpec {
   }
   it should "retrieve sessions" in {
     val registry = new SessionRegistry(conf)
-    val session = registry.create(Project(ProjectRequest("nico", "awesome project")))
+    val (_, session) = registry.create(Project(ProjectRequest("nico", "awesome project")))
     registry.get(session.idString) should not be empty
   }
 }

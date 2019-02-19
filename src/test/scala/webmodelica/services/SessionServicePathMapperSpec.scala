@@ -13,7 +13,7 @@ class SessionServicePathMapperSpec
   val session = Session(Project(ProjectRequest("nico", "testproj")))
   val service = new SessionService(conf, session)
   val mapper = service.pathMapper
-  val bindRoot = conf.data.bindDirectory.resolve(session.idString)
+  val bindRoot = conf.data.bindDirectory.resolve(session.basePath)
   val hostRoot = service.fsStore.rootDir
 
   override def afterAll:Unit = tmpDir.delete()

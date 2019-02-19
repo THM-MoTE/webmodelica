@@ -12,7 +12,7 @@ case class Session(
 ) {
   def idString: String = id.toString
   def owner:String = project.owner
-  def basePath:String = s"${owner}/${project.name}"
+  def basePath:String = s"${owner}_${project.name}"
 }
 
 case class JSSession(project: JSProject,
