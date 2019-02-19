@@ -36,7 +36,8 @@ class SessionController@Inject()(projectStore:ProjectStore, sessionRegistry: Ses
       case None => Future.value(response.notFound.body(s"Can't find a session for: $id"))
     }
 
-  post("/projects/:projectId/sessions/new") { requ:Request =>
+  filter[JwtFilter]
+  .post("/projects/:projectId/sessions/new") { requ:Request =>
     val id = requ.getParam("projectId")
     for {
       project <- projectStore.findBy(BsonObjectId(id)).flatMap(errors.notFoundExc(s"project with $id not found!"))
@@ -49,13 +50,15 @@ class SessionController@Inject()(projectStore:ProjectStore, sessionRegistry: Ses
     }
   }
 
-  post("/sessions/:sessionId/files/update") { req:NewFileRequest =>
+  filter[JwtFilter]
+  .post("/sessions/:sessionId/files/update") { req:NewFileRequest =>
     withSession(req.sessionId) { service =>
       service.update(ModelicaFile(req.relativePath,req.content))
     }
   }
 
-  post("/sessions/:sessionId/compile")  { req:CompileRequest =>
+  filter[JwtFilter]
+  .post("/sessions/:sessionId/compile")  { req:CompileRequest =>
     withSession(req.sessionId) { service =>
       service.compile(req.path)
     }
