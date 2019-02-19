@@ -24,11 +24,12 @@ class SessionRegistry @Inject()(conf:MopeClientConfig)
     }
   }
 
-  def create(p:Project): Session = sync {
+  def create(p:Project): (SessionService, Session) = sync {
     val s = Session(p)
     info(s"creating session $s")
-    registry += (s.idString -> new SessionService(conf, s))
-    s
+    val service = new SessionService(conf, s)
+    registry += (s.idString -> service)
+    (service, s)
   }
 
   def get(id:UUIDStr): Option[SessionService] = sync{ registry.get(id) }

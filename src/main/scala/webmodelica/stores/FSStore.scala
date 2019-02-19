@@ -21,5 +21,15 @@ class FSStore(root:Path)
     Future.value(())
   }
 
+  override def files: Future[List[ModelicaFile]] = {
+    Future.value(
+      File(root)
+        .listRecursively
+        .filterNot(_.isDirectory)
+        .map(f => ModelicaFile(root.relativize(f.path), f.contentAsString))
+        .toList
+    )
+  }
+
   override def toString:String = s"FSStore($root)"
 }

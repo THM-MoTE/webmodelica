@@ -6,6 +6,7 @@ import java.nio.file.Path
 
 trait FileStore {
   def rootDir: Path
+  def files: Future[List[ModelicaFile]]
   def update(file:ModelicaFile): Future[Unit]
   def update(files:Seq[ModelicaFile]):Future[Unit] = {
     Future.join(files.map(update))

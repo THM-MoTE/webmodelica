@@ -16,12 +16,14 @@ case class Session(
 }
 
 case class JSSession(project: JSProject,
-                    id: UUIDStr)
+  id: UUIDStr,
+  files: List[ModelicaFile])
 
 object JSSession {
-  def apply(s: Session): JSSession =
+  def apply(s: Session, files: List[ModelicaFile]=List.empty): JSSession =
     s.into[JSSession]
       .withFieldComputed(_.id, _.idString)
       .withFieldComputed(_.project, s => JSProject(s.project))
+      .withFieldConst(_.files, files)
       .transform
 }

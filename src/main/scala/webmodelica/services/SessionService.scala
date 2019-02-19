@@ -30,4 +30,5 @@ class SessionService @Inject()(
   info(s"fsStore: $fsStore")
   override def rootDir: Path = fsStore.rootDir
   override def update(file: ModelicaFile): Future[Unit] = fsStore.update(file)
+  override def files: Future[List[ModelicaFile]] = fsStore.files
 }
