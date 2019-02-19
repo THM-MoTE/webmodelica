@@ -1,6 +1,6 @@
 FROM openjdk:11-jre-slim
 
-ADD ./target/universal/webmodelica-0.1-snapshot.txz /opt
+ADD ./target/universal/webmodelica-*.txz /opt
 RUN cd /opt &&\
     mv webmodelica* webmodelica
 
