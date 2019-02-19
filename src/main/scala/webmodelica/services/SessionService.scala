@@ -22,7 +22,7 @@ class SessionService @Inject()(
   with com.twitter.inject.Logging {
   override val client = new featherbed.Client(new java.net.URL(conf.address+"mope/"))
 
-  val fsStore = new FSStore(conf.data.hostDirectory.resolve(session.id.toString))
+  val fsStore = new FSStore(conf.data.hostDirectory.resolve(session.basePath))
 
   override val pathMapper = MopeService.pathMapper(fsStore.rootDir.toAbsolutePath, conf.data.bindDirectory.resolve(fsStore.rootDir.toAbsolutePath.getFileName()))
 
