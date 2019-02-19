@@ -9,11 +9,10 @@ export class EditorsPane extends React.Component<any, any> {
 
   constructor(props: any) {
     super(props)
-    console.log("EditorsPane: opened files", this.props.files)
   }
 
   componentDidMount() {
-    console.log("files", this.props.files)
+    // console.log("files", this.props.files)
 
     if (!EditorsPane.monacoEditor) {
       EditorsPane.monacoEditor = monaco.editor.create(document.getElementById(EditorsPane.editorName) as HTMLElement, {

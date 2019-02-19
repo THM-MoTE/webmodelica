@@ -26,13 +26,11 @@ class LandingCon extends Component<any, any> {
 
   private handleSubmit(ev: any) {
     const props = this.props
-    console.log("name", this.username, "pw", this.password)
     const username = this.username
     const pw = this.password
     this.api.login(username, pw)
       .then(() => props.history.push('/projects'))
       .catch(err => {
-        console.error("login error:", err)
         this.setState({ errors: [err] })
       })
     ev.preventDefault()

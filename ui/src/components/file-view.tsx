@@ -39,7 +39,7 @@ class FileViewCon extends React.Component<any, any> {
       this.api
         .updateFile({ relativePath: path, content: content })
         .then(this.props.newFile)
-        .catch(er => console.log("file creation failed: ", er))
+        .catch(er => console.error("file creation failed: ", er))
     } else {
       console.error("can't create a new file without name & type!")
     }
@@ -80,7 +80,6 @@ class FileViewCon extends React.Component<any, any> {
     const files = this.props.files
     const fileClicked = this.props.onFileClicked
     const newFileClicked = () => {
-      console.log("new file clicked")
       this.setState({ showNewFileDialog: true })
     }
     return (<>

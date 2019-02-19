@@ -22,12 +22,10 @@ class SessionPaneCon extends React.Component<any, any> {
   }
 
   private handleFileClicked(f: File): void {
-    console.log("SessionPane: file clicked", f)
     this.setState({ editingFiles: [f] })
   }
 
   render() {
-    console.log("state", this.state)
     return (
       <Container>
         <Row>

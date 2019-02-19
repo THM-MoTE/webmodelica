@@ -7,7 +7,7 @@ import { updateToken, login } from '../redux/index';
 function rejectError(res: Response): Promise<Response> {
   if (res.ok) return Promise.resolve(res)
   else {
-    console.error("ajax error:", res)
+    console.error("api error:", res)
     return res.text().then(txt => Promise.reject(txt || res.statusText))
   }
 }

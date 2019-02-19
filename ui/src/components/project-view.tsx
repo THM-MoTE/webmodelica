@@ -30,8 +30,6 @@ class ProjectViewCon extends Component<any, any> {
   }
 
   private newSession(ev: any, p: Project): void {
-    console.log("project clicked", p)
-    console.log("history", this.props.history)
     this.api.newSession(p)
       .then(s => {
         this.props.setSession(s)
