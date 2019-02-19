@@ -5,7 +5,6 @@ object Common {
   def settings = Seq(
     unmanagedResourceDirectories in Compile += baseDirectory.value / "conf",
     organization := "de.thm.mote",
-    version := "0.2-snapshot",
     scalaVersion := "2.12.8",
     scalacOptions ++= Seq(
       "-unchecked",

@@ -21,6 +21,7 @@ lazy val root = (project in file("."))
   .enablePlugins(BuildInfoPlugin, JavaAppPackaging)
   .settings(Common.settings)
   .settings(
+    version := "0.2.1",
     buildInfoKeys := Seq[BuildInfoKey](name, version,
       BuildInfoKey.action("license") (s"(c) $copyrightYear $copyrightName - $license"),
       BuildInfoKey.action("commit") {
