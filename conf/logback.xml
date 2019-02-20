@@ -12,14 +12,10 @@
     </encoder>
   </appender>
 
-   <logger name="com.typesafe" level="INFO">
-   </logger>
-   <logger name="io.netty" level="INFO">
-   </logger>
-   <logger name="com.twitter" level="INFO">
-   </logger>
-   <logger name="org.mongodb" level="INFO">
-   </logger>
+   <logger name="com.typesafe" level="INFO"></logger>
+   <logger name="io.netty" level="INFO"></logger>
+   <logger name="com.twitter" level="INFO"></logger>
+   <logger name="org.mongodb" level="INFO"></logger>
 
    <root level="DEBUG">
        <appender-ref ref="FILE"/>
