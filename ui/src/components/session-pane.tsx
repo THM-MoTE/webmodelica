@@ -5,8 +5,8 @@ import { Container } from '../layouts'
 import { FileView } from './index'
 import { EditorsPane } from './editors-pane'
 import { ApiClient } from '../services/api-client'
-import { Row } from 'react-bootstrap'
-import { AppState } from '../models/state'
+import { Row, Col, Button, ButtonGroup, Container as RContainer, Card } from 'react-bootstrap'
+import { File, AppState } from '../models/index'
 import { Action, updateSessionFiles } from '../redux/actions'
 
 class SessionPaneCon extends React.Component<any, any> {
@@ -24,14 +24,28 @@ class SessionPaneCon extends React.Component<any, any> {
   private handleFileClicked(f: File): void {
     this.setState({ editingFiles: [f] })
   }
+  handleSaveClicked() {
+    console.log("save")
+    let content = EditorsPane.monacoEditor.getValue()
+    let files: File[] = [{ ...this.state.editingFiles[0], content: content }]
+    const updatePromises = files.map((f: File) => this.api.updateFile(f))
+    Promise.all(updatePromises).then(fs => this.props.updateSessionFiles(fs))
+  }
+  handleCompileClicked() {
+    console.log("compile")
+  }
 
   render() {
     return (
       <Container>
         <Row>
-          <FileView
-            onFileClicked={(f: File) => this.handleFileClicked(f)}
-            api={this.api} />
+          <Col lg="2">
+            <FileView
+              onSaveClicked={this.handleSaveClicked.bind(this)}
+              onCompileClicked={this.handleCompileClicked.bind(this)}
+              onFileClicked={(f: File) => this.handleFileClicked(f)}
+              api={this.api} />
+          </Col>
           <EditorsPane
             files={this.state.editingFiles} />
         </Row>

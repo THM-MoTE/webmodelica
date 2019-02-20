@@ -9,7 +9,11 @@ const reducerMap = {
   [ActionTypes.SetProjects.toString()]: (state: AppState, data: Project[]) => { return { ...state, projects: data } },
   [ActionTypes.UpdateSessionFiles.toString()]: function(state: AppState, data: File[]): AppState {
     if (state.session) {
-      return { ...state, session: { ...state!.session, files: data } }
+      let pathNames = data.map(f => f.relativePath)
+      //TODO: only update the files, that are new.. don't replace all files
+      let oldFiles = R.filter((f: File) => !R.contains(f.relativePath, pathNames), state.session.files)
+      let newFiles = R.sortBy((f: File) => f.relativePath, oldFiles.concat(data))
+      return { ...state, session: { ...state!.session, files: newFiles } }
     } else {
       console.error("can't set session files if no session provided before!")
       return state

@@ -1,5 +1,5 @@
 
-import { File, Project, TokenWrapper, Session, AppState, UserAuth } from '../models'
+import { File, Project, TokenWrapper, Session, AppState, UserAuth, Complete } from '../models/index'
 import React, { Component } from 'react';
 import { Store } from 'redux';
 import { updateToken, login } from '../redux/index';
@@ -102,6 +102,25 @@ export class ApiClient {
       .then(rejectError)
       .then(this.updateWSToken.bind(this))
       .then(res => res.json())
+  }
+
+  public compile(file: File): Promise<Complete[]> {
+    const session = this.store.getState().session
+    if (session) {
+      return fetch(this.sessionUri() + `/${session.id}/compile`, {
+        method: 'POST',
+        headers: {
+          [authHeader]: this.token(),
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(file)
+      }).then(rejectError)
+        .then(this.updateWSToken.bind(this))
+        .then(res => res.json())
+    } else {
+      return Promise.reject("can't compile if there is no session!")
+    }
   }
 
   public updateFile(file: File): Promise<File> {
