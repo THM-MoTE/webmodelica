@@ -16,3 +16,10 @@ code {
 div.editor {
   height:600px;border:1px solid grey;
 }
+
+.highlightedLine {
+  background-color: #add8e6;
+}
+.errorGlyph {
+  background-color: red;
+}

@@ -17,7 +17,8 @@ export class EditorsPane extends React.Component<any, any> {
     if (!EditorsPane.monacoEditor) {
       EditorsPane.monacoEditor = monaco.editor.create(document.getElementById(EditorsPane.editorName) as HTMLElement, {
         value: "your editor for modelica code!",
-        language: "modelica"
+        language: "modelica",
+        glyphMargin: true
       })
     } else {
     }
