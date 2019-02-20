@@ -81,7 +81,7 @@ class SessionPaneCon extends React.Component<Props, State> {
     return (
       <Container>
         <Row>
-          <Col lg="2">
+          <Col sm="2">
             <FileView
               onSaveClicked={this.handleSaveClicked.bind(this)}
               onCompileClicked={this.handleCompileClicked.bind(this)}
