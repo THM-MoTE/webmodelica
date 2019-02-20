@@ -13,7 +13,7 @@ services:
     ports:
       - 9002:3000
     labels:
-      - "traefik.frontend.rule=PathPrefixStrip:/api"
+      - "traefik.frontend.rule=PathPrefix:/api"
       - "traefik.backend=webmodelica-backend"
       - "traefik.port=3000"
     volumes:
