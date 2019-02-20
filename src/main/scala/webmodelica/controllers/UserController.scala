@@ -18,7 +18,11 @@ case class RegisterRequest(
   @JsonProperty() email:String,
   @JsonProperty() password:String) {
   def toSecureUser: MessageDigest => User =
-    UserStore.securePassword(_)(this.into[User].withFieldRenamed(_.password, _.hashedPassword).transform)
+    UserStore.securePassword(_)(
+      this.into[User]
+        .withFieldRenamed(_.password, _.hashedPassword)
+        .withFieldComputed(_.username, _.username.toLowerCase)
+        .transform)
 }
 
 case class LoginRequest(@JsonProperty() username:String,
@@ -44,7 +48,7 @@ class UserController@Inject()(userStore:UserStore,
     }
 
     post("/users/login") { req: LoginRequest =>
-      userStore.findBy(req.username)
+      userStore.findBy(req.username.toLowerCase)
         .flatMap {
           case Some(dbUser) if dbUser.hashedPassword == UserStore.hashString(digest)(req.password) => Future.value(dbUser)
           case _ => Future.exception(errors.CredentialsError)
