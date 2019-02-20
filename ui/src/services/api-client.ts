@@ -114,7 +114,7 @@ export class ApiClient {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        body: JSON.stringify(file)
+        body: JSON.stringify({ path: file.relativePath })
       }).then(rejectError)
         .then(this.updateWSToken.bind(this))
         .then(res => res.json())

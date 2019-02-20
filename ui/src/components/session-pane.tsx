@@ -32,7 +32,8 @@ class SessionPaneCon extends React.Component<any, any> {
     Promise.all(updatePromises).then(fs => this.props.updateSessionFiles(fs))
   }
   handleCompileClicked() {
-    console.log("compile")
+    this.api.compile(this.state.editingFiles[0])
+      .then(errors => console.log("got errors", errors))
   }
 
   render() {
