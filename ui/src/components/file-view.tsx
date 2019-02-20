@@ -84,10 +84,10 @@ class FileViewCon extends React.Component<any, any> {
     return (<>
       <Nav className="flex-column border">
         <h5 className="text-secondary">Files</h5>
-        <Nav.Link href="#" onSelect={newFileClicked}>New File</Nav.Link>
         {this.props.files.map((f: File) => <Nav.Link href="#" key={f.relativePath} onSelect={() => fileClicked(f)}>{f.relativePath}</Nav.Link>)}
         <h5 className="text-secondary">Actions</h5>
         <Button variant="outline-success" onClick={this.props.onSaveClicked}>Save</Button>
+        <Button variant="outline-primary" onClick={newFileClicked}>New File</Button>
         <Button variant="outline-primary" onClick={this.props.onCompileClicked}>Compile</Button>
       </Nav>
       {this.newFileDialog()}
