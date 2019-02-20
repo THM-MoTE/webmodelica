@@ -70,7 +70,7 @@ trait MopeService {
         .accept("application/json")
       req.send[Seq[CompilerError]]()
         .map { xs =>
-          info(s"compiling returned $xs - ${pathMapper.relativize(xs.head.file)}")
+          info(s"compiling returned $xs")
           xs.map { error => error.copy(file=pathMapper.relativize(error.file).toString) }
         }
         .handle {
