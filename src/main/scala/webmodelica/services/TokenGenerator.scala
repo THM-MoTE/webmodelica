@@ -12,13 +12,13 @@ import com.twitter.util.Future
 case class UserTokenPayload(username: String)
 case class UserToken(username:String, iat: Long, exp: Long)
 
-class TokenGenerator(secret:String) {
+class TokenGenerator(secret:String, exp:Duration=(15 minutes)) {
   import io.circe.generic.auto._
   import io.circe.parser
   import io.circe.syntax._
 
   private val algorithm = JwtAlgorithm.HS384
-  private val expiration = (15 minutes).toSeconds
+  private val expiration = exp.toSeconds
 
   def newToken(u:User): String = {
     val payload = UserTokenPayload(u.username).asJson.toString

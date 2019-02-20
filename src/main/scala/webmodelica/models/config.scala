@@ -2,12 +2,14 @@ package webmodelica.models
 
 import java.nio.file.{Path,Paths}
 import pureconfig.ConfigReader
+import scala.concurrent.duration.Duration
 
 package config {
   case class WMConfig(
     mope: MopeClientConfig,
     mongodb: MongoDBConfig,
     secret: String,
+    tokenExpiration: Duration
   )
 
   case class MongoDBConfig(
