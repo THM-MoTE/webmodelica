@@ -20,7 +20,8 @@ class SessionService @Inject()(
   extends FileStore
     with MopeService
   with com.twitter.inject.Logging {
-  override val client = new featherbed.Client(new java.net.URL(conf.address+"mope/"))
+  override def clientProvider() = new featherbed.Client(new java.net.URL(conf.address+"mope/"))
+
 
   val fsStore = new FSStore(conf.data.hostDirectory.resolve(session.basePath))
 

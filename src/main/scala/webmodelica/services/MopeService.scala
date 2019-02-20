@@ -30,7 +30,16 @@ trait MopeService {
   this: com.twitter.inject.Logging =>
 
   def pathMapper: MopeService.PathMapper
-  val client: featherbed.Client
+  def clientProvider(): featherbed.Client
+
+  private def withClient[A](fn: featherbed.Client => Future[A]): Future[A] = {
+    debug("Using new client")
+    val cl = clientProvider()
+    fn(cl).ensure {
+      debug("releasing client")
+      cl.close()
+    }
+  }
 
   private lazy val projIdPromise: Promise[Int] = new Promise[Int]()
   private def projectId: Future[Int] = projIdPromise
@@ -42,41 +51,45 @@ trait MopeService {
     val path = pathMapper.projectDirectory
     val descr = ProjectDescription(path.toString)
     info(s"connecting with $descr")
-    val req = client.post("connect")
-      .withContent(descr, "application/json")
-      .accept("application/json")
+    withClient { client =>
+      val req = client.post("connect")
+        .withContent(descr, "application/json")
+        .accept("application/json")
 
-    req.send[Int]().map { id =>
-        info(s"registered id $id")
-        projIdPromise setValue id
-        id
-    }
-      .handle {
-        case request.ErrorResponse(req,resp) =>
-          val str = s"Error response $resp to request $req"
-          throw new Exception(str)
-        case e:Exception =>
-          error(s"error while connecting ${e.getMessage}")
-          throw e
+      req.send[Int]().map { id =>
+          info(s"registered id $id")
+          projIdPromise setValue id
+          id
       }
+        .handle {
+          case request.ErrorResponse(req,resp) =>
+            val str = s"Error response $resp to request $req"
+            throw new Exception(str)
+          case e:Exception =>
+            error(s"error while connecting ${e.getMessage}")
+            throw e
+        }
+    }
   }
 
   def compile(path:Path): Future[Seq[CompilerError]] = {
     val fp = FilePath(pathMapper.toBindPath(path).toString)
     projectId.flatMap { id =>
       info(s"compiling $fp")
-      val req = client.post(s"project/$id/compile")
-        .withContent(fp, "application/json")
-        .accept("application/json")
-      req.send[Seq[CompilerError]]()
-        .map { xs =>
-          info(s"compiling returned $xs")
-          xs.map { error => error.copy(file=pathMapper.relativize(error.file).toString) }
-        }
-        .handle {
-        case request.ErrorResponse(req,resp) =>
-          val str = s"Error response $resp to request $req"
-          throw new Exception(str)
+      withClient { client =>
+        val req = client.post(s"project/$id/compile")
+          .withContent(fp, "application/json")
+          .accept("application/json")
+        req.send[Seq[CompilerError]]()
+          .map { xs =>
+            info(s"compiling returned $xs")
+            xs.map { error => error.copy(file = pathMapper.relativize(error.file).toString) }
+          }
+          .handle {
+            case request.ErrorResponse(req, resp) =>
+              val str = s"Error response $resp to request $req"
+              throw new Exception(str)
+          }
       }
     }
   }
@@ -85,14 +98,16 @@ trait MopeService {
     val cNew = c.copy(file=pathMapper.toBindPath(Paths.get(c.file)).toString)
     projectId.flatMap { id =>
       info(s"complete $cNew")
-      val req = client.post(s"project/$id/completion")
-        .withContent(cNew, "application/json")
-        .accept("application/json")
-      req.send[Seq[Suggestion]]()
-      .handle {
-        case request.ErrorResponse(req,resp) =>
-          val str = s"Error response $resp to request $req"
-          throw new Exception(str)
+      withClient { client =>
+        val req = client.post(s"project/$id/completion")
+          .withContent(cNew, "application/json")
+          .accept("application/json")
+        req.send[Seq[Suggestion]]()
+          .handle {
+            case request.ErrorResponse(req, resp) =>
+              val str = s"Error response $resp to request $req"
+              throw new Exception(str)
+          }
       }
     }
   }
