@@ -102,13 +102,6 @@ export class ApiClient {
       .then(rejectError)
       .then(this.updateWSToken.bind(this))
       .then(res => res.json())
-      .then((s: Session) => {
-        //TODO: use files from backend!
-        s.files = [{ relativePath: "a/b/simple.mo", content: "simple" },
-        { relativePath: "factor.mo", content: "function factor end factor;" }]
-        return s
-      }
-      )
   }
 
   public updateFile(file: File): Promise<File> {
