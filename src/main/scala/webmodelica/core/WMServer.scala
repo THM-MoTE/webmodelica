@@ -23,4 +23,6 @@ class WMServer extends HttpServer {
       .add[controllers.InfoController]
       .add[controllers.UserController]
   }
+
+  scala.sys.addShutdownHook { this.close() }
 }
