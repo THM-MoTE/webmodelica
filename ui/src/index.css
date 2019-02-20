@@ -17,9 +17,9 @@ div.editor {
   height:600px;border:1px solid grey;
 }
 
-.highlightedLine {
-  background-color: #add8e6;
+.myGlyphMarginClass {
+	background: red;
 }
-.errorGlyph {
-  background-color: red;
+.myContentClass {
+	background: lightblue;
 }

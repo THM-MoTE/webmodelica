@@ -19,6 +19,11 @@ interface Props {
   updateSessionFiles(f: File[]): void
 }
 
+function lineLength(f: File, lNo: number): number {
+  const line = f.content.split("\n")[lNo - 1]
+  return line.length
+}
+
 class SessionPaneCon extends React.Component<Props, State> {
   private readonly api: ApiClient
 
@@ -45,16 +50,18 @@ class SessionPaneCon extends React.Component<Props, State> {
     Promise.all(updatePromises).then(fs => this.props.updateSessionFiles(fs))
   }
   handleCompileClicked() {
-    this.api.compile(this.state.editingFiles[0])
+    this.api.compile(this.currentFile())
       .then(errors => {
         console.log("errors:", errors)
         let currentFileErrors = errors.filter(e => e.file == this.currentFile().relativePath)
-        let decos = currentFileErrors.map(e => ({
-          range: new monaco.Range(e.start.line, e.start.column, e.end.line, e.end.column),
+        let decos: monaco.editor.IModelDeltaDecoration[] = currentFileErrors.map(e => ({
+          //TODO: possible wrong index for lineNo .. does MoPE return 0-based or 1-baed lineNumbers???
+          range: new monaco.Range(2, 1, 2, lineLength(this.currentFile(), e.start.line)),
           options: {
             isWholeLine: true,
-            className: 'highlightedLine',
-            glyphMarginClassName: 'errorGlyph'
+            className: 'myContentClass',
+            glyphMarginClassName: 'myGlyphMarginClass',
+            hoverMessage: { value: e.type.toUpperCase() + ": " + e.message }
           }
         }))
         EditorsPane.monacoEditor.deltaDecorations([], decos)

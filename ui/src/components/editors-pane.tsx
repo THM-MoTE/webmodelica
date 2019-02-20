@@ -27,7 +27,9 @@ export class EditorsPane extends React.Component<any, any> {
   render() {
     const tabSelected = (key: string) => console.log("editor tab selected:", key)
     const file = this.props.files.length > 0 && this.props.files[0]
-    if (EditorsPane.monacoEditor && file) {
+    //only overwrite editor-content if it really changed; otherwise decorations would be removed
+    if (EditorsPane.monacoEditor && file &&
+      EditorsPane.monacoEditor.getValue() !== file.content) {
       const model = monaco.editor.createModel(file.content, "modelica")
       EditorsPane.monacoEditor.setModel(model)
     }
