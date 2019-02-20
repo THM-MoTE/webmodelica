@@ -13,15 +13,15 @@ function rejectError(res: Response): Promise<Response> {
 }
 
 const authHeader = "Authorization"
+const apiPrefix = "/api/v1/"
 
 export class ApiClient {
-
   private readonly base: string
   private readonly store: Store<AppState>
 
   constructor(store: Store<AppState>) {
     this.store = store
-    this.base = window.location.protocol + "//" + window.location.host + "/"
+    this.base = window.location.protocol + "//" + window.location.host + apiPrefix
   }
 
   private userUri(): string {

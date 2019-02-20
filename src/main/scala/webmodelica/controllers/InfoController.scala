@@ -13,18 +13,20 @@ case class Infos(
   commitHash:String,
 )
 
-class InfoController @Inject()(config: WMConfig)
+class InfoController @Inject()(config: WMConfig, prefix:webmodelica.ApiPrefix)
     extends Controller {
 
   import buildinfo.BuildInfo
 
-  get("/info") { _:Request =>
-    Infos(
-      config,
-      BuildInfo.name,
-      BuildInfo.version,
-      BuildInfo.license,
-      BuildInfo.commit
-    )
+  prefix(prefix.p) {
+    get("/info") { _:Request =>
+      Infos(
+        config,
+        BuildInfo.name,
+        BuildInfo.version,
+        BuildInfo.license,
+        BuildInfo.commit
+      )
+    }
   }
 }

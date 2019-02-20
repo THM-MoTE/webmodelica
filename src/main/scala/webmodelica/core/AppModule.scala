@@ -6,6 +6,7 @@ import webmodelica.models.config._
 import com.twitter.inject.{Injector, TwitterModule}
 import com.google.inject.{Provides, Singleton}
 import org.mongodb.scala._
+import webmodelica.ApiPrefix
 import webmodelica.models._
 import webmodelica.services._
 
@@ -17,6 +18,9 @@ object AppModule
   private val confDefault = "webmodelica.conf"
   val env = flag(name="env", default="development", help="environment to use")
   val configFile = flag(name="configFile", default=confDefault, help="the config file to use")
+
+  @Provides
+  def prefixProvider: ApiPrefix = ApiPrefix("/api/v1")
 
   override def singletonStartup(injector: Injector) {
     super.singletonStartup(injector)
