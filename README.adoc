@@ -2,6 +2,8 @@
 
 A web-based Modelica-Toolbox.
 
+image::doc/screenshot.png[]
+
 === Docker
 The backend, frontend and MoPE server are published as docker containers to https://cloud.docker.com/u/thmmote/repository/list[DockerHub]:
 
