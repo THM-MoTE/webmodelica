@@ -4,7 +4,7 @@ export interface Position {
   line: number
 }
 
-export interface Complete {
+export interface CompilerError {
   file: string
   message: string
   start: Position

@@ -1,5 +1,5 @@
 
-import { File, Project, TokenWrapper, Session, AppState, UserAuth, Complete } from '../models/index'
+import { File, Project, TokenWrapper, Session, AppState, UserAuth, CompilerError } from '../models/index'
 import React, { Component } from 'react';
 import { Store } from 'redux';
 import { updateToken, login } from '../redux/index';
@@ -104,7 +104,7 @@ export class ApiClient {
       .then(res => res.json())
   }
 
-  public compile(file: File): Promise<Complete[]> {
+  public compile(file: File): Promise<CompilerError[]> {
     const session = this.store.getState().session
     if (session) {
       return fetch(this.sessionUri() + `/${session.id}/compile`, {
