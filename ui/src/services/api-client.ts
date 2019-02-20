@@ -64,7 +64,7 @@ export class ApiClient {
     return fetch(this.projectUri(), {
       method: 'GET',
       headers: {
-        'Authentication': this.token(),
+        [authHeader]: this.token(),
         'Accept': 'application/json'
       }
     })
@@ -78,7 +78,7 @@ export class ApiClient {
       return fetch(this.projectUri(), {
         method: 'POST',
         headers: {
-          'Authentication': this.token(),
+          [authHeader]: this.token(),
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ owner: user, name: title })
@@ -95,7 +95,7 @@ export class ApiClient {
     return fetch(this.projectUri() + `/${project.id}/sessions/new`, {
       method: 'POST',
       headers: {
-        'Authentication': this.token(),
+        [authHeader]: this.token(),
         'Accept': 'application/json'
       }
     })
@@ -117,7 +117,7 @@ export class ApiClient {
       return fetch(this.sessionUri() + `/${session.id}/files/update`, {
         method: 'POST',
         headers: {
-          'Authentication': this.token(),
+          [authHeader]: this.token(),
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
