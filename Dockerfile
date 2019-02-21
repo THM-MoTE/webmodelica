@@ -6,4 +6,4 @@ RUN cd /opt &&\
 
 EXPOSE 3000
 
-CMD /opt/webmodelica/bin/webmodelica -http.port=3000 -env=docker
+CMD /opt/webmodelica/bin/webmodelica -http.port=:3000 -env=docker
