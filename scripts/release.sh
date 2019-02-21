@@ -27,6 +27,7 @@ echo "==> Generating frontend image.."
 docker build -t $frontendImage:$version ./ui
 
 echo "==> pushing to remotes.."
+git push origin master
 git push origin --tags
 docker push $backendImage:$version
 docker push $frontendImage:$version
