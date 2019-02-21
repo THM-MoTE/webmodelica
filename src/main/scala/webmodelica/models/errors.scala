@@ -17,4 +17,7 @@ object errors {
   case object CredentialsError extends RuntimeException {
     override def getMessage: String = "Wrong username or password!"
   }
+  case class ResourceUsernameError(resourceName:String="resource") extends RuntimeException {
+    override def getMessage: String = s"You can't create a ${resourceName} for another user!"
+  }
 }

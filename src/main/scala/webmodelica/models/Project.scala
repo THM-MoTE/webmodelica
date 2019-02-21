@@ -11,7 +11,8 @@ case class Project(
 
 case class ProjectRequest(
   owner: String,
-  name: String)
+  name: String,
+  request: com.twitter.finagle.http.Request)
 
 case class JSProject(
   id: String,

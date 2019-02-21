@@ -6,8 +6,11 @@ import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
 import org.mongodb.scala.bson.BsonObjectId
 import webmodelica.models._
-import webmodelica.services.{SessionRegistry, SessionService}
-import webmodelica.stores.ProjectStore
+import webmodelica.services.{TokenGenerator, SessionRegistry, SessionService}
+import webmodelica.stores.{
+  UserStore,
+  ProjectStore
+}
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.twitter.finatra.request._
 
@@ -21,8 +24,14 @@ case class CompileRequest(
   @JsonProperty() path: java.nio.file.Path,
 )
 
-class SessionController@Inject()(projectStore:ProjectStore, sessionRegistry: SessionRegistry, prefix:webmodelica.ApiPrefix)
-  extends Controller {
+class SessionController@Inject()(
+  projectStore:ProjectStore,
+  sessionRegistry: SessionRegistry,
+  prefix:webmodelica.ApiPrefix,
+  override val userStore: UserStore,
+  override val gen: TokenGenerator)
+    extends Controller
+    with UserExtractor {
 
   def withSession[A](id:webmodelica.UUIDStr)(fn: SessionService => Future[A]): Future[_] =
     FuturePool.unboundedPool(sessionRegistry.get(id)).flatMap {
@@ -35,8 +44,8 @@ class SessionController@Inject()(projectStore:ProjectStore, sessionRegistry: Ses
       post("/projects/:projectId/sessions/new") { requ: Request =>
         val id = requ.getParam("projectId")
         for {
-          project <- projectStore.findBy(BsonObjectId(id)).flatMap(errors.notFoundExc(s"project with $id not found!"))
-          _ = require(project ne null, "searched project can't be null!")
+          t <- extractToken(requ)
+          project <- projectStore.findBy(BsonObjectId(id), t.username).flatMap(errors.notFoundExc(s"project with $id not found!"))
           (service, session) <- FuturePool.unboundedPool(sessionRegistry.create(project))
           files <- service.files
         } yield {

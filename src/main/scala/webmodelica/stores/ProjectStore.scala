@@ -20,6 +20,15 @@ class ProjectStore @Inject()(db:MongoDatabase)
   def add(p:Project): TFuture[Unit] = collection.insertOne(p).head().map(_ => ()).asTwitter
   def all(): TFuture[Seq[Project]] = collection.find()
     .sort(Sorts.ascending("name"))
-    .toFuture().asTwitter
-  def findBy(id:BsonObjectId): TFuture[Option[Project]] = collection.find(Filters.equal("_id", id)).headOption().asTwitter
+    .toFuture()
+    .asTwitter
+  def findBy(id:BsonObjectId, username:String): TFuture[Option[Project]] =
+    collection.find(Filters.and(Filters.equal("_id", id), Filters.equal("owner", username)))
+      .headOption()
+      .asTwitter
+  def byUsername(username:String): TFuture[Seq[Project]] =
+    collection.find(Filters.equal("owner", username))
+      .sort(Sorts.ascending("name"))
+      .toFuture()
+      .asTwitter
 }
