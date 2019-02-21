@@ -1,13 +1,19 @@
 import React from 'react'
-import { Col, Row, ListGroup, Nav, Button, Modal, Form } from 'react-bootstrap'
+import { Col, Row, ListGroup, Nav, Button, Modal, Form, Alert } from 'react-bootstrap'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as R from 'ramda'
 import { File, AppState } from '../models/index'
 import { newFile, Action } from '../redux/index'
 import { ApiClient } from '../services/api-client';
+import { renderErrors } from '../partials/errors'
 
-class FileViewCon extends React.Component<any, any> {
+interface State {
+  showNewFileDialog: boolean
+  errors: string[]
+}
+
+class FileViewCon extends React.Component<any, State> {
   private newFilename?: string = undefined
 
   private readonly api: ApiClient
@@ -19,7 +25,11 @@ class FileViewCon extends React.Component<any, any> {
   constructor(props: any) {
     super(props)
     this.api = this.props.api
-    this.state = { showNewFileDialog: false }
+    this.state = { showNewFileDialog: false, errors: [] }
+  }
+
+  private updateErrors(err: string[]) {
+    this.setState({ showNewFileDialog: !R.isEmpty(err), errors: err })
   }
 
   private createNewFile() {
@@ -30,7 +40,7 @@ class FileViewCon extends React.Component<any, any> {
     }
     const createFilename = (path: string) => path.replace(/\./g, "/") + ".mo"
 
-    if (this.selectedType && this.newFilename) {
+    if (this.selectedType && this.newFilename && !R.contains(" ", this.newFilename)) {
       const suffixStripped = this.newFilename!.endsWith(".mo") ? this.newFilename!.substring(0, this.newFilename!.length - 3).trim() : this.newFilename!.trim()
       const tpe = this.selectedType!.toLowerCase()
       const name = extractModelname(suffixStripped)
@@ -39,14 +49,19 @@ class FileViewCon extends React.Component<any, any> {
       this.api
         .updateFile({ relativePath: path, content: content })
         .then(this.props.newFile)
-        .catch(er => console.error("file creation failed: ", er))
+        .then(() => this.updateErrors([]))
+        .catch(er => this.updateErrors(["Creation failed because of: " + er]))
     } else {
-      console.error("can't create a new file without name & type!")
+      this.updateErrors(["The file needs a type and a name!", "The filename can't contain spaces!"])
     }
   }
 
   private newFileDialog() {
-    const handleClose = () => this.setState({ showNewFileDialog: false })
+    const handleClose = () => {
+      console.log("close: ", this.state)
+      if (R.isEmpty(this.state.errors))
+        this.setState({ showNewFileDialog: false })
+    }
     const handleFilenameChange = (ev: any) => this.newFilename = ev.target.value
     const handleFileTypeSelect = (tpe: string) => this.selectedType = tpe
 
@@ -68,9 +83,10 @@ class FileViewCon extends React.Component<any, any> {
               </Form.Control>
             </Form.Group>
           </Form>
+          {renderErrors(this.state.errors)}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="success" type="submit" onClick={R.compose(handleClose, this.createNewFile.bind(this))}>Create</Button>
+          <Button variant="success" type="submit" onClick={this.createNewFile.bind(this)}>Create</Button>
         </Modal.Footer>
       </Modal >)
   }

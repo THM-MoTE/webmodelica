@@ -5,6 +5,7 @@ import { ApiClient } from '../services/api-client'
 import { Redirect } from 'react-router'
 import { defaultMapDispatchToProps, mapAuthenticationToProps } from '../redux'
 import { Action, login } from '../redux/index'
+import { renderErrors } from '../partials/errors'
 import { connect } from 'react-redux'
 import * as R from 'ramda'
 
@@ -53,11 +54,7 @@ class LandingCon extends Component<any, any> {
                 <Form.Label>Password</Form.Label>
                 <Form.Control required type="password" placeholder="Password" onChange={passwordChanged} />
               </Form.Group>
-              {!R.isEmpty(this.state.errors) &&
-                (<Alert variant="danger">
-                  <p>{this.state.errors.join("\n")}</p>
-                </Alert>)
-              }
+              {renderErrors(this.state.errors)}
               <Button variant="primary" type="submit" onClick={this.handleSubmit.bind(this)}>
                 Submit
                 </Button>
