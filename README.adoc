@@ -13,6 +13,15 @@ The backend, frontend and MoPE server are published as docker containers to http
 
 Starting a production deployment should be as simple as:
 
+- Setup
+[source,sh]
+----
+# create data directories and set permissions
+$ mkdir -p private/data
+$ chown 777 private/data
+----
+
+- Running
 [source, sh]
 ----
 $ docker-compose --project-name webmodelica -f deployment/docker-compose.yml -f deployment/docker-compose.prod.yml

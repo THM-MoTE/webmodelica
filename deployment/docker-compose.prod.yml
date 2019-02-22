@@ -17,7 +17,7 @@ services:
       - "traefik.backend=webmodelica-backend"
       - "traefik.port=3000"
     volumes:
-      - /var/webmodelica/data:/data
+      - ../private/data:/data
   ui:
     image: "thmmote/webmodelica-ui:0.2.3"
     ports:
@@ -32,5 +32,5 @@ services:
     ports:
       - 9015:3000
     volumes:
-      - /var/webmodelica/data:/home/openmodelica/data
+      - ../private/data:/home/openmodelica/data
       - ./mope.conf:/home/openmodelica/.config/mope/mope.conf

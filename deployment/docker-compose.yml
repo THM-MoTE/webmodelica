@@ -6,14 +6,13 @@ services:
     ports:
       - 9010:27017
     volumes:
-      #- ../db:/data/db
-      - /var/webmodelica/db:/data/db
+      - ../private/db:/data/db
   mope:
     image: "thmmote/mope-server:0.6.5-bugfix"
     user: openmodelica:openmodelica
     ports:
       - 9015:3000
     volumes:
-      - ../data:/home/openmodelica/data
+      - ../private/data:/home/openmodelica/data
       - ./mope.conf:/home/openmodelica/.config/mope/mope.conf
 #      - ../moie-server/target/scala-2.12/mope-server-0.6.5.jar:/opt/mope-server.jar
