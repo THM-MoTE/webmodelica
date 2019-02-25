@@ -9,10 +9,13 @@ import { Row, Col, Button, ButtonGroup, Container as RContainer, Card } from 're
 import { File, AppState, CompilerError } from '../models/index'
 import { Action, updateSessionFiles } from '../redux/actions'
 import * as monaco from 'monaco-editor';
+import { renderErrors } from '../partials/errors';
+import * as R from 'ramda';
 
 interface State {
   editingFiles: File[]
   compilerErrors: CompilerError[]
+  deltaMarkers: any[]
 }
 interface Props {
   api: ApiClient
@@ -24,13 +27,28 @@ function lineLength(f: File, lNo: number): number {
   return line.length
 }
 
+function deltaDecorations(openedFile: File, errors: CompilerError[]): monaco.editor.IModelDeltaDecoration[] {
+  return errors
+    .filter(e => e.file == openedFile.relativePath)
+    .map(e => ({
+      //TODO: possible wrong index for lineNo .. does MoPE return 0-based or 1-baed lineNumbers???
+      range: new monaco.Range(e.start.line, 1, e.end.line, e.end.column),
+      options: {
+        isWholeLine: true,
+        className: 'myContentClass',
+        glyphMarginClassName: 'myGlyphMarginClass',
+        hoverMessage: { value: e.type.toUpperCase() + ": " + e.message }
+      }
+    }))
+}
+
 class SessionPaneCon extends React.Component<Props, State> {
   private readonly api: ApiClient
 
   constructor(props: any) {
     super(props)
     this.api = this.props.api
-    this.state = { editingFiles: [], compilerErrors: [] }
+    this.state = { editingFiles: [], compilerErrors: [], deltaMarkers:[] }
   }
 
   public componentDidMount() {
@@ -43,30 +61,28 @@ class SessionPaneCon extends React.Component<Props, State> {
   private currentFile(): File {
     return this.state.editingFiles[0]
   }
+
   handleSaveClicked() {
     let content = EditorsPane.monacoEditor.getValue()
     let files: File[] = [{ ...this.currentFile(), content: content }]
     const updatePromises = files.map((f: File) => this.api.updateFile(f))
-    Promise.all(updatePromises).then(fs => this.props.updateSessionFiles(fs))
+    Promise.all(updatePromises)
+    .then(() => this.setState({editingFiles: files}))
   }
   handleCompileClicked() {
+    console.log("compiling .. ")
     this.api.compile(this.currentFile())
       .then(errors => {
         console.log("errors:", errors)
-        let currentFileErrors = errors.filter(e => e.file == this.currentFile().relativePath)
-        let decos: monaco.editor.IModelDeltaDecoration[] = currentFileErrors.map(e => ({
-          //TODO: possible wrong index for lineNo .. does MoPE return 0-based or 1-baed lineNumbers???
-          range: new monaco.Range(2, 1, 2, lineLength(this.currentFile(), e.start.line)),
-          options: {
-            isWholeLine: true,
-            className: 'myContentClass',
-            glyphMarginClassName: 'myGlyphMarginClass',
-            hoverMessage: { value: e.type.toUpperCase() + ": " + e.message }
-          }
-        }))
-        EditorsPane.monacoEditor.deltaDecorations([], decos)
-        this.setState({ ...this.state, compilerErrors: errors })
+        const newMarkers = this.markErrors(this.state.deltaMarkers, errors)
+        this.setState({ deltaMarkers: newMarkers, compilerErrors: errors })
       })
+  }
+
+  markErrors(oldMarkers:string[], errors:CompilerError[]):string[] {
+    console.log("old markers ", oldMarkers)
+    const decos = deltaDecorations(this.currentFile(), errors)
+    return EditorsPane.monacoEditor.deltaDecorations(oldMarkers, decos)
   }
 
   render() {
