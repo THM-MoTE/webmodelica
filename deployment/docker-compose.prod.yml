@@ -26,3 +26,12 @@ services:
       - "traefik.frontend.rule=PathPrefix:/"
       - "traefik.backend=webmodelica-ui"
       - "traefik.port=3000"
+  mope:
+    image: "thmmote/mope-server:0.6.5-bugfix"
+    user: openmodelica:openmodelica
+    ports:
+      - 9015:3000
+    volumes:
+      - webmodelica_data:/home/openmodelica/data
+      - ./mope.conf:/home/openmodelica/.config/mope/mope.conf
+#      - ../moie-server/target/scala-2.12/mope-server-0.6.5.jar:/opt/mope-server.jar
