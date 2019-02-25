@@ -55,19 +55,28 @@ class SessionPaneCon extends React.Component<Props, State> {
   }
 
   private handleFileClicked(f: File): void {
-    this.setState({ editingFiles: [f], compilerErrors: [] })
+    this.saveCurrentFiles().then( () => this.setState({ editingFiles: [f], compilerErrors: [] }) )
   }
 
   private currentFile(): File {
     return this.state.editingFiles[0]
   }
 
-  handleSaveClicked() {
+  private saveCurrentFiles():Promise<File[]> {
     let content = EditorsPane.monacoEditor.getValue()
-    let files: File[] = [{ ...this.currentFile(), content: content }]
+    let files: File[] = this.currentFile() ? [{ ...this.currentFile(), content: content }] : []
     const updatePromises = files.map((f: File) => this.api.updateFile(f))
-    Promise.all(updatePromises)
-    .then(() => this.setState({editingFiles: files}))
+    return Promise.all(updatePromises).then((files) => {
+      this.props.updateSessionFiles(files)
+      return files
+    })
+  }
+
+  handleSaveClicked() {
+    this.saveCurrentFiles()
+      .then((files) => {
+        this.setState({editingFiles: files})
+      })
   }
   handleCompileClicked() {
     console.log("compiling .. ")
