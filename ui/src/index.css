@@ -17,9 +17,14 @@ div.editor {
   height:600px;border:1px solid grey;
 }
 
-.myGlyphMarginClass {
-	background: red;
+.errorGlyph {
+  background: red;
+  border-radius: 20px;
 }
-.myContentClass {
+span.errorGlyph {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+.contentClass {
 	background: lightblue;
 }

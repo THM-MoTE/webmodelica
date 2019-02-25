@@ -35,8 +35,8 @@ function deltaDecorations(openedFile: File, errors: CompilerError[]): monaco.edi
       range: new monaco.Range(e.start.line, 1, e.end.line, e.end.column),
       options: {
         isWholeLine: true,
-        className: 'myContentClass',
-        glyphMarginClassName: 'myGlyphMarginClass',
+        className: 'contentClass',
+        glyphMarginClassName: 'errorGlyph',
         hoverMessage: { value: e.type.toUpperCase() + ": " + e.message }
       }
     }))
@@ -88,7 +88,7 @@ class SessionPaneCon extends React.Component<Props, State> {
   render() {
     const errorLine = (e: CompilerError) => (
       <div key={e.file + "-" + e.start}>
-        <p><span>{e.type.toUpperCase()} </span>
+        <p><span className="errorGlyph">{e.type.toUpperCase()} </span>
           <span>L:{e.start.line} </span>
           <span>{e.message} </span>
           <span>({e.file})</span>
