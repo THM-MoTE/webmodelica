@@ -5,7 +5,7 @@ import com.twitter.finagle.Service
 import com.twitter.finagle.Http
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finatra.json.FinatraObjectMapper
-import com.twitter.util.Future
+import com.twitter.util.{Future, Time}
 import webmodelica.models.config.MopeClientConfig
 import webmodelica.models.{ModelicaFile, Session}
 import webmodelica.stores.{FSStore, FileStore}
@@ -19,7 +19,8 @@ class SessionService @Inject()(
   val session:Session)
   extends FileStore
     with MopeService
-  with com.twitter.inject.Logging {
+  with com.twitter.inject.Logging
+  with com.twitter.util.Closable {
   override def clientProvider() = new featherbed.Client(new java.net.URL(conf.address+"mope/"))
 
 
@@ -32,4 +33,6 @@ class SessionService @Inject()(
   override def rootDir: Path = fsStore.rootDir
   override def update(file: ModelicaFile): Future[Unit] = fsStore.update(file)
   override def files: Future[List[ModelicaFile]] = fsStore.files
+
+  override def close(deadline:Time):Future[Unit] = disconnect()
 }

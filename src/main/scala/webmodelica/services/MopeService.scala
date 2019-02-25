@@ -111,6 +111,24 @@ trait MopeService {
       }
     }
   }
+
+  def disconnect(): Future[Unit] = {
+    //POST /mope/project/:id/disconnect
+    //TODO: don't know if this really works though.. accepting nothing as json is awkward ?!
+    projectId.flatMap { id =>
+      withClient{ client =>
+        val req = client.post(s"/project/$id/disconnect")
+          .withContent((), "application/json")
+          .accept("application/json")
+        req.send[Unit]()
+          .handle {
+            case request.ErrorResponse(req, resp) =>
+              val str = s"Error response $resp to request $req"
+              throw new Exception(str)
+          }
+      }
+    }
+  }
 }
 
 object MopeService {

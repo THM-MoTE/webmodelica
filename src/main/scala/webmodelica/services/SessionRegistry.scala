@@ -2,7 +2,7 @@ package webmodelica.services
 
 import com.google.inject.Inject
 import com.twitter.finatra.json.FinatraObjectMapper
-import com.twitter.util.{Future, FuturePool}
+import com.twitter.util.{Future, FuturePool, Time}
 import webmodelica.UUIDStr
 import webmodelica.models.config.MopeClientConfig
 import webmodelica.models.{Project, Session}
@@ -10,7 +10,8 @@ import webmodelica.models.{Project, Session}
 import scala.collection.concurrent
 
 class SessionRegistry @Inject()(conf:MopeClientConfig)
-  extends com.twitter.inject.Logging {
+  extends com.twitter.inject.Logging 
+  with com.twitter.util.Closable {
 
   private val lock:java.util.concurrent.locks.Lock = new java.util.concurrent.locks.ReentrantLock()
   private val registry = concurrent.TrieMap[UUIDStr, SessionService]()
@@ -33,4 +34,6 @@ class SessionRegistry @Inject()(conf:MopeClientConfig)
   }
 
   def get(id:UUIDStr): Option[SessionService] = sync{ registry.get(id) }
+
+  override def close(deadline:Time):Future[Unit] = Future.collect(this.registry.values.map(_.close(deadline)).toList).map(_ => ())
 }

@@ -3,6 +3,7 @@ package webmodelica.core
 import java.security.MessageDigest
 
 import webmodelica.models.config._
+import com.twitter.util.{Await, Time}
 import com.twitter.inject.{Injector, TwitterModule}
 import com.google.inject.{Provides, Singleton}
 import org.mongodb.scala._
@@ -32,6 +33,7 @@ object AppModule
     super.singletonShutdown(injector)
     println("!!! SHUTDOWN CALLED")
     injector.instance(classOf[MongoClient]).close()
+    Await.result(injector.instance(classOf[SessionRegistry]).close(Time.fromSeconds(90)))
   }
 
   @Singleton
