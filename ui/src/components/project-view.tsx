@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { AppState, Project } from '../models/index'
 import { Action, setProjects, addProject, setSession } from '../redux/index'
-import { Container } from '../layouts'
+import { WmContainer } from '../partials/container'
 import { ApiClient } from '../services/api-client'
 // import * as alerts from './partials/alerts'
 import { ListGroup, Card, Form, Button, Col, Alert } from 'react-bootstrap'
@@ -49,7 +49,7 @@ class ProjectViewCon extends Component<any, any> {
   public render() {
     const newProjectNameChanged = (ev: any) => this.newProjectName = ev.target.value
 
-    return (<Container>
+    return (<WmContainer title="Projects">
       <Alert show={!R.isEmpty(this.state.errors)} variant="danger" onClose={() => undefined}>
         {this.state.errors.join("\n")}
       </Alert>
@@ -68,7 +68,7 @@ class ProjectViewCon extends Component<any, any> {
           }
         </ListGroup>
       </Card>
-    </Container >)
+    </WmContainer >)
   }
 }
 

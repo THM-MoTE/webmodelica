@@ -1,12 +1,12 @@
 import React from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { Container } from '../layouts'
+import { WmContainer } from '../partials/container'
 import { FileView } from './index'
 import { EditorsPane } from './editors-pane'
 import { ApiClient } from '../services/api-client'
 import { Row, Col, Button, ButtonGroup, Container as RContainer, Card } from 'react-bootstrap'
-import { File, AppState, CompilerError } from '../models/index'
+import { File, AppState, CompilerError, Session } from '../models/index'
 import { Action, updateSessionFiles } from '../redux/actions'
 import * as monaco from 'monaco-editor';
 import { renderErrors } from '../partials/errors';
@@ -19,6 +19,7 @@ interface State {
 }
 interface Props {
   api: ApiClient
+  session: Session
   updateSessionFiles(f: File[]): void
 }
 
@@ -104,7 +105,7 @@ class SessionPaneCon extends React.Component<Props, State> {
         </p>
       </div>)
     return (
-      <Container>
+      <WmContainer title={"Session: "+this.props.session.project.name}>
         <Row>
           <Col sm="2">
             <FileView
@@ -122,7 +123,7 @@ class SessionPaneCon extends React.Component<Props, State> {
             {this.state.compilerErrors.map(errorLine)}
           </Col>
         </Row>
-      </Container>
+      </WmContainer>
     )
   }
 }

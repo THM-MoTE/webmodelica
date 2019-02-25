@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container } from '../layouts'
+import { WmContainer } from '../partials/container'
 import { Button, Form, Alert } from 'react-bootstrap'
 import { ApiClient } from '../services/api-client'
 import { Redirect } from 'react-router'
@@ -40,7 +40,7 @@ class LandingCon extends Component<any, any> {
   render() {
     const usernameChanged = (ev: any) => this.username = ev.target.value
     const passwordChanged = (ev: any) => this.password = ev.target.value
-    return (<Container>
+    return (<WmContainer title="">
       <div className="row align-items-center">
         <div className="card sm-10 mx-auto">
           <h5 className="card-title">Login</h5>
@@ -62,7 +62,7 @@ class LandingCon extends Component<any, any> {
           </div>
         </div>
       </div>
-    </Container>)
+    </WmContainer>)
   }
 }
 
