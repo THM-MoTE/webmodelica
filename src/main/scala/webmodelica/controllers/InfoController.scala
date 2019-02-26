@@ -6,7 +6,6 @@ import com.google.inject.Inject
 import webmodelica.models.config._
 
 case class Infos(
-  config: WMConfig,
   appName:String,
   version:String,
   license:String,
@@ -21,7 +20,6 @@ class InfoController @Inject()(config: WMConfig, prefix:webmodelica.ApiPrefix)
   prefix(prefix.p) {
     get("/info") { _:Request =>
       Infos(
-        config,
         BuildInfo.name,
         BuildInfo.version,
         BuildInfo.license,
