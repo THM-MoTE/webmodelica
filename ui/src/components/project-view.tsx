@@ -8,6 +8,7 @@ import { ListGroup, Card, Form, Button, Col, Alert } from 'react-bootstrap'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as R from 'ramda'
+import { renderErrors } from '../partials/errors';
 
 class ProjectViewCon extends Component<any, any> {
   private api: ApiClient
@@ -50,9 +51,7 @@ class ProjectViewCon extends Component<any, any> {
     const newProjectNameChanged = (ev: any) => this.newProjectName = ev.target.value
 
     return (<WmContainer title="Projects">
-      <Alert show={!R.isEmpty(this.state.errors)} variant="danger" onClose={() => undefined}>
-        {this.state.errors.join("\n")}
-      </Alert>
+      {renderErrors(this.state.errors)}
       <Card>
         <Card.Header>Your Projects</Card.Header>
         <ListGroup variant="flush">
