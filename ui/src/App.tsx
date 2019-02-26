@@ -7,7 +7,6 @@ import { ApiClient } from './services/api-client'
 import { rootReducer } from './redux/reducers'
 import { createStore } from "redux";
 import { Provider } from "react-redux";
-import { login } from './redux/actions'
 import { withApi } from './partials/api-wrapper';
 import { AppState } from './models';
 

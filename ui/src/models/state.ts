@@ -3,7 +3,14 @@ import { File, Project } from './index'
 
 export interface UserAuth {
   username: string,
-  jwtToken: string
+  token: JwtToken
+}
+
+export interface JwtToken {
+  username: string,
+  issued: Date,
+  expires: Date,
+  raw: string
 }
 
 export interface Session {

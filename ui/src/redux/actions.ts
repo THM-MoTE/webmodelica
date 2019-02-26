@@ -1,7 +1,6 @@
 import { UserAuth, Project, File, Session } from '../models/index'
 
 export enum ActionTypes {
-  Login,
   Logout,
   SetProjects,
   AddProject,
@@ -16,7 +15,6 @@ export interface Action {
   payload?: any
 }
 
-export const login: (pl: UserAuth) => Action = (pl: UserAuth) => { return { type: ActionTypes.Login, payload: pl } }
 export const updateToken: (pl: String) => Action = pl => ({ type: ActionTypes.UpdateWsToken, payload: pl })
 export const addProject = (p: Project) => ({ type: ActionTypes.AddProject, payload: p })
 export const setProjects: (ps: Project[]) => Action = (ps: Project[]) => { return { type: ActionTypes.SetProjects, payload: ps } }

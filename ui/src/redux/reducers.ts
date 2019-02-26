@@ -5,7 +5,6 @@ import { Action, ActionTypes } from './actions'
 import * as R from 'ramda'
 
 const reducerMap = {
-  [ActionTypes.Login.toString()]: (state: AppState, data: any) => { return { ...state, authentication: data } },
   [ActionTypes.SetProjects.toString()]: (state: AppState, data: Project[]) => { return { ...state, projects: data } },
   [ActionTypes.UpdateSessionFiles.toString()]: function(state: AppState, data: File[]): AppState {
     if (state.session) {
@@ -21,7 +20,22 @@ const reducerMap = {
   },
   [ActionTypes.AddProject.toString()]: (state: AppState, data: Project) => ({ ...state, projects: R.prepend(data, state.projects) }),
   [ActionTypes.SetSession.toString()]: (state: AppState, session: Session) => ({ ...state, session: session }),
-  [ActionTypes.UpdateWsToken.toString()]: (state: AppState, token: string) => ({ ...state, authentication: { username: state.authentication!.username, jwtToken: token } }),
+  [ActionTypes.UpdateWsToken.toString()]: (state: AppState, token: string) => {
+    let payload = JSON.parse(atob(token.split('.')[1]))
+    return {
+      ...state,
+      authentication: {
+        username: payload.username,
+        token: {
+          username: payload.username,
+          //iat & exp are in seconds, JS-Dates take miliseconds => *1000
+          issued: new Date(payload.iat * 1000),
+          expires: new Date(payload.exp * 1000),
+          raw: token
+        }
+      }
+    }
+  },
   [ActionTypes.CreateNewFile.toString()]: (state: AppState, f: File) => ({ ...state, session: { ...state.session!, files: R.append(f, state.session!.files) } })
 }
 

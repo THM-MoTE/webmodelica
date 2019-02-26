@@ -2,7 +2,7 @@
 import { File, Project, TokenWrapper, Session, AppState, UserAuth, CompilerError } from '../models/index'
 import React, { Component } from 'react';
 import { Store } from 'redux';
-import { updateToken, login } from '../redux/index';
+import { updateToken } from '../redux/index';
 
 function rejectError(res: Response): Promise<Response> {
   if (res.ok) return Promise.resolve(res)
@@ -41,7 +41,7 @@ export class ApiClient {
     }
     return res
   }
-  private token(): string { return this.store.getState().authentication!.jwtToken }
+  private token(): string { return this.store.getState().authentication!.token.raw }
 
   public login(user: string, pw: string): Promise<TokenWrapper> {
     return fetch(this.userUri() + "/login", {
@@ -55,7 +55,7 @@ export class ApiClient {
       .then(rejectError)
       .then(res => res.json())
       .then((t: TokenWrapper) => {
-        this.store.dispatch(login({ username: user, jwtToken: t.token }))
+        this.store.dispatch(updateToken(t.token))
         return t
       })
   }
