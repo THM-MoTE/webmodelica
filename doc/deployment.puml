@@ -3,8 +3,8 @@
 [Browser]
 
 node Traefik
-node Webmodelica
-node WebmodelicaUi
+node Webmodelica #Yellow
+node WebmodelicaUi #Yellow
 node MongoDB
 
 Browser -- Traefik : HTTP /
