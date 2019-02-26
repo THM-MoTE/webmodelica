@@ -31,7 +31,7 @@ class ProjectStore @Inject()(db:MongoDatabase)
     .sort(Sorts.ascending("name"))
     .toFuture()
     .asTwitter
-  def findBy(id:BsonObjectId, username:String): TFuture[Option[Project]] =
+  def findBy(id:String, username:String): TFuture[Option[Project]] =
     collection.find(Filters.and(Filters.equal("_id", id), Filters.equal("owner", username)))
       .headOption()
       .asTwitter

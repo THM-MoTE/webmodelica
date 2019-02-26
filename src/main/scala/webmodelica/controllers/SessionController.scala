@@ -45,7 +45,7 @@ class SessionController@Inject()(
         val id = requ.getParam("projectId")
         for {
           t <- extractToken(requ)
-          project <- projectStore.findBy(BsonObjectId(id), t.username).flatMap(errors.notFoundExc(s"project with $id not found!"))
+          project <- projectStore.findBy(id, t.username).flatMap(errors.notFoundExc(s"project with $id not found!"))
           (service, session) <- FuturePool.unboundedPool(sessionRegistry.create(project))
           files <- service.files
         } yield {

@@ -4,7 +4,7 @@ import org.mongodb.scala.bson.BsonObjectId
 import io.scalaland.chimney.dsl._
 
 case class Project(
-  _id: BsonObjectId,
+  _id: String,
   owner: String,
   name: String,
 )
@@ -22,11 +22,11 @@ case class JSProject(
 object JSProject {
   def apply(p:Project): JSProject = {
     require(p != null, "project can't be null!")
-    p.into[JSProject].withFieldComputed(_.id, _._id.getValue.toHexString).transform
+    p.into[JSProject].withFieldRenamed(_._id, _.id).transform
   }
 }
 
 object Project {
   def apply(request: ProjectRequest): Project =
-    request.into[Project].withFieldComputed(_._id, _ => BsonObjectId()).transform
+    request.into[Project].withFieldComputed(_._id, req => s"${req.owner}_${req.name}").transform
 }

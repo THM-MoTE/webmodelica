@@ -42,7 +42,7 @@ class ProjectController@Inject()(
       get("/projects/:id") { requ: Request =>
         val id = requ.getParam("id")
           extractToken(requ).flatMap { case UserToken(username,_,_) =>
-            store.findBy(BsonObjectId(id), username)
+            store.findBy(id, username)
               .flatMap(errors.notFoundExc(s"project with $id not found!"))
               .map(JSProject.apply)
           }
