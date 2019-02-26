@@ -1,0 +1,27 @@
+@startuml
+
+[Browser]
+
+node Traefik
+node Webmodelica
+node WebmodelicaUi
+node MongoDB
+
+Browser -- Traefik : HTTP /
+Traefik -- Webmodelica : HTTP /api/*
+Traefik -- WebmodelicaUi : HTTP /*/*
+
+Webmodelica --> MongoDB
+
+node MopeServer {
+  Webmodelica --> [MoPE] : HTTP /mope/*
+  [OpenModelica]
+  [MoPE] -- [OpenModelica] : ZeroMQ
+}
+
+storage SharedVolume
+
+Webmodelica --> SharedVolume : FsIO
+MopeServer --> SharedVolume : FsIO
+
+@enduml
