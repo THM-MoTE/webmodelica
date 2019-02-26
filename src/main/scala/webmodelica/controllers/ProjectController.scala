@@ -7,7 +7,7 @@ import com.twitter.finatra.http.Controller
 import org.mongodb.scala.bson.BsonObjectId
 import webmodelica.models.{JSProject, Project, ProjectRequest, errors}
 import webmodelica.models.config.WMConfig
-import webmodelica.models.errors.ResourceUsernameError
+import webmodelica.models.errors
 import webmodelica.services.{
   TokenGenerator,
   UserToken
@@ -33,7 +33,9 @@ class ProjectController@Inject()(
           case token if token.username == project.owner =>
             val newProj = Project(project)
             store.add(newProj).map(_ => JSProject(newProj))
-          case _ => Future.value(response.forbidden.body(ResourceUsernameError("project").getMessage))
+          case _ => Future.value(response.forbidden.body(errors.ResourceUsernameError("project").getMessage))
+        }.handle {
+          case e:errors.AlreadyInUse => response.conflict(e.getMessage)
         }
       }
 

@@ -46,7 +46,7 @@ class UserController@Inject()(userStore:UserStore,
         .map(_ => tokenGenerator.newToken(user))
         .map(tokenResponse)
         .handle {
-          case e:errors.UsernameAlreadyInUse => response.conflict(e.getMessage)
+          case e:errors.AlreadyInUse => response.conflict(e.getMessage)
         }
     }
 

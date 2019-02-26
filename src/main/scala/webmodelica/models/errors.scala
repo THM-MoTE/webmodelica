@@ -10,8 +10,17 @@ object errors {
     case _ => Future.exception(NotFoundException(reason))
   }
 
-  case class UsernameAlreadyInUse(name:String) extends RuntimeException {
-    override def getMessage: String = s"Username `$name` already assigned"
+  trait AlreadyInUse extends RuntimeException {
+    def resource:String
+    def name:String
+    override def getMessage: String = s"$resource `$name` already assigned"
+  }
+
+  case class UsernameAlreadyInUse(override val name:String) extends AlreadyInUse {
+    override def resource:String = "Username"
+  }
+  case class ProjectnameAlreadyInUse(override val name:String) extends AlreadyInUse {
+    override def resource:String = "Projectname"
   }
 
   case object CredentialsError extends RuntimeException {
