@@ -45,6 +45,9 @@ class UserController@Inject()(userStore:UserStore,
       userStore.add(user)
         .map(_ => tokenGenerator.newToken(user))
         .map(tokenResponse)
+        .handle {
+          case e:errors.UsernameAlreadyInUse => response.conflict(e.getMessage)
+        }
     }
 
     post("/users/login") { req: LoginRequest =>
