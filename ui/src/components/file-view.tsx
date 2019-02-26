@@ -8,12 +8,21 @@ import { newFile, Action } from '../redux/index'
 import { ApiClient } from '../services/api-client';
 import { renderErrors } from '../partials/errors'
 
+interface Props {
+  api: ApiClient
+  files: File[]
+  newFile(f:File): Action
+  onFileClicked(f:File): void
+  onSaveClicked(): void
+  onCompileClicked(): void
+}
+
 interface State {
   showNewFileDialog: boolean
   errors: string[]
 }
 
-class FileViewCon extends React.Component<any, State> {
+class FileViewCon extends React.Component<Props, State> {
   private newFilename?: string = undefined
 
   private readonly api: ApiClient
@@ -31,6 +40,10 @@ class FileViewCon extends React.Component<any, State> {
   private updateErrors(err: string[]) {
     this.setState({ showNewFileDialog: !R.isEmpty(err), errors: err })
   }
+  private fileExists(name:string): Boolean {
+    const paths = this.props.files.map(f => f.relativePath)
+    return R.any(p => p==name, paths)
+  }
 
   private createNewFile() {
     const extractModelname = (path: string) => {
@@ -40,7 +53,7 @@ class FileViewCon extends React.Component<any, State> {
     }
     const createFilename = (path: string) => path.replace(/\./g, "/") + ".mo"
 
-    if (this.selectedType && this.newFilename && !R.contains(" ", this.newFilename)) {
+    if (this.selectedType && this.newFilename && !R.contains(" ", this.newFilename) && !this.fileExists(this.newFilename)) {
       const suffixStripped = this.newFilename!.endsWith(".mo") ? this.newFilename!.substring(0, this.newFilename!.length - 3).trim() : this.newFilename!.trim()
       const tpe = this.selectedType!.toLowerCase()
       const name = extractModelname(suffixStripped)
@@ -52,7 +65,10 @@ class FileViewCon extends React.Component<any, State> {
         .then(() => this.updateErrors([]))
         .catch(er => this.updateErrors(["Creation failed because of: " + er]))
     } else {
-      this.updateErrors(["The file needs a type and a name!", "The filename can't contain spaces!"])
+      this.updateErrors([
+        "The file needs a type and a name!",
+        "The filename can't contain spaces!",
+        "The file shouldn't already exists!"])
     }
   }
 

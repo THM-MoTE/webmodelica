@@ -5,7 +5,9 @@ import * as R from 'ramda'
 export function renderErrors(errors: string[]) {
   return (<>{!R.isEmpty(errors) &&
     (<Alert variant="danger">
-      <p>{errors.join("\n")}</p>
+      <ul>
+      {errors.map(e => (<li>{e}</li>))}
+      </ul>
     </Alert>)
   }</>)
 }
