@@ -24,7 +24,7 @@ $ chown 777 private/data
 - Running
 [source, sh]
 ----
-$ docker-compose --project-name webmodelica -f deployment/docker-compose.yml -f deployment/docker-compose.prod.yml
+$ docker-compose --project-name webmodelica -f deployment/docker-compose.yml -f deployment/docker-compose.prod.yml up
 ----
 Now you can access the frontend at `localhost:80`.
 
