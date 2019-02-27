@@ -15,7 +15,7 @@ echo "==> Compiling backend.."
 sbt ";clean;compile;universal:packageXzTarball"
 
 echo "==> Building frontend.."
-cd ui && npm run build
+cd ui && npm run build && cd ..
 
 echo "==> Tagging.."
 git commit $versionFile -m ':up: version '$version
@@ -25,7 +25,7 @@ echo "==> Generating backend image.."
 docker build -t $backendImage:$version .
 
 echo "==> Generating frontend image.."
-docker build -t $frontendImage:$version ui
+cd ui && docker build -t $frontendImage:$version . && cd ..
 
 echo "==> pushing to remotes.."
 git push origin master
