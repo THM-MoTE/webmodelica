@@ -1,4 +1,5 @@
 #!/bin/bash
+# generates a new release, call it like this: bash scripts/release.sh <version>
 
 versionFile="./project/version.txt"
 backendImage="thmmote/webmodelica"
@@ -24,7 +25,7 @@ echo "==> Generating backend image.."
 docker build -t $backendImage:$version .
 
 echo "==> Generating frontend image.."
-docker build -t $frontendImage:$version ./ui
+docker build -t $frontendImage:$version ui
 
 echo "==> pushing to remotes.."
 git push origin master
