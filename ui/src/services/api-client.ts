@@ -3,6 +3,7 @@ import { File, Project, TokenWrapper, Session, AppState, UserAuth, CompilerError
 import React, { Component } from 'react';
 import { Store } from 'redux';
 import { updateToken } from '../redux/index';
+import objOf from 'ramda/es/objOf';
 
 function rejectError(res: Response): Promise<Response> {
   if (res.ok) return Promise.resolve(res)
@@ -102,6 +103,7 @@ export class ApiClient {
       .then(rejectError)
       .then(this.updateWSToken.bind(this))
       .then(res => res.json())
+      .then((obj: any) => ({ ...obj, compilerErrors: [] }))
   }
 
   public compile(file: File): Promise<CompilerError[]> {

@@ -1,5 +1,5 @@
 
-import { File, Project } from './index'
+import { CompilerError, File, Project } from './index'
 
 export interface UserAuth {
   username: string,
@@ -17,7 +17,8 @@ export interface Session {
   project: Project,
   id: string,
   files: File[],
-  openedFiles: File[]
+  openedFiles: File[],
+  compilerErrors: CompilerError[]
 }
 
 export interface AppState {

@@ -3,6 +3,7 @@ import { Project } from '../models/project'
 import { File } from '../models/file'
 import { Action, ActionTypes } from './actions'
 import * as R from 'ramda'
+import { CompilerError } from '../models';
 
 const reducerMap = {
   [ActionTypes.SetProjects.toString()]: (state: AppState, data: Project[]) => { return { ...state, projects: data } },
@@ -36,7 +37,8 @@ const reducerMap = {
       }
     }
   },
-  [ActionTypes.CreateNewFile.toString()]: (state: AppState, f: File) => ({ ...state, session: { ...state.session!, files: R.append(f, state.session!.files) } })
+  [ActionTypes.CreateNewFile.toString()]: (state: AppState, f: File) => ({ ...state, session: { ...state.session!, files: R.append(f, state.session!.files) } }),
+  [ActionTypes.SetCompilerErrors.toString()]: (state: AppState, errors: CompilerError[]) => ({ ...state, session: { ...state.session!, compilerErrors: errors}})
 }
 
 export function rootReducer(state: AppState = initialState(), action: Action): AppState {
