@@ -73,15 +73,17 @@ class SessionPaneCon extends React.Component<Props, State> {
     })
   }
 
-  handleSaveClicked() {
-    this.saveCurrentFiles()
+  handleSaveClicked():Promise<File[]> {
+    return this.saveCurrentFiles()
       .then((files) => {
         this.setState({editingFiles: files})
+        return files
       })
   }
   handleCompileClicked() {
     console.log("compiling .. ")
-    this.api.compile(this.currentFile())
+    this.handleSaveClicked()
+      .then(files => this.api.compile(this.currentFile()))
       .then(errors => {
         console.log("errors:", errors)
         const newMarkers = this.markErrors(this.state.deltaMarkers, errors)
