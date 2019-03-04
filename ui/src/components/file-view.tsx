@@ -1,9 +1,9 @@
 import React from 'react'
-import { Col, Row, ListGroup, Nav, Button, Modal, Form, Alert } from 'react-bootstrap'
+import { Col, Row, ListGroup, Nav, Button, Modal, Form, Alert, Badge } from 'react-bootstrap'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as R from 'ramda'
-import { File, AppState } from '../models/index'
+import { File, AppState, CompilerError } from '../models/index'
 import { newFile, Action } from '../redux/index'
 import { ApiClient } from '../services/api-client';
 import { renderErrors } from '../partials/errors'
@@ -11,6 +11,7 @@ import { renderErrors } from '../partials/errors'
 interface Props {
   api: ApiClient
   files: File[]
+  compilerErrors: CompilerError []
   newFile(f:File): Action
   onFileClicked(f:File): void
   onSaveClicked(): void
@@ -110,6 +111,7 @@ class FileViewCon extends React.Component<Props, State> {
   render() {
     const files = this.props.files
     const fileClicked = this.props.onFileClicked
+    const errorsInFile = (f:File) => this.props.compilerErrors.filter(e => e.file == f.relativePath)
     const newFileClicked = () => {
       this.setState({ showNewFileDialog: true })
     }
@@ -120,7 +122,14 @@ class FileViewCon extends React.Component<Props, State> {
         <Button variant="outline-primary" onClick={newFileClicked}>New File</Button>
         <Button variant="outline-primary" onClick={this.props.onCompileClicked}>Compile</Button>
         <h5 className="text-secondary">Files</h5>
-        {this.props.files.map((f: File) => <Nav.Link href="#" key={f.relativePath} onSelect={() => fileClicked(f)}>{f.relativePath}</Nav.Link>)}
+        {this.props.files.map((f: File) =>
+          <Nav.Link href="#" key={f.relativePath} onSelect={() => fileClicked(f)}>
+            {f.relativePath+"  "}
+            {errorsInFile(f).length != 0 &&
+              (<Badge variant="danger">{errorsInFile(f).length}</Badge>)
+            }
+          </Nav.Link>
+        )}
       </Nav>
       {this.newFileDialog()}
     </>
@@ -129,7 +138,7 @@ class FileViewCon extends React.Component<Props, State> {
 }
 
 function mapProps(state: AppState) {
-  return { files: state.session!.files }
+  return { files: state.session!.files, compilerErrors: state.session!.compilerErrors }
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {

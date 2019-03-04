@@ -7,20 +7,21 @@ import { EditorsPane } from './editors-pane'
 import { ApiClient } from '../services/api-client'
 import { Row, Col, Button, ButtonGroup, Container as RContainer, Card } from 'react-bootstrap'
 import { File, AppState, CompilerError, Session } from '../models/index'
-import { Action, updateSessionFiles } from '../redux/actions'
+import { Action, updateSessionFiles, setCompilerErrors } from '../redux/actions'
 import * as monaco from 'monaco-editor';
 import { renderErrors } from '../partials/errors';
 import * as R from 'ramda';
 
 interface State {
   editingFiles: File[]
-  compilerErrors: CompilerError[]
   deltaMarkers: any[]
 }
 interface Props {
   api: ApiClient
   session: Session
+  compilerErrors: CompilerError[]
   updateSessionFiles(f: File[]): void
+  setCompilerErrors(ers:CompilerError[]): void
 }
 
 function lineLength(f: File, lNo: number): number {
@@ -49,14 +50,14 @@ class SessionPaneCon extends React.Component<Props, State> {
   constructor(props: any) {
     super(props)
     this.api = this.props.api
-    this.state = { editingFiles: [], compilerErrors: [], deltaMarkers:[] }
+    this.state = { editingFiles: [], deltaMarkers:[] }
   }
 
   public componentDidMount() {
   }
 
   private handleFileClicked(f: File): void {
-    this.saveCurrentFiles().then( () => this.setState({ editingFiles: [f], compilerErrors: [] }) )
+    this.saveCurrentFiles().then( () => this.setState({ editingFiles: [f] }) )
   }
 
   private currentFile(): File {
@@ -87,7 +88,8 @@ class SessionPaneCon extends React.Component<Props, State> {
       .then(errors => {
         console.log("errors:", errors)
         const newMarkers = this.markErrors(this.state.deltaMarkers, errors)
-        this.setState({ deltaMarkers: newMarkers, compilerErrors: errors })
+        this.props.setCompilerErrors(errors)
+        this.setState({ deltaMarkers: newMarkers })
       })
   }
 
@@ -122,7 +124,7 @@ class SessionPaneCon extends React.Component<Props, State> {
         <Row>
           <Col lg="2"></Col>
           <Col>
-            {this.state.compilerErrors.map(errorLine)}
+            {this.props.compilerErrors.map(errorLine)}
           </Col>
         </Row>
       </WmContainer>
@@ -131,11 +133,11 @@ class SessionPaneCon extends React.Component<Props, State> {
 }
 
 function mapProps(state: AppState) {
-  return { session: state.session }
+  return { session: state.session, compilerErrors: state.session!.compilerErrors }
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({ updateSessionFiles }, dispatch)
+  return bindActionCreators({ updateSessionFiles, setCompilerErrors }, dispatch)
 }
 
 const SessionPane = connect(mapProps, dispatchToProps)(SessionPaneCon)
