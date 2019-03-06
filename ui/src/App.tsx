@@ -10,7 +10,6 @@ import { Provider } from "react-redux";
 import { withApi } from './partials/api-wrapper';
 import { AppState } from './models';
 
-
 const stateKey = "wm-redux-State"
 const store = createStore(rootReducer, persistedStore())
 const client = new ApiClient(store)

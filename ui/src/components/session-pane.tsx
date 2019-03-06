@@ -6,6 +6,8 @@ import { FileView } from './index'
 import { EditorsPane } from './editors-pane'
 import { ApiClient } from '../services/api-client'
 import { Row, Col, Button, ButtonGroup, Container as RContainer, Card } from 'react-bootstrap'
+//@ts-ignore
+import Octicon from 'react-octicon'
 import { File, AppState, CompilerError, Session } from '../models/index'
 import { Action, updateSessionFiles, setCompilerErrors } from '../redux/actions'
 import * as monaco from 'monaco-editor';
@@ -21,7 +23,7 @@ interface Props {
   session: Session
   compilerErrors: CompilerError[]
   updateSessionFiles(f: File[]): void
-  setCompilerErrors(ers:CompilerError[]): void
+  setCompilerErrors(ers: CompilerError[]): void
 }
 
 function lineLength(f: File, lNo: number): number {
@@ -50,21 +52,21 @@ class SessionPaneCon extends React.Component<Props, State> {
   constructor(props: any) {
     super(props)
     this.api = this.props.api
-    this.state = { editingFiles: [], deltaMarkers:[] }
+    this.state = { editingFiles: [], deltaMarkers: [] }
   }
 
   public componentDidMount() {
   }
 
   private handleFileClicked(f: File): void {
-    this.saveCurrentFiles().then( () => this.setState({ editingFiles: [f] }) )
+    this.saveCurrentFiles().then(() => this.setState({ editingFiles: [f] }))
   }
 
   private currentFile(): File {
     return this.state.editingFiles[0]
   }
 
-  private saveCurrentFiles():Promise<File[]> {
+  private saveCurrentFiles(): Promise<File[]> {
     let content = EditorsPane.monacoEditor.getValue()
     let files: File[] = this.currentFile() ? [{ ...this.currentFile(), content: content }] : []
     const updatePromises = files.map((f: File) => this.api.updateFile(f))
@@ -74,10 +76,10 @@ class SessionPaneCon extends React.Component<Props, State> {
     })
   }
 
-  handleSaveClicked():Promise<File[]> {
+  handleSaveClicked(): Promise<File[]> {
     return this.saveCurrentFiles()
       .then((files) => {
-        this.setState({editingFiles: files})
+        this.setState({ editingFiles: files })
         return files
       })
   }
@@ -93,7 +95,7 @@ class SessionPaneCon extends React.Component<Props, State> {
       })
   }
 
-  markErrors(oldMarkers:string[], errors:CompilerError[]):string[] {
+  markErrors(oldMarkers: string[], errors: CompilerError[]): string[] {
     console.log("old markers ", oldMarkers)
     const decos = deltaDecorations(this.currentFile(), errors)
     return EditorsPane.monacoEditor.deltaDecorations(oldMarkers, decos)
@@ -102,14 +104,14 @@ class SessionPaneCon extends React.Component<Props, State> {
   render() {
     const errorLine = (e: CompilerError) => (
       <div key={e.file + "-" + e.start}>
-        <p><span className="errorGlyph">{e.type.toUpperCase()} </span>
+        <p><span className="errorGlyph"><Octicon name="alert" /> {e.type.toUpperCase()} </span>
           <span>L:{e.start.line} </span>
           <span>{e.message} </span>
           <span>({e.file})</span>
         </p>
       </div>)
     return (
-      <WmContainer title={"Session: "+this.props.session.project.name}>
+      <WmContainer title={"Session: " + this.props.session.project.name}>
         <Row>
           <Col sm="2">
             <FileView

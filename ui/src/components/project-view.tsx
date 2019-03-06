@@ -5,6 +5,8 @@ import { WmContainer } from '../partials/container'
 import { ApiClient } from '../services/api-client'
 // import * as alerts from './partials/alerts'
 import { ListGroup, Card, Form, Button, Col, Alert } from 'react-bootstrap'
+//@ts-ignore
+import Octicon from 'react-octicon'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as R from 'ramda'
@@ -58,12 +60,15 @@ class ProjectViewCon extends Component<any, any> {
           <ListGroup.Item>
             <Form.Row className="justify-content-md-center">
               <Col sm={10}><Form.Control placeholder="Enter project name" onChange={newProjectNameChanged} /></Col>
-              <Col sm={1}><Button variant="outline-primary" onClick={this.newProject.bind(this)}>New Project</Button></Col>
+              <Col sm={1}><Button variant="outline-primary" onClick={this.newProject.bind(this)}>
+                <Octicon name="plus" />New Project
+            </Button></Col>
             </Form.Row>
           </ListGroup.Item>
           {
             this.props.projects && this.props.projects.map((p: Project) =>
-              (<ListGroup.Item action href={"#" + p.id} onClick={(ev: any) => this.newSession(ev, p)} key={p.id}>{p.owner} - {p.name}</ListGroup.Item>))
+              (<ListGroup.Item action href={"#" + p.id} onClick={(ev: any) => this.newSession(ev, p)} key={p.id}><Octicon name="repo" /> {p.owner} - {p.name}
+              </ListGroup.Item>))
           }
         </ListGroup>
       </Card>

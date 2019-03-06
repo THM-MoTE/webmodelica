@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { WmContainer } from '../partials/container'
 import { Button, Form, Alert } from 'react-bootstrap'
+//@ts-ignore
+import Octicon from 'react-octicon'
 import { ApiClient } from '../services/api-client'
 import { Redirect } from 'react-router'
 import { defaultMapDispatchToProps, mapAuthenticationToProps } from '../redux'
@@ -56,7 +58,7 @@ class LandingCon extends Component<any, any> {
               </Form.Group>
               {renderErrors(this.state.errors)}
               <Button variant="primary" type="submit" onClick={this.handleSubmit.bind(this)}>
-                Submit
+                <Octicon name="sign-in" /> Submit
                 </Button>
             </Form>
           </div>

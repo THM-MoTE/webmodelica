@@ -1,5 +1,7 @@
 import React from 'react'
 import { Col, Row, ListGroup, Nav, Button, Modal, Form, Alert, Badge } from 'react-bootstrap'
+//@ts-ignore
+import Octicon from 'react-octicon'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as R from 'ramda'
@@ -11,9 +13,9 @@ import { renderErrors } from '../partials/errors'
 interface Props {
   api: ApiClient
   files: File[]
-  compilerErrors: CompilerError []
-  newFile(f:File): Action
-  onFileClicked(f:File): void
+  compilerErrors: CompilerError[]
+  newFile(f: File): Action
+  onFileClicked(f: File): void
   onSaveClicked(): void
   onCompileClicked(): void
 }
@@ -41,9 +43,9 @@ class FileViewCon extends React.Component<Props, State> {
   private updateErrors(err: string[]) {
     this.setState({ showNewFileDialog: !R.isEmpty(err), errors: err })
   }
-  private fileExists(name:string): Boolean {
+  private fileExists(name: string): Boolean {
     const paths = this.props.files.map(f => f.relativePath)
-    return R.any(p => p==name, paths)
+    return R.any(p => p == name, paths)
   }
 
   private createNewFile() {
@@ -111,20 +113,23 @@ class FileViewCon extends React.Component<Props, State> {
   render() {
     const files = this.props.files
     const fileClicked = this.props.onFileClicked
-    const errorsInFile = (f:File) => this.props.compilerErrors.filter(e => e.file == f.relativePath)
+    const errorsInFile = (f: File) => this.props.compilerErrors.filter(e => e.file == f.relativePath)
     const newFileClicked = () => {
       this.setState({ showNewFileDialog: true })
     }
     return (<>
       <Nav className="flex-column border">
         <h5 className="text-secondary">Actions</h5>
-        <Button variant="outline-success" onClick={this.props.onSaveClicked}>Save</Button>
-        <Button variant="outline-primary" onClick={newFileClicked}>New File</Button>
-        <Button variant="outline-primary" onClick={this.props.onCompileClicked}>Compile</Button>
+        <Button variant="outline-success" onClick={this.props.onSaveClicked}><Octicon name="check" /> Save</Button>
+        <Button variant="outline-primary" onClick={newFileClicked}>
+          <Octicon name="plus" /> New File
+            </Button>
+        <Button variant="outline-primary" onClick={this.props.onCompileClicked}>
+          <Octicon name="gear" /> Compile</Button>
         <h5 className="text-secondary">Files</h5>
         {this.props.files.map((f: File) =>
           <Nav.Link href="#" key={f.relativePath} onSelect={() => fileClicked(f)}>
-            {f.relativePath+"  "}
+            <Octicon name="file-code" /> {f.relativePath + "  "}
             {errorsInFile(f).length != 0 &&
               (<Badge variant="danger">{errorsInFile(f).length}</Badge>)
             }
