@@ -11,4 +11,6 @@ object requests {
   case class Complete(file: String,
     position: FilePosition,
     word: String)
+
+  case class SimulateRequest(modelName:String, options:Map[String,io.circe.Json])
 }

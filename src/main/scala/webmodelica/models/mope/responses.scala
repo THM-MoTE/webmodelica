@@ -21,4 +21,6 @@ object responses {
     def displayString: String =
       s"$kind - $name"
   }
+
+  case class SimulationResult(modelName:String, variables:Map[String,Seq[Double]])
 }
