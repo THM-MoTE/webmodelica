@@ -131,6 +131,21 @@ trait MopeService {
     }
   }
 
+  def simulationResults(addr:URI): Future[SimulationResult] = {
+    projectId.flatMap {id =>
+      withClient { client => //FIXME: handle not-finished responses !
+        val req = client.get(addr.toString)
+          .accept("application/json")
+        req.send[SimulationResult]()
+          .handle {
+            case request.ErrorResponse(req, resp) =>
+              val str = s"Error response $resp to request $req"
+              throw new Exception(str)
+          }
+      }
+    }
+  }
+
   def disconnect(): Future[Unit] = {
     //POST /mope/project/:id/disconnect
     //TODO: don't know if this really works though.. accepting nothing as json is awkward ?!

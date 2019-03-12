@@ -19,7 +19,7 @@ import com.twitter.util.{Future,Await}
 class MopeIntegration
     extends webmodelica.WMSpec {
   val conf = AppModule.configProvider.mope
-  val session = Session(Project(ProjectRequest("nico", "awesome project", com.twitter.finagle.http.Request())))
+  val session = Session(Project(ProjectRequest("nico", "awesomeProject", com.twitter.finagle.http.Request())))
   val service = new SessionService(conf,session)
 
   val files = Seq(
@@ -100,6 +100,14 @@ end BouncingBall;
   it should "simulate and get a location" in {
     import io.circe.syntax._
     Await.result(service.compile(files.last.relativePath))
-    Await.result(service.simulate(SimulateRequest("BouncingBall", Map("stopTime" -> 3.asJson))))
+    Await.result(service.simulate(SimulateRequest("BouncingBall", Map("stopTime" -> 1.asJson))))
+  }
+
+  it should "return simulation-results one's completed" in {
+    import io.circe.syntax._
+    Await.result(service.compile(files.last.relativePath))
+    val uri = Await.result(service.simulate(SimulateRequest("BouncingBall", Map("stopTime" -> 2.asJson))))
+    Thread.sleep(3000)
+    Await.result(service.simulationResults(uri)) shouldBe an[SimulationResult]
   }
 }
