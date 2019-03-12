@@ -19,7 +19,7 @@ import com.twitter.util.{Future,Await}
 class MopeIntegration
     extends webmodelica.WMSpec {
   val conf = AppModule.configProvider.mope
-  val session = Session(Project(ProjectRequest("nico", "awesome project")))
+  val session = Session(Project(ProjectRequest("nico", "awesome project", com.twitter.finagle.http.Request())))
   val service = new SessionService(conf,session)
 
   val files = Seq(
@@ -40,6 +40,29 @@ class MopeIntegration
 |  y := x*x;
 |end Square;
 |""".stripMargin
+    ),
+    ModelicaFile(
+      Paths.get("BouncingBall.mo"),
+      s"""
+// source: http://book.xogeny.com/behavior/discrete/bouncing/
+
+model BouncingBall "The 'classic' bouncing ball model"
+  type Height=Real(unit="m");
+  type Velocity=Real(unit="m/s");
+  parameter Real e=0.8 "Coefficient of restitution";
+  parameter Height h0=1.0 "Initial height";
+  Height h "Height";
+  Velocity v(start=0.0, fixed=true) "Velocity";
+initial equation
+  h = h0;
+equation
+  v = der(h);
+  der(v) = -9.81;
+  when h<0 then
+    reinit(v, -e*pre(v));
+  end when;
+end BouncingBall;
+""".stripMargin
     )
   )
   val errFiles = Seq(files(1),
@@ -72,5 +95,11 @@ class MopeIntegration
     val completions = Await.result(service.complete(Complete("a/b/simple.mo", FilePosition(1, 5), "Modelica.")))
     completions should not be empty
     completions.size should be >(4)
+  }
+
+  it should "simulate and get a location" in {
+    import io.circe.syntax._
+    Await.result(service.compile(files.last.relativePath))
+    Await.result(service.simulate(SimulateRequest("BouncingBall", Map("stopTime" -> 3.asJson))))
   }
 }

@@ -12,9 +12,9 @@ class SessionRegistrySpec extends WMSpec {
 
   "The SessionRegistry" should "assign unique ids" in {
     val registry = new SessionRegistry(conf)
-    val sessions = Seq(registry.create(Project(ProjectRequest("nico", "awesome project"))),
-      registry.create(Project(ProjectRequest("nico", "awesome project"))),
-      registry.create(Project(ProjectRequest("nico", "awesome project"))))
+    val sessions = Seq(registry.create(Project(ProjectRequest("nico", "awesome project", com.twitter.finagle.http.Request()))),
+      registry.create(Project(ProjectRequest("nico", "awesome project", com.twitter.finagle.http.Request()))),
+      registry.create(Project(ProjectRequest("nico", "awesome project", com.twitter.finagle.http.Request()))))
 
     val set = sessions.toSet
     set should have size sessions.length
@@ -22,7 +22,7 @@ class SessionRegistrySpec extends WMSpec {
   }
   it should "retrieve sessions" in {
     val registry = new SessionRegistry(conf)
-    val (_, session) = registry.create(Project(ProjectRequest("nico", "awesome project")))
+    val (_, session) = registry.create(Project(ProjectRequest("nico", "awesome project", com.twitter.finagle.http.Request())))
     registry.get(session.idString) should not be empty
   }
 }

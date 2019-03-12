@@ -1,25 +1,20 @@
 package webmodelica.services
 
-import java.nio.file.{
-  Path,
-  Paths
-}
+import java.nio.file.{Path, Paths}
 
 import com.twitter.finagle.Service
 import com.twitter.finagle.Http
 import com.twitter.finagle.http.{Method, Request, Response}
 import com.twitter.finatra.json.FinatraObjectMapper
-import java.net.URL
+import java.net.{URI, URL}
 
-import com.twitter.util.{
-  Future,
-  Promise
-}
-import scala.concurrent.{ Future => SFuture, Promise =>  SPromise }
+import com.twitter.util.{Future, Promise}
+
+import scala.concurrent.{Future => SFuture, Promise => SPromise}
 import scala.concurrent.ExecutionContext.Implicits.global
-
 import com.twitter.io.Buf
 import featherbed._
+
 import scala.reflect.Manifest
 import webmodelica.models.mope._
 import webmodelica.models.mope.requests._
@@ -103,6 +98,30 @@ trait MopeService {
           .withContent(cNew, "application/json")
           .accept("application/json")
         req.send[Seq[Suggestion]]()
+          .handle {
+            case request.ErrorResponse(req, resp) =>
+              val str = s"Error response $resp to request $req"
+              throw new Exception(str)
+          }
+      }
+    }
+  }
+
+
+  def simulate(sim:SimulateRequest): Future[URI] = {
+    projectId.flatMap {id =>
+      info(s"simulating for $id")
+      withClient { client =>
+        val req = client.post(s"project/$id/simulate")
+          .withContent(sim, "application/json")
+        req.send[Response]()
+          .map(r => r.headerMap.get("Location"))
+          .flatMap {
+            case Some(l) => Future.value(new URI(l))
+            case None =>
+              error(s"/simulate $req didn't return a Location header!")
+              Future.exception(new RuntimeException(s"POST /simulate didn't return a Location header!"))
+          }
           .handle {
             case request.ErrorResponse(req, resp) =>
               val str = s"Error response $resp to request $req"

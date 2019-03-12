@@ -10,7 +10,7 @@ class SessionServicePathMapperSpec
 
   val tmpDir = File.newTemporaryDirectory("mapperspec-tmp")
   val conf = MopeClientConfig("http://localhost:9015/", MopeDataConfig(tmpDir.path, Paths.get("/data/wm")))
-  val session = Session(Project(ProjectRequest("nico", "testproj")))
+  val session = Session(Project(ProjectRequest("nico", "testproj", com.twitter.finagle.http.Request())))
   val service = new SessionService(conf, session)
   val mapper = service.pathMapper
   val bindRoot = conf.data.bindDirectory.resolve(session.basePath)
