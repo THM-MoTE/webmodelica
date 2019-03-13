@@ -24,6 +24,7 @@ interface Props {
   compilerErrors: CompilerError[]
   updateSessionFiles(f: File[]): void
   setCompilerErrors(ers: CompilerError[]): void
+  history: History
 }
 
 function lineLength(f: File, lNo: number): number {
@@ -111,7 +112,7 @@ class SessionPaneCon extends React.Component<Props, State> {
         </p>
       </div>)
     return (
-      <WmContainer title={"Session: " + this.props.session.project.name}>
+      <WmContainer title={"Session: " + this.props.session.project.name} sessionId={this.props.session.id}>
         <Row>
           <Col sm="2">
             <FileView

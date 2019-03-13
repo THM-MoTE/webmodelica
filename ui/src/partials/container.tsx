@@ -15,6 +15,7 @@ export class WmContainer extends React.Component<any, any> {
         <Navbar.Brand href="#home">Webmodelica {this.props.title}</Navbar.Brand>
         <Navbar.Toggle />
         <div className="collapse navbar-collapse justify-content-end">
+          {this.props.sessionId && (<Nav.Item><Nav.Link href={`/session/${this.props.sessionId}/simulate`}> Simulate</Nav.Link></Nav.Item>)}
           <Nav.Item><Nav.Link href="/projects"><Octicon name="repo" /> Projects</Nav.Link></Nav.Item>
           <Nav.Item><Nav.Link href="/logout"><Octicon name="sign-out" /> Logout</Nav.Link></Nav.Item>
         </div>
