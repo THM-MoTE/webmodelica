@@ -24,8 +24,7 @@ class FSStore(root:Path)
   override def files: Future[List[ModelicaFile]] = {
     Future.value(
       File(root)
-        .listRecursively
-        .filterNot(_.isDirectory)
+        .glob("**.mo")
         .map(f => ModelicaFile(root.relativize(f.path), f.contentAsString))
         .toList
         .sortBy(_.relativePath)
