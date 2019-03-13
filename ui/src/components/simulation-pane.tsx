@@ -13,7 +13,9 @@ import { AppState, Session } from '../models/index'
 class SimulationPaneCon extends React.Component<any, any> {
   render() {
     return (
-      <p> simulation year {this.props.session.id} </p>
+      <WmContainer title={"Session: " + this.props.session.project.name} active="simulation" sessionId={this.props.session.id}>
+        <p> simulation year {this.props.session.id} </p>
+      </WmContainer>
     )
   }
 }

@@ -112,7 +112,7 @@ class SessionPaneCon extends React.Component<Props, State> {
         </p>
       </div>)
     return (
-      <WmContainer title={"Session: " + this.props.session.project.name} sessionId={this.props.session.id}>
+      <WmContainer title={"Session: " + this.props.session.project.name} active="session" sessionId={this.props.session.id}>
         <Row>
           <Col sm="2">
             <FileView
