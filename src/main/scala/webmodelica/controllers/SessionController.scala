@@ -29,6 +29,7 @@ case class FSimulateRequest(
   @RouteParam() sessionId: String,
   @JsonProperty() modelName: String,
   @JsonProperty() options: Map[String, Any],
+  request: Request,
 ) {
   def toMopeRequest: SimulateRequest = {
     import io.circe.syntax._
@@ -43,6 +44,10 @@ case class FSimulateRequest(
 }
 
 case class SimulationResponse(location: java.net.URI)
+case class FSimulateStatusRequest(
+  @RouteParam() sessionId: String,
+  @QueryParam addr:java.net.URI
+)
 
 class SessionController@Inject()(
   projectStore:ProjectStore,
@@ -86,8 +91,16 @@ class SessionController@Inject()(
       post("/sessions/:sessionId/simulate") { req: FSimulateRequest =>
         withSession(req.sessionId) { service =>
           service.simulate(req.toMopeRequest).map { uri =>
-            response.ok(SimulationResponse(uri)).header("Location", uri.toString)
+            val location = req.request.uri.toString+s"?addr=${uri.toString}"
+            response
+              .ok(SimulationResponse(new java.net.URI(location)))
+              .header("Location", location)
           }
+        }
+      }
+      get("/sessions/:sessionId/simulate") { req: FSimulateStatusRequest =>
+        withSession(req.sessionId) { service =>
+          service.simulationResults(req.addr)
         }
       }
     }
