@@ -7,6 +7,7 @@ import com.twitter.finatra.http.Controller
 import org.mongodb.scala.bson.BsonObjectId
 import webmodelica.models._
 import webmodelica.models.mope.requests.SimulateRequest
+import webmodelica.models.mope.responses.SimulationResult
 import webmodelica.services.{TokenGenerator, SessionRegistry, SessionService}
 import webmodelica.stores.{
   UserStore,
@@ -46,7 +47,13 @@ case class FSimulateRequest(
 case class SimulationResponse(location: java.net.URI)
 case class FSimulateStatusRequest(
   @RouteParam() sessionId: String,
+  @QueryParam format:String="default",
   @QueryParam addr:java.net.URI
+)
+case class TableFormat(
+  modelName: String,
+  data: Traversable[Traversable[Double]],
+  header: Traversable[String]
 )
 
 class SessionController@Inject()(
@@ -100,7 +107,23 @@ class SessionController@Inject()(
       }
       get("/sessions/:sessionId/simulate") { req: FSimulateStatusRequest =>
         withSession(req.sessionId) { service =>
-          service.simulationResults(req.addr)
+          //TODO: reuse mopeService instead of static data
+          // service
+          //   .simulationResults(req.addr)
+          val f = Future.value {
+            import better.files._
+            import io.circe.syntax._
+            import io.circe.generic.auto._
+            import io.circe.parser.decode
+            val str = File("./ui/public/simulation-example.json").contentAsString
+            decode[SimulationResult](str).toOption.get
+          }
+            f.map {
+              case SimulationResult(name, variables) if req.format == "chartjs" =>
+                val tableData = variables.values.transpose
+                TableFormat(name, tableData, variables.keys)
+              case results => results
+            }
         }
       }
     }
