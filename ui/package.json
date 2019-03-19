@@ -15,6 +15,7 @@
     "react": "^16.7.0",
     "react-bootstrap": "^1.0.0-beta.5",
     "react-dom": "^16.7.0",
+    "react-google-charts": "^3.0.11",
     "react-octicon": "^3.0.1",
     "react-redux": "^6.0.0",
     "react-router-dom": "^4.3.1",
