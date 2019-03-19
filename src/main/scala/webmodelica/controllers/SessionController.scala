@@ -115,13 +115,14 @@ class SessionController@Inject()(
             import io.circe.syntax._
             import io.circe.generic.auto._
             import io.circe.parser.decode
-            val str = File("./ui/public/simulation-example.json").contentAsString
+            val str = File("./ui/public/sim-example.json").contentAsString
             decode[SimulationResult](str).toOption.get
           }
             f.map {
               case SimulationResult(name, variables) if req.format == "chartjs" =>
-                val tableData = variables.values.transpose
-                TableFormat(name, tableData, variables.keys)
+                val headers = variables.keys.filterNot(k => k=="time").toList
+                val tableData = (variables("time")+:headers.map(k => variables(k)).toSeq).transpose
+                TableFormat(name, tableData, "time"::headers)
               case results => results
             }
         }
