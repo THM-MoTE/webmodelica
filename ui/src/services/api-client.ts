@@ -1,9 +1,8 @@
 
-import { File, Project, TokenWrapper, Session, AppState, UserAuth, CompilerError } from '../models/index'
+import { File, Project, TokenWrapper, Session, AppState, UserAuth, CompilerError, SimulationResult, TableFormat } from '../models/index'
 import React, { Component } from 'react';
 import { Store } from 'redux';
 import { updateToken } from '../redux/index';
-import objOf from 'ramda/es/objOf';
 
 function rejectError(res: Response): Promise<Response> {
   if (res.ok) return Promise.resolve(res)
@@ -142,6 +141,24 @@ export class ApiClient {
         .then(res => file)
     } else {
       return Promise.reject("can't create a file if there is no session!")
+    }
+  }
+
+  public getSimulationResults(addr: string, format: string = "chartjs"): Promise<SimulationResult | TableFormat> {
+    const session = this.store.getState().session
+    if (session) {
+      return fetch(this.sessionUri() + `/${session.id}/simulate?addr=${addr}&format=${format}`, {
+        method: 'GET',
+        headers: {
+          [authHeader]: this.token(),
+          'Accept': 'application/json'
+        }
+      })
+        .then(rejectError)
+        .then(this.updateWSToken.bind(this))
+        .then(res => res.json())
+    } else {
+      return Promise.reject("can't simulate without a session!")
     }
   }
 }
