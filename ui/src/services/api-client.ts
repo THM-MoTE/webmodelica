@@ -1,5 +1,5 @@
 
-import { File, Project, TokenWrapper, Session, AppState, UserAuth, CompilerError, SimulationResult, TableFormat } from '../models/index'
+import { File, Project, TokenWrapper, Session, AppState, UserAuth, CompilerError, SimulationResult, TableFormat, SimulateRequest } from '../models/index'
 import React, { Component } from 'react';
 import { Store } from 'redux';
 import { updateToken } from '../redux/index';
@@ -144,10 +144,32 @@ export class ApiClient {
     }
   }
 
-  public getSimulationResults(addr: string, format: string = "chartjs"): Promise<SimulationResult | TableFormat> {
+  public simulate(r:SimulateRequest): Promise<string> {
     const session = this.store.getState().session
     if (session) {
-      return fetch(this.sessionUri() + `/${session.id}/simulate?addr=${addr}&format=${format}`, {
+      return fetch(this.sessionUri() + `/${session.id}/simulate`, {
+        method: 'POST',
+        headers: {
+          [authHeader]: this.token(),
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(r)
+      })
+        .then(rejectError)
+        .then(this.updateWSToken.bind(this))
+        .then(res => res.headers.get("Location")!)
+    } else {
+      return Promise.reject("can't simulate without a session!")
+    }
+  }
+
+  public getSimulationResults(addr: string, format: string = "chartjs"): Promise<SimulationResult | TableFormat> {
+    //TODO: addr is a CORS request because it's at :8888 instead of expected :3000
+    // fix this???!
+    const session = this.store.getState().session
+    if (session) {
+      return fetch(addr, {
         method: 'GET',
         headers: {
           [authHeader]: this.token(),

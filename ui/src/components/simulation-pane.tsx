@@ -3,13 +3,14 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { WmContainer } from '../partials/container'
 import SimulationPlot from '../partials/simulation-plot'
+import SimulationSetup from '../partials/simulation-setup'
 //@ts-ignore
 import Octicon from 'react-octicon'
 import { Row, Col, Button, ButtonGroup, Container as RContainer, Card } from 'react-bootstrap'
 import { renderErrors } from '../partials/errors';
 import * as R from 'ramda';
 import { Action } from '../redux/actions'
-import { AppState, Session, SimulationResult, TableFormat } from '../models/index'
+import { AppState, Session, SimulationResult, TableFormat, SimulateRequest } from '../models/index'
 import { ApiClient } from '../services/api-client'
 
 interface Props {
@@ -19,26 +20,48 @@ interface Props {
 
 interface State {
   resultSet?: TableFormat
+  resultLocation?: string
 }
 
 class SimulationPaneCon extends React.Component<Props, State> {
   constructor(p: Props) {
     super(p)
-    this.state = { resultSet: undefined }
+    this.state = {}
   }
 
   componentDidMount() {
+    // this.props.api
+    //   .getSimulationResults("/simulation-example.json")
+    //   .then(rs => this.setState({
+    //     resultSet: (rs as TableFormat)
+    //   }))
+  }
+
+  private simulate(sr: SimulateRequest): void {
+    console.log("gonna simulate: ", sr)
+    this.props.api.simulate(sr)
+      .then(l => {
+        this.setState({resultLocation: l})
+        this.queryResults(l)
+      })
+  }
+
+  private queryResults(location:string): void {
+    console.log("query results ...")
     this.props.api
-      .getSimulationResults("/simulation-example.json")
-      .then(rs => this.setState({
-        resultSet: (rs as TableFormat)
-      }))
+      .getSimulationResults(location)
+      .then(rs => this.setState({ resultSet: (rs as TableFormat)}))
+      .catch(er => window.setTimeout(() => this.queryResults(location), 10000))
   }
 
   render() {
     return (
       <WmContainer title={"Session: " + this.props.session.project.name} active="simulation" sessionId={this.props.session.id}>
+
+        <SimulationSetup api={this.props.api} simulate={this.simulate.bind(this)}/>
+
         {this.state.resultSet && (<SimulationPlot data={this.state.resultSet} api={this.props.api} />)}
+        {this.state.resultLocation && ("Awaiting results at: "+this.state.resultLocation)}
       </WmContainer>
     )
   }
