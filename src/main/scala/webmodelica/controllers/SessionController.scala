@@ -107,18 +107,9 @@ class SessionController@Inject()(
       }
       get("/sessions/:sessionId/simulate") { req: FSimulateStatusRequest =>
         withSession(req.sessionId) { service =>
-          //TODO: reuse mopeService instead of static data
-          // service
-          //   .simulationResults(req.addr)
-          val f = Future.value {
-            import better.files._
-            import io.circe.syntax._
-            import io.circe.generic.auto._
-            import io.circe.parser.decode
-            val str = File("./ui/public/sim-example.json").contentAsString
-            decode[SimulationResult](str).toOption.get
-          }
-            f.map {
+          service
+            .simulationResults(req.addr)
+            .map {
               case SimulationResult(name, variables) if req.format == "chartjs" =>
                 val headers = variables.keys.filterNot(k => k=="time").toList
                 val tableData = (variables("time")+:headers.map(k => variables(k)).toSeq).transpose
