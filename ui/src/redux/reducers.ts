@@ -48,7 +48,9 @@ const reducerMap = {
     return R.assocPath(["session", "simulationOptions"], simulationOptions, state) as AppState
   },
   [ActionTypes.AddSimulationOption.toString()]: (state: AppState, payload:SimulationOption) =>
-    R.assocPath(["session", "simulationOptions"], R.append(payload, state.session!.simulationOptions), state) as AppState
+    R.assocPath(["session", "simulationOptions"], R.append(payload, state.session!.simulationOptions), state) as AppState,
+  [ActionTypes.DeleteSimulationOption.toString()]: (state: AppState, idx: number) =>
+    R.assocPath(["session", "simulationOptions"], state.session!.simulationOptions.filter((_,i) => i !== idx), state) as AppState
 }
 
 export function rootReducer(state: AppState = initialState(), action: Action): AppState {

@@ -44,6 +44,7 @@ class SimulationOptionsCon extends React.Component<Props, State> {
   private addOptionField(): void {
     this.props.addOption({ name: "", value: "" })
   }
+  private deleteOptionField = this.props.deleteOption
 
   render() {
     return (<>
@@ -51,7 +52,7 @@ class SimulationOptionsCon extends React.Component<Props, State> {
         <Form.Row key={idx}>
           <Col sm={4}><Form.Control placeholder="name" value={opt.name} onChange={(ev:any) => this.updateName(idx, ev.target.value)}/></Col>
           <Col sm={6}><Form.Control placeholder="value" value={opt.value.toString()} onChange={(ev:any) => this.updateValue(idx, ev.target.value)}/></Col>
-          <Col sm={2}><Button variant="outline-danger"><Octicon name="x" /></Button></Col>
+          <Col sm={2}><Button variant="outline-danger" onClick={() => this.deleteOptionField(idx)}><Octicon name="x" /></Button></Col>
         </Form.Row>
       ))}
       <Button onClick={this.addOptionField.bind(this)}><Octicon name="plus" /></Button>
