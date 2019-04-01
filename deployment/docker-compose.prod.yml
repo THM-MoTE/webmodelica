@@ -9,7 +9,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
   backend:
-    image: "thmmote/webmodelica:0.2.4"
+    image: "thmmote/webmodelica:0.2.5"
     ports:
       - 9002:3000
     labels:
@@ -19,7 +19,7 @@ services:
     volumes:
       - webmodelica_data:/data
   ui:
-    image: "thmmote/webmodelica-ui:0.2.4"
+    image: "thmmote/webmodelica-ui:0.2.5"
     ports:
       - 9003:3000
     labels:
@@ -27,7 +27,7 @@ services:
       - "traefik.backend=webmodelica-ui"
       - "traefik.port=3000"
   mope:
-    image: "thmmote/mope-server:0.6.5-bugfix"
+    image: "thmmote/mope-server:0.6.8"
     user: openmodelica:openmodelica
     ports:
       - 9015:3000
