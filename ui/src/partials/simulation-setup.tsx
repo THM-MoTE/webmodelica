@@ -21,7 +21,8 @@ class SimulationSetupCon extends React.Component<Props, State> {
 
   private simulateClicked() {
     const opts = {
-      numberOfIntervals: 10
+      numberOfIntervals: 10,
+      stopTime: 5
     }
     this.props.simulate({modelName: this.modelName, options: opts})
   }

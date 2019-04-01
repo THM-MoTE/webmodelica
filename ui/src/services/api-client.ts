@@ -164,12 +164,11 @@ export class ApiClient {
     }
   }
 
-  public getSimulationResults(addr: string, format: string = "chartjs"): Promise<SimulationResult | TableFormat> {
-    //TODO: addr is a CORS request because it's at :8888 instead of expected :3000
-    // fix this???!
+  public getSimulationResults(addr: URL, format: string = "chartjs"): Promise<SimulationResult | TableFormat> {
     const session = this.store.getState().session
     if (session) {
-      return fetch(addr, {
+      addr.searchParams.set("format", format)
+      return fetch(addr.toString(), {
         method: 'GET',
         headers: {
           [authHeader]: this.token(),

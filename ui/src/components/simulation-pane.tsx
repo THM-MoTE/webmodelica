@@ -20,7 +20,7 @@ interface Props {
 
 interface State {
   resultSet?: TableFormat
-  resultLocation?: string
+  resultLocation?: URL
 }
 
 class SimulationPaneCon extends React.Component<Props, State> {
@@ -41,17 +41,19 @@ class SimulationPaneCon extends React.Component<Props, State> {
     console.log("gonna simulate: ", sr)
     this.props.api.simulate(sr)
       .then(l => {
-        this.setState({resultLocation: l})
-        this.queryResults(l)
+        const url =  new URL(l)
+        url.host = window.location.host
+        this.setState({resultLocation: url})
+        this.queryResults(url)
       })
   }
 
-  private queryResults(location:string): void {
+  private queryResults(location:URL): void {
     console.log("query results ...")
     this.props.api
       .getSimulationResults(location)
       .then(rs => this.setState({ resultSet: (rs as TableFormat)}))
-      .catch(er => window.setTimeout(() => this.queryResults(location), 10000))
+      .catch(er => window.setTimeout(() => this.queryResults(location), 5000))
   }
 
   render() {
