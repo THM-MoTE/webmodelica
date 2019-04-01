@@ -18,8 +18,15 @@ export interface Session {
   id: string,
   files: File[],
   openedFiles: File[],
-  compilerErrors: CompilerError[]
+  compilerErrors: CompilerError[],
+  simulationOptions: SimulationOption[]
 }
+
+export interface SimulationOption {
+  name: string
+  value: number | string
+}
+
 
 export interface AppState {
   authentication?: UserAuth

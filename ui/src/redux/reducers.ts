@@ -1,4 +1,4 @@
-import { initialState, AppState, Session } from '../models/state'
+import { initialState, AppState, Session, SimulationOption } from '../models/state'
 import { Project } from '../models/project'
 import { File } from '../models/file'
 import { Action, ActionTypes } from './actions'
@@ -38,7 +38,17 @@ const reducerMap = {
     }
   },
   [ActionTypes.CreateNewFile.toString()]: (state: AppState, f: File) => ({ ...state, session: { ...state.session!, files: R.append(f, state.session!.files) } }),
-  [ActionTypes.SetCompilerErrors.toString()]: (state: AppState, errors: CompilerError[]) => ({ ...state, session: { ...state.session!, compilerErrors: errors}})
+  [ActionTypes.SetCompilerErrors.toString()]: (state: AppState, errors: CompilerError[]) => ({ ...state, session: { ...state.session!, compilerErrors: errors}}),
+  [ActionTypes.UpdateSimulationOption.toString()]: (state: AppState, payload: any) => {
+    const { idx, option } = payload
+    const simulationOptions:SimulationOption[] = state.session!.simulationOptions.map((opt, i) => {
+      if(i === idx) return option
+      else return opt
+    })
+    return R.assocPath(["session", "simulationOptions"], simulationOptions, state) as AppState
+  },
+  [ActionTypes.AddSimulationOption.toString()]: (state: AppState, payload:SimulationOption) =>
+    R.assocPath(["session", "simulationOptions"], R.append(payload, state.session!.simulationOptions), state) as AppState
 }
 
 export function rootReducer(state: AppState = initialState(), action: Action): AppState {

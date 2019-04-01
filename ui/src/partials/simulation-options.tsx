@@ -1,62 +1,53 @@
 import React from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import {
+  Action,
+  addOption,
+  updateOption,
+  deleteOption
+} from '../redux/index'
 import { Row, Col, Button, Form } from 'react-bootstrap'
 //@ts-ignore
 import Octicon from 'react-octicon'
-import { AppState, Session, TableFormat, SimulateRequest } from '../models/index'
+import { AppState, Session, TableFormat, SimulateRequest, SimulationOption } from '../models/index'
 import { ApiClient } from '../services/api-client'
-import { Action } from '../redux/actions'
 import * as R from 'ramda';
 
-interface Option {
-  name: string
-  value: number | string
-}
+type Option = SimulationOption
 
 interface Props {
+  options: Option[]
+  addOption(o:Option):void
+  updateOption(idx:number, o:Option):void
+  deleteOption(idx:number):void
 }
 interface State {
-  options: Option[]
 }
 
 class SimulationOptionsCon extends React.Component<Props, State> {
   constructor(p:Props) {
     super(p)
-    this.state = {options: [
-      {name: "startTime", value: 0},
-      {name: "stopTime", value: 5},
-      {name: "numberOfIntervals", value: 500}
-    ]}
   }
 
   private updateName(idx:number, value:string): void {
-    const options = this.state.options.map((old, i) => {
-      if(i === idx) return {...old, name: value}
-      else return old
-    })
-    this.setState({options})
+    this.props.updateOption(idx, {...this.props.options[idx], name: value})
   }
   private updateValue(idx: number, value: string): void {
-    const options = this.state.options.map((old, i) => {
-      //convert string to number if it's a true float number
-      //parseFloat returns NaN if it couldn't convert to float
-      const f = parseFloat(value)
-      const v = (!isNaN(f)) ? f : value
-      if (i === idx) return { ...old, value: v }
-      else return old
-    })
-    this.setState({ options })
+    //convert string to number if it's a true float number
+    //parseFloat returns NaN if it couldn't convert to float
+    const f = parseFloat(value)
+    const v = (!isNaN(f)) ? f : value
+    this.props.updateOption(idx, { ...this.props.options[idx], value: v })
   }
 
   private addOptionField(): void {
-    const options = R.append({name: "", value: ""}, this.state.options)
-    this.setState({ options})
+    this.props.addOption({ name: "", value: "" })
   }
 
   render() {
     return (<>
-      {this.state.options.map((opt, idx) => (
+      {this.props.options.map((opt, idx) => (
         <Form.Row key={idx}>
           <Col sm={4}><Form.Control placeholder="name" value={opt.name} onChange={(ev:any) => this.updateName(idx, ev.target.value)}/></Col>
           <Col sm={6}><Form.Control placeholder="value" value={opt.value.toString()} onChange={(ev:any) => this.updateValue(idx, ev.target.value)}/></Col>
@@ -70,11 +61,15 @@ class SimulationOptionsCon extends React.Component<Props, State> {
 }
 
 function mapProps(state: AppState) {
-  return {}
+  return {options: state.session!.simulationOptions}
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({}, dispatch)
+  return bindActionCreators({
+    addOption,
+    updateOption,
+    deleteOption,
+  }, dispatch)
 }
 
 const SimulationOptions = connect(mapProps, dispatchToProps)(SimulationOptionsCon)
