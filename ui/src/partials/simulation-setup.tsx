@@ -4,15 +4,17 @@ import { connect } from 'react-redux'
 import { Row, Col, Button, Form } from 'react-bootstrap'
 //@ts-ignore
 import Octicon from 'react-octicon'
-import { AppState, Session, TableFormat, SimulateRequest } from '../models/index'
+import { AppState, Session, TableFormat, SimulateRequest, SimulationOption } from '../models/index'
 import { ApiClient } from '../services/api-client'
 import { Action } from '../redux/actions'
 import * as R from 'ramda';
 import SimulationOptions from './simulation-options'
+import { strictEqual } from 'assert';
 
 interface Props {
   api: ApiClient
   simulate(sr: SimulateRequest):void
+  options: SimulationOption[]
 }
 type State = any
 
@@ -21,10 +23,11 @@ class SimulationSetupCon extends React.Component<Props, State> {
 
 
   private simulateClicked() {
-    const opts = {
-      numberOfIntervals: 10,
-      stopTime: 5
-    }
+    const opts = R.fromPairs(
+      this.props.options
+        .filter(o => !R.empty(o.name.trim()))
+        .map(o => R.pair(o.name, o.value) )
+      )
     this.props.simulate({modelName: this.modelName, options: opts})
   }
 
@@ -42,7 +45,7 @@ class SimulationSetupCon extends React.Component<Props, State> {
 }
 
 function mapProps(state: AppState) {
-  return {}
+  return { options: state.session!.simulationOptions }
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {
