@@ -3,8 +3,6 @@ services:
   mongo:
     image: "mongo:3.4"
     restart: on-failure
-    ports:
-      - 9010:27017
     volumes:
       - webmodelica_db:/data/db
   mope:

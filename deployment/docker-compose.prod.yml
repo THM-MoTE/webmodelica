@@ -29,8 +29,6 @@ services:
   mope:
     image: "thmmote/mope-server:0.6.8"
     user: openmodelica:openmodelica
-    ports:
-      - 9015:3000
     volumes:
       - webmodelica_data:/home/openmodelica/data
       - ./mope.conf:/home/openmodelica/.config/mope/mope.conf
