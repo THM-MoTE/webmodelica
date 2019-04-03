@@ -5,6 +5,8 @@ services:
     restart: on-failure
     volumes:
       - webmodelica_db:/data/db
+    ports:
+      - 9010:27017
   mope:
     image: "thmmote/mope-server:0.6.8"
     user: openmodelica:openmodelica
