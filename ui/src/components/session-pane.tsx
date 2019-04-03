@@ -13,10 +13,12 @@ import { Action, updateSessionFiles, setCompilerErrors } from '../redux/actions'
 import * as monaco from 'monaco-editor';
 import { renderErrors } from '../partials/errors';
 import * as R from 'ramda';
+import { LoadingSpinner } from '../partials/loading-spinner';
 
 interface State {
   editingFiles: File[]
   deltaMarkers: any[]
+  compiling:boolean
 }
 interface Props {
   api: ApiClient
@@ -53,7 +55,7 @@ class SessionPaneCon extends React.Component<Props, State> {
   constructor(props: any) {
     super(props)
     this.api = this.props.api
-    this.state = { editingFiles: [], deltaMarkers: [] }
+    this.state = { editingFiles: [], deltaMarkers: [], compiling: false }
   }
 
   public componentDidMount() {
@@ -86,13 +88,14 @@ class SessionPaneCon extends React.Component<Props, State> {
   }
   handleCompileClicked() {
     console.log("compiling .. ")
+    this.setState({compiling: true})
     this.handleSaveClicked()
       .then(files => this.api.compile(this.currentFile()))
       .then(errors => {
         console.log("errors:", errors)
         const newMarkers = this.markErrors(this.state.deltaMarkers, errors)
         this.props.setCompilerErrors(errors)
-        this.setState({ deltaMarkers: newMarkers })
+        this.setState({ deltaMarkers: newMarkers, compiling: false })
       })
   }
 
@@ -130,6 +133,7 @@ class SessionPaneCon extends React.Component<Props, State> {
             {this.props.compilerErrors.map(errorLine)}
           </Col>
         </Row>
+        <LoadingSpinner msg={"compiling be patient.."} display={this.state.compiling} />
       </WmContainer>
     )
   }
