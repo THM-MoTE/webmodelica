@@ -9,7 +9,10 @@ import com.twitter.util.{Future, Time}
 import webmodelica.models.config.MopeClientConfig
 import webmodelica.models.{ModelicaFile, Session}
 import webmodelica.stores.{FSStore, FileStore}
-import java.nio.file._
+import java.nio.file.{
+  Path, Paths
+}
+import better.files._
 
 import scala.concurrent.{ Future => SFuture, Promise =>  SPromise }
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -35,4 +38,11 @@ class SessionService @Inject()(
   override def files: Future[List[ModelicaFile]] = fsStore.files
 
   override def close(deadline:Time):Future[Unit] = disconnect()
+
+  def extractArchive(path:Path): Future[List[ModelicaFile]] = Future {
+    File(path)
+      .newZipInputStream
+      .mapEntries(ze => ModelicaFile(Paths.get(ze.getName), ""))
+      .toList
+  }
 }
