@@ -12,6 +12,7 @@ import * as R from 'ramda';
 import { Action } from '../redux/actions'
 import { AppState, Session, SimulationResult, TableFormat, SimulateRequest } from '../models/index'
 import { ApiClient } from '../services/api-client'
+import { LoadingSpinner } from '../partials/loading-spinner';
 
 interface Props {
   api: ApiClient
@@ -21,12 +22,13 @@ interface Props {
 interface State {
   resultSet?: TableFormat
   resultLocation?: URL
+  simulating:boolean
 }
 
 class SimulationPaneCon extends React.Component<Props, State> {
   constructor(p: Props) {
     super(p)
-    this.state = {}
+    this.state = {simulating: false}
   }
 
   componentDidMount() {
@@ -39,20 +41,21 @@ class SimulationPaneCon extends React.Component<Props, State> {
 
   private simulate(sr: SimulateRequest): void {
     console.log("gonna simulate: ", sr)
+    this.setState({ resultSet: undefined, resultLocation: undefined, simulating: true })
     this.props.api.simulate(sr)
       .then(l => {
-        const url =  new URL(l)
+        const url = new URL(l)
         url.host = window.location.host
-        this.setState({resultLocation: url})
+        this.setState({ resultLocation: url })
         this.queryResults(url)
       })
   }
 
-  private queryResults(location:URL): void {
+  private queryResults(location: URL): void {
     console.log("query results ...")
     this.props.api
       .getSimulationResults(location)
-      .then(rs => this.setState({ resultSet: (rs as TableFormat)}))
+      .then(rs => this.setState({ resultSet: (rs as TableFormat) }))
       .catch(er => window.setTimeout(() => this.queryResults(location), 5000))
   }
 
@@ -60,10 +63,10 @@ class SimulationPaneCon extends React.Component<Props, State> {
     return (
       <WmContainer title={"Session: " + this.props.session.project.name} active="simulation" sessionId={this.props.session.id}>
 
-        <SimulationSetup api={this.props.api} simulate={this.simulate.bind(this)}/>
+        <SimulationSetup api={this.props.api} simulate={this.simulate.bind(this)} />
 
         {this.state.resultSet && (<SimulationPlot data={this.state.resultSet} api={this.props.api} />)}
-        {this.state.resultLocation && ("Awaiting results at: "+this.state.resultLocation)}
+        <LoadingSpinner msg={"simulating be patient.."} display={this.state.resultSet === undefined && this.state.simulating}/>
       </WmContainer>
     )
   }
