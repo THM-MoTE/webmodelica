@@ -29,4 +29,5 @@ object errors {
   case class ResourceUsernameError(resourceName:String="resource") extends RuntimeException {
     override def getMessage: String = s"You can't create a ${resourceName} for another user!"
   }
+  case class ArchiveError(reason:String) extends RuntimeException(reason)
 }
