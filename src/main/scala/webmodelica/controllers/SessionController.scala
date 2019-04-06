@@ -17,7 +17,8 @@ import webmodelica.stores.{
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.twitter.finatra.request._
 import io.scalaland.chimney.dsl._
-import java.nio.file._
+import java.nio.file.{Path, Paths, Files}
+import better.files._
 
 case class NewFileRequest(
   @RouteParam() sessionId: String,
@@ -98,9 +99,8 @@ class SessionController@Inject()(
           val uploadRequ = new FinagleRequestFileUpload()
           uploadRequ.parseMultipartItems(req).get("archive").map { archive =>
             val p = Paths.get("/tmp", archive.filename.get)
-            Future.value(Files.write(p, archive.data)).flatMap{ _ =>
-              service.extractArchive(p)
-            }
+            File(p).writeByteArray(archive.data)
+            service.extractArchive(p)
           }
             .getOrElse(Future.value(response.badRequest.body("'archive' file expected!")))
         }
