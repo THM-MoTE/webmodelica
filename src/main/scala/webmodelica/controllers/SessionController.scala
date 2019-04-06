@@ -4,6 +4,7 @@ import com.google.inject.Inject
 import com.twitter.util.{Future, FuturePool}
 import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
+import com.twitter.finatra.http.fileupload._
 import org.mongodb.scala.bson.BsonObjectId
 import webmodelica.models._
 import webmodelica.models.mope.requests.SimulateRequest
@@ -16,6 +17,8 @@ import webmodelica.stores.{
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.twitter.finatra.request._
 import io.scalaland.chimney.dsl._
+import java.nio.file.{Path, Paths, Files}
+import better.files._
 
 case class NewFileRequest(
   @RouteParam() sessionId: String,
@@ -90,6 +93,19 @@ class SessionController@Inject()(
           service.update(ModelicaFile(req.relativePath, req.content))
         }
       }
+
+      post("/sessions/:sessionId/files/upload") { req: Request =>
+        withSession(req.getParam("sessionId")) { service =>
+          val uploadRequ = new FinagleRequestFileUpload()
+          uploadRequ.parseMultipartItems(req).get("archive").map { archive =>
+            val p = Paths.get("/tmp", archive.filename.get)
+            File(p).writeByteArray(archive.data)
+            service.extractArchive(p)
+          }
+            .getOrElse(Future.value(response.badRequest.body("'archive' file expected!")))
+        }
+      }
+
       post("/sessions/:sessionId/compile") { req: CompileRequest =>
         withSession(req.sessionId) { service =>
           service.compile(req.path)

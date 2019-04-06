@@ -9,7 +9,11 @@ import com.twitter.util.{Future, Time}
 import webmodelica.models.config.MopeClientConfig
 import webmodelica.models.{ModelicaFile, Session}
 import webmodelica.stores.{FSStore, FileStore}
-import java.nio.file._
+import webmodelica.models.errors
+import java.nio.file.{
+  Path, Paths
+}
+import better.files._
 
 import scala.concurrent.{ Future => SFuture, Promise =>  SPromise }
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -36,4 +40,12 @@ class SessionService @Inject()(
   override def delete(p: Path): Future[Unit] = fsStore.delete(p)
   override def rename(oldPath: Path,newPath: Path):Future[ModelicaFile] = fsStore.rename(oldPath, newPath)
   override def close(deadline:Time):Future[Unit] = disconnect()
+
+  def extractArchive(path:Path): Future[List[ModelicaFile]] = {
+    import scala.sys.process._
+    Future { Seq("unzip", path.toAbsolutePath.toString, "-d", fsStore.rootDir.toAbsolutePath.toString).! }.flatMap {
+      case status:Int if status==0 => this.files
+      case _ => Future.exception(errors.ArchiveError("Unzipping $path failed!"))
+    }
+  }
 }
