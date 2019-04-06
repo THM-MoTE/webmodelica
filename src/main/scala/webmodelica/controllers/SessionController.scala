@@ -25,6 +25,11 @@ case class NewFileRequest(
   @JsonProperty() relativePath: java.nio.file.Path,
   @JsonProperty() content: String,
 )
+case class RenameRequest(
+  @RouteParam() sessionId: String,
+  @JsonProperty() oldPath:Path,
+  @JsonProperty() newPath:Path,
+)
 case class CompileRequest(
   @RouteParam() sessionId: String,
   @JsonProperty() path: java.nio.file.Path,
@@ -103,6 +108,12 @@ class SessionController@Inject()(
             service.extractArchive(p)
           }
             .getOrElse(Future.value(response.badRequest.body("'archive' file expected!")))
+        }
+      }
+
+      put("/sessions/:sessionId/files/rename") { req: RenameRequest =>
+        withSession(req.sessionId) { service =>
+          service.rename(req.oldPath, req.newPath)
         }
       }
 
