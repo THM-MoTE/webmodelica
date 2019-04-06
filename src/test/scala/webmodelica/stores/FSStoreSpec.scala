@@ -49,4 +49,21 @@ class FSStoreSpec extends WMSpec {
     Await.result(store.update(newFile))
     newFile.content == (root/file.relativePath.toString).contentAsString
   }
+
+  it should "rename a file" in {
+    val oldFile = modelicaFiles.head
+    val newPath = Paths.get("a/b/c/test-new.mo")
+    Await.result(for {
+       _ <- store.update(oldFile)
+      newFile <- store.rename(oldFile.relativePath,  newPath)
+    } yield newFile.relativePath == newPath)
+  }
+
+  it should "delete a file" in {
+    val oldFile = modelicaFiles.head
+    Await.result(for {
+      _ <- store.update(oldFile)
+      _ <- store.delete(oldFile.relativePath)
+    } yield (root/oldFile.relativePath.toString).notExists shouldBe true)
+  }
 }

@@ -21,6 +21,14 @@ class FSStore(root:Path)
     Future.value(())
   }
 
+  def delete(p:Path): Future[Unit] = Future { File(root.resolve(p)).delete() }
+  def rename(oldPath:Path, newPath:Path): Future[ModelicaFile] =
+    Future {
+      val newFile = root.resolve(newPath)
+      File(root.resolve(oldPath)).renameTo(newFile.toString)
+      ModelicaFile(newFile, File(newFile).contentAsString)
+    }
+
   override def files: Future[List[ModelicaFile]] = {
     Future.value(
       File(root)

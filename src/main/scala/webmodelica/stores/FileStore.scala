@@ -8,6 +8,8 @@ trait FileStore {
   def rootDir: Path
   def files: Future[List[ModelicaFile]]
   def update(file:ModelicaFile): Future[Unit]
+  def delete(p:Path): Future[Unit]
+  def rename(oldPath:Path, newPath:Path): Future[ModelicaFile]
   def update(files:Seq[ModelicaFile]):Future[Unit] = {
     Future.join(files.map(update))
   }

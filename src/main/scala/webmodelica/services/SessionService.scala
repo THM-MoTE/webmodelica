@@ -33,6 +33,7 @@ class SessionService @Inject()(
   override def rootDir: Path = fsStore.rootDir
   override def update(file: ModelicaFile): Future[Unit] = fsStore.update(file)
   override def files: Future[List[ModelicaFile]] = fsStore.files
-
+  override def delete(p: Path): Future[Unit] = fsStore.delete(p)
+  override def rename(oldPath: Path,newPath: Path):Future[ModelicaFile] = fsStore.rename(oldPath, newPath)
   override def close(deadline:Time):Future[Unit] = disconnect()
 }
