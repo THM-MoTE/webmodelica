@@ -25,6 +25,10 @@ case class NewFileRequest(
   @JsonProperty() relativePath: java.nio.file.Path,
   @JsonProperty() content: String,
 )
+case class DeleteRequest(
+  @RouteParam() sessionId: String,
+  @QueryParam() path:String
+)
 case class RenameRequest(
   @RouteParam() sessionId: String,
   @JsonProperty() oldPath:Path,
@@ -111,6 +115,11 @@ class SessionController@Inject()(
         }
       }
 
+      delete("/sessions/:sessionId/files") { req: DeleteRequest =>
+        withSession(req.sessionId) { service =>
+          service.delete(Paths.get(req.path)).map(_ => response.noContent)
+        }
+      }
       put("/sessions/:sessionId/files/rename") { req: RenameRequest =>
         withSession(req.sessionId) { service =>
           service.rename(req.oldPath, req.newPath)
