@@ -40,8 +40,12 @@ class ProjectEndpointSpec
     }
 
 
+  def projectsReq = client.get("projects")
+    .withHeader(constants.authorizationHeader, token)
+    .accept("application/json")
+
+
   "The /projects endpoint" should "create a project" in {
-    println(s"the token is: $token")
     val req = client.post("projects")
       .withHeader(constants.authorizationHeader, token)
       .withContent(
@@ -59,13 +63,24 @@ class ProjectEndpointSpec
     }.asScala
   }
   it should "return all projects" in {
-    val req = client.get("projects")
-      .withHeader(constants.authorizationHeader, token)
-      .accept("application/json")
-
-    req.send[Seq[JSProject]]()
+    projectsReq.send[Seq[JSProject]]()
       .map{ seq => seq should not be ('empty) }
       .handle(catchError)
+      .asScala
+  }
+  it should "return a specific project" in {
+    projectsReq.send[Seq[JSProject]]()
+      .handle(catchError)
+      .map(seq => seq.last)
+      .flatMap { proj =>
+        val req = client.get(s"projects/${proj.id}")
+          .withHeader(constants.authorizationHeader, token)
+          .accept("application/json")
+
+        req.send[JSProject]()
+          .handle(catchError)
+          .map { projNew => projNew.id shouldBe(proj.id) }
+      }
       .asScala
   }
 }
