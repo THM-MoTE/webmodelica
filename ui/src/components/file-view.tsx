@@ -173,18 +173,18 @@ class FileViewCon extends React.Component<Props, State> {
           <Button variant="outline-primary" onClick={this.props.onCompileClicked}><Octicon name="gear" /> Compile</Button>
         </ButtonGroup>
         <h5 className="text-secondary">Files</h5>
-      <ListGroup>
+      <ButtonGroup vertical>
           {this.props.files.map((f: File) =>
-            <ListGroup.Item key={f.relativePath} onClick={() => fileClicked(f)} active={f == this.props.activeFile}>
+            <Button key={f.relativePath} onClick={() => fileClicked(f)} active={f == this.props.activeFile} variant="outline-secondary">
               <a href="#delete" className="text-danger" onClick={ev => this.deleteFile(ev, f)}><Octicon name="x" /></a>
               <a href="#rename" className="text-warning"><Octicon name="pencil" /></a>&nbsp;&nbsp;
               <Octicon name="file-code" /> {f.relativePath + "  "}
               {errorsInFile(f).length != 0 &&
                 (<Badge variant="danger">{errorsInFile(f).length}</Badge>)
               }
-            </ListGroup.Item>
+            </Button>
           )}
-        </ListGroup>
+        </ButtonGroup>
       {this.newFileDialog()}
       {this.uploadDialog()}
     </>
