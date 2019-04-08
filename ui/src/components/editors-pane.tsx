@@ -36,13 +36,11 @@ export class EditorsPane extends React.Component<any, any> {
 
     let tabTitle = file.relativePath || "welcome"
 
-    return (
-      <Col>
+    return (<>
         <Nav className="justify-content-center" activeKey={tabTitle} onSelect={tabSelected}>
           <Nav.Link href={tabTitle}>{tabTitle}</Nav.Link>
         </Nav>
         <div id={EditorsPane.editorName} className="editor"></div>
-      </Col>
-    )
+      </>)
   }
 }

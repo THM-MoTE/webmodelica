@@ -14,7 +14,8 @@ code {
 }
 
 div.editor {
-  height:600px;border:1px solid grey;
+  height:80vh;
+  border:1px solid grey;
 }
 
 .errorGlyph {

@@ -124,8 +124,10 @@ class SessionPaneCon extends React.Component<Props, State> {
               onFileClicked={(f: File) => this.handleFileClicked(f)}
               api={this.api} />
           </Col>
+          <Col sm={10}>
           <EditorsPane
             files={this.state.editingFiles} />
+          </Col>
         </Row>
         <Row>
           <Col lg="2"></Col>
