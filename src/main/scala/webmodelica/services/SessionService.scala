@@ -43,7 +43,7 @@ class SessionService @Inject()(
 
   def extractArchive(path:Path): Future[List[ModelicaFile]] = {
     import scala.sys.process._
-    Future { Seq("unzip", path.toAbsolutePath.toString, "-d", fsStore.rootDir.toAbsolutePath.toString).! }.flatMap {
+    Future { Seq("unzip", "-f", path.toAbsolutePath.toString, "-d", fsStore.rootDir.toAbsolutePath.toString).! }.flatMap {
       case status:Int if status==0 => this.files
       case _ => Future.exception(errors.ArchiveError("Unzipping $path failed!"))
     }
