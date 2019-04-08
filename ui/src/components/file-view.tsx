@@ -176,6 +176,8 @@ class FileViewCon extends React.Component<Props, State> {
       <ListGroup>
           {this.props.files.map((f: File) =>
             <ListGroup.Item key={f.relativePath} onClick={() => fileClicked(f)} active={f == this.props.activeFile}>
+              <a href="#delete" className="text-danger" onClick={ev => this.deleteFile(ev, f)}><Octicon name="x" /></a>
+              <a href="#rename" className="text-warning"><Octicon name="pencil" /></a>&nbsp;&nbsp;
               <Octicon name="file-code" /> {f.relativePath + "  "}
               {errorsInFile(f).length != 0 &&
                 (<Badge variant="danger">{errorsInFile(f).length}</Badge>)
