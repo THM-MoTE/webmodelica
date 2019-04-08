@@ -2,6 +2,7 @@ package webmodelica.integrationtests
 
 import org.scalatest._
 
+import webmodelica._
 import webmodelica.core._
 import webmodelica.models._
 import webmodelica.controllers._
@@ -13,10 +14,7 @@ import io.circe.generic.auto._
 import com.twitter.util.{Future,Await}
 
 class UserEndpointSpec
-    extends AsyncFlatSpec
-    with Matchers
-    with Inspectors
-    with BeforeAndAfterAll {
+    extends AsyncWMSpec {
 
   val baseUrl = "http://localhost:8888/api/v1/users/"
   val client = new featherbed.Client(new java.net.URL(baseUrl))
