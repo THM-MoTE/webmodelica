@@ -4,7 +4,7 @@ export * from './token'
 export * from './state'
 export * from './modelica-syntax'
 export * from './compiler-error'
-import R from 'ramda'
+import * as R from 'ramda'
 
 export interface SimulationResult {
   modelName: string

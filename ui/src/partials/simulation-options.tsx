@@ -10,7 +10,7 @@ import {
 import { Row, Col, Button, Form } from 'react-bootstrap'
 //@ts-ignore
 import Octicon from 'react-octicon'
-import { AppState, Session, TableFormat, SimulateRequest, SimulationOption } from '../models/index'
+import { AppState, Session, TableFormat, SimulateRequest, SimulationOption, availableSimulationOptions } from '../models/index'
 import { ApiClient } from '../services/api-client'
 import * as R from 'ramda';
 
@@ -50,7 +50,11 @@ class SimulationOptionsCon extends React.Component<Props, State> {
     return (<>
       {this.props.options.map((opt, idx) => (
         <Form.Row key={idx}>
-          <Col sm={4}><Form.Control placeholder="name" value={opt.name} onChange={(ev:any) => this.updateName(idx, ev.target.value)}/></Col>
+          <Col sm={4}>
+            <Form.Control as="select" placeholder="name" value={opt.name} onChange={(ev:any) => this.updateName(idx, ev.target.value)}>
+              {availableSimulationOptions.map(o => (<option>{o.key}</option>))}
+            </Form.Control>
+          </Col>
           <Col sm={6}><Form.Control placeholder="value" value={opt.value.toString()} onChange={(ev:any) => this.updateValue(idx, ev.target.value)}/></Col>
           <Col sm={2}><Button variant="outline-danger" onClick={() => this.deleteOptionField(idx)}><Octicon name="x" /></Button></Col>
         </Form.Row>

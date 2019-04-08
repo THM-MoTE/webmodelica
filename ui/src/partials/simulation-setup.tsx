@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { Row, Col, Button, Form } from 'react-bootstrap'
 //@ts-ignore
 import Octicon from 'react-octicon'
-import { AppState, Session, TableFormat, SimulateRequest, SimulationOption } from '../models/index'
+import { AppState, Session, TableFormat, SimulateRequest, SimulationOption, availableSimulationOptions } from '../models/index'
 import { ApiClient } from '../services/api-client'
 import { Action } from '../redux/actions'
 import * as R from 'ramda';
@@ -20,7 +20,6 @@ type State = any
 
 class SimulationSetupCon extends React.Component<Props, State> {
   private modelName:string = ""
-
 
   private simulateClicked() {
     const opts = R.fromPairs(
