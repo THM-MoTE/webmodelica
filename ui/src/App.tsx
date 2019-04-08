@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { BrowserRouter as Router, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 import { ProjectView, Landing, SessionPane, SimulationPane } from './components/index'
 import { ApiClient } from './services/api-client'
 import { rootReducer } from './redux/reducers'
 import { createStore } from "redux";
 import { Provider } from "react-redux";
 import { withApi } from './partials/api-wrapper';
-import { AppState } from './models';
+import { AppState, userIsAuthenticated } from './models/index';
 
 const stateKey = "wm-redux-State"
 const store = createStore(rootReducer, persistedStore())
@@ -34,18 +34,31 @@ function destroySession() {
   return (<span>logout..</span>)
 }
 
+function AuthenticatedRoute(obj: any) {
+  return (
+    <Route
+      {...obj.rest}
+      render={props =>
+        (userIsAuthenticated(store.getState().authentication)) ?
+          <obj.component {...props} /> :
+          <Redirect to="/" />
+      }
+      />
+  )
+}
+
 class App extends Component {
   render() {
     return (
       <Provider store={store}>
         <Router>
-          <div>
-            <Route exact path="/projects" component={withApi(client, ProjectView)} />
+          <Switch>
             <Route exact path="/" component={withApi(client, Landing)} />
             <Route exact path="/logout" render={() => destroySession()} />
-            <Route exact path="/session/:sessionId/simulate" component={withApi(client, SimulationPane)} />
-            <Route exact path="/session/:sessionId" component={withApi(client, SessionPane)} />
-          </div>
+            <AuthenticatedRoute exact path="/projects" component={withApi(client, ProjectView)} />
+            <AuthenticatedRoute exact path="/session/:sessionId/simulate" component={withApi(client, SimulationPane)} />
+            <AuthenticatedRoute exact path="/session/:sessionId" component={withApi(client, SessionPane)} />
+          </Switch>
         </Router>
       </Provider>
     )

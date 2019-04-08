@@ -1,5 +1,6 @@
 
 import { CompilerError, File, Project } from './index'
+import {isFuture} from 'date-fns'
 
 export interface UserAuth {
   username: string,
@@ -40,4 +41,7 @@ export function initialState(): AppState {
     projects: [],
     session: undefined
   }
+}
+export function userIsAuthenticated(auth?:UserAuth):boolean {
+  return (auth) ? isFuture(auth!.token.expires) : false
 }
