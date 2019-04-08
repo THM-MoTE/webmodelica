@@ -15,17 +15,21 @@ interface Props {
 type State = any
 
 class SimulationPlotCon extends React.Component<Props, State> {
-
+  private readonly chartOptions:any
   constructor(p: Props) {
     super(p)
     const dataSet = R.prepend(p.data.header as any[], p.data.data as any[][])
     this.state = { dataSet: dataSet }
+    this.chartOptions = {
+      //display edges as soft curves, not hard edges
+      curveType: 'function'
+    }
   }
 
   render() {
     console.log("dataset: ", this.state.dataSet)
     return (
-      <Chart chartType="LineChart" width='800px' height='600px' data={this.state.dataSet} legendToggle />
+      <Chart chartType="LineChart" width='800px' height='600px' data={this.state.dataSet} legendToggle options={this.chartOptions}/>
     )
   }
 }
