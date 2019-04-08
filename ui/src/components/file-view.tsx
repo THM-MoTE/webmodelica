@@ -1,5 +1,5 @@
 import React from 'react'
-import { Col, Row, ListGroup, Nav, ButtonGroup, Button, Modal, Form, Alert, Badge } from 'react-bootstrap'
+import { Col, Row, ListGroup, Nav, SplitButton, ButtonGroup, Button, Modal, Form, Alert, Badge, Dropdown } from 'react-bootstrap'
 //@ts-ignore
 import Octicon from 'react-octicon'
 import { bindActionCreators } from 'redux'
@@ -79,8 +79,7 @@ class FileViewCon extends React.Component<Props, State> {
     }
   }
 
-  private deleteFile(ev:any, f:File) {
-    ev.preventDefault()
+  private deleteFile(f:File) {
     this.props.api.deleteFile(f)
       .then(() => console.log("deleted: ", f.relativePath))
   }
@@ -166,23 +165,25 @@ class FileViewCon extends React.Component<Props, State> {
     const uploadArchiveClicked = () => { this.setState({showUploadDialog: true}) }
     return (<>
         <h5 className="text-secondary">Actions</h5>
-        <ButtonGroup vertical style={{width: "100%"}}>
+        <ButtonGroup vertical className="full-width">
           <Button variant="outline-success" onClick={this.props.onSaveClicked}><Octicon name="check" /> Save</Button>
           <Button variant="outline-primary" onClick={newFileClicked}><Octicon name="plus" /> New File</Button>
           <Button variant="outline-primary" onClick={uploadArchiveClicked}><Octicon name="file-zip" /> Upload Archive</Button>
           <Button variant="outline-primary" onClick={this.props.onCompileClicked}><Octicon name="gear" /> Compile</Button>
         </ButtonGroup>
         <h5 className="text-secondary">Files</h5>
-      <ButtonGroup vertical>
+      <ButtonGroup vertical className="full-width">
           {this.props.files.map((f: File) =>
-            <Button key={f.relativePath} onClick={() => fileClicked(f)} active={f == this.props.activeFile} variant="outline-secondary">
-              <a href="#delete" className="text-danger" onClick={ev => this.deleteFile(ev, f)}><Octicon name="x" /></a>
-              <a href="#rename" className="text-warning"><Octicon name="pencil" /></a>&nbsp;&nbsp;
-              <Octicon name="file-code" /> {f.relativePath + "  "}
-              {errorsInFile(f).length != 0 &&
-                (<Badge variant="danger">{errorsInFile(f).length}</Badge>)
-              }
-            </Button>
+            <SplitButton
+              title={f.relativePath + "  "}
+              onClick={() => fileClicked(f)}
+              key={f.relativePath}
+              size="sm"
+              id={`file-view-dropdown-${f.relativePath}`}
+              variant={(f === this.props.activeFile) ? "secondary" : "outline-secondary"}>
+              <Dropdown.Item className="text-danger" onSelect={() => this.deleteFile(f)}><Octicon name="x" /> Delete</Dropdown.Item>
+              <Dropdown.Item className="text-warning"><Octicon name="pencil" /> Rename</Dropdown.Item>
+            </SplitButton>
           )}
         </ButtonGroup>
       {this.newFileDialog()}

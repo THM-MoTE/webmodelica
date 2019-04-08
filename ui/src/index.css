@@ -29,3 +29,6 @@ span.errorGlyph {
 .contentClass {
 	background: lightblue;
 }
+.full-width {
+  width: 100%;
+}
