@@ -5,6 +5,7 @@ export enum ActionTypes {
   SetProjects,
   AddProject,
   UpdateSessionFiles,
+  SetSessionFiles,
   SetSession,
   UpdateWsToken,
   CreateNewFile,
@@ -29,3 +30,4 @@ export const newFile = (f: File) => ({ type: ActionTypes.CreateNewFile, payload:
 export const addOption = (o: SimulationOption) => ({ type: ActionTypes.AddSimulationOption, payload: o})
 export const updateOption = (idx: number, o: SimulationOption) => ({ type: ActionTypes.UpdateSimulationOption, payload: {idx: idx, option: o}})
 export const deleteOption = (idx: number) => ({type: ActionTypes.DeleteSimulationOption, payload: idx})
+export const setSessionFiles = (files:File[]) => ({type: ActionTypes.SetSessionFiles, payload: files})

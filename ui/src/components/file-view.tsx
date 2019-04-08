@@ -6,15 +6,17 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as R from 'ramda'
 import { File, AppState, CompilerError } from '../models/index'
-import { newFile, Action } from '../redux/index'
+import { newFile, setSessionFiles, Action } from '../redux/index'
 import { ApiClient } from '../services/api-client';
 import { renderErrors } from '../partials/errors'
+import Dropzone from 'react-dropzone'
 
 interface Props {
   api: ApiClient
   files: File[]
   compilerErrors: CompilerError[]
   newFile(f: File): Action
+  setSessionFiles(f:File[]): Action
   onFileClicked(f: File): void
   onSaveClicked(): void
   onCompileClicked(): void
@@ -22,6 +24,7 @@ interface Props {
 
 interface State {
   showNewFileDialog: boolean
+  showUploadDialog: boolean
   errors: string[]
 }
 
@@ -37,7 +40,7 @@ class FileViewCon extends React.Component<Props, State> {
   constructor(props: any) {
     super(props)
     this.api = this.props.api
-    this.state = { showNewFileDialog: false, errors: [] }
+    this.state = { showNewFileDialog: false, showUploadDialog: false, errors: [] }
   }
 
   private updateErrors(err: string[]) {
@@ -116,20 +119,56 @@ class FileViewCon extends React.Component<Props, State> {
       </Modal >)
   }
 
+  private uploadArchive(files: any[]) {
+    console.log("uploading..", files)
+    const promises = files.map(f => this.api.uploadArchive(f))
+    //await all uploads and use last-finished to update session files
+    Promise.all(promises)
+      .then(results => results[results.length-1])
+      .then(files => this.props.setSessionFiles(files))
+      .then(() => this.setState({showUploadDialog: false}))
+  }
+
+  private uploadDialog() {
+    const handleClose = () => {
+      console.log("close: ", this.state)
+      if (R.isEmpty(this.state.errors))
+        this.setState({ showUploadDialog: false })
+    }
+
+    return (
+      <Modal show={this.state.showUploadDialog} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Upload archive</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Dropzone onDrop={this.uploadArchive.bind(this)} accept=".zip">
+            {({ getRootProps, getInputProps }) => (
+              <section className="card bg-light">
+                <div className="card-body" {...getRootProps()}>
+                  <input {...getInputProps()} />
+                  <p className="card-text">Drag 'n' drop a zip archive here, or click to select one.</p>
+                </div>
+              </section>
+            )}
+          </Dropzone>
+        </Modal.Body>
+      </Modal>
+    )
+  }
+
   render() {
     const files = this.props.files
     const fileClicked = this.props.onFileClicked
     const errorsInFile = (f: File) => this.props.compilerErrors.filter(e => e.file == f.relativePath)
-    const newFileClicked = () => {
-      this.setState({ showNewFileDialog: true })
-    }
+    const newFileClicked = () => { this.setState({ showNewFileDialog: true }) }
+    const uploadArchiveClicked = () => { this.setState({showUploadDialog: true}) }
     return (<>
       <Nav className="flex-column border">
         <h5 className="text-secondary">Actions</h5>
         <Button variant="outline-success" onClick={this.props.onSaveClicked}><Octicon name="check" /> Save</Button>
-        <Button variant="outline-primary" onClick={newFileClicked}>
-          <Octicon name="plus" /> New File
-            </Button>
+        <Button variant="outline-primary" onClick={newFileClicked}><Octicon name="plus" /> New File</Button>
+        <Button variant="outline-primary" onClick={uploadArchiveClicked}><Octicon name="file-zip" /> Upload Archive</Button>
         <Button variant="outline-primary" onClick={this.props.onCompileClicked}>
           <Octicon name="gear" /> Compile</Button>
         <h5 className="text-secondary">Files</h5>
@@ -143,6 +182,7 @@ class FileViewCon extends React.Component<Props, State> {
         )}
       </Nav>
       {this.newFileDialog()}
+      {this.uploadDialog()}
     </>
     )
   }
@@ -153,7 +193,7 @@ function mapProps(state: AppState) {
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({ newFile }, dispatch)
+  return bindActionCreators({ newFile, setSessionFiles}, dispatch)
 }
 const FileView = connect(mapProps, dispatchToProps)(FileViewCon)
 export default FileView
