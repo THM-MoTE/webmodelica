@@ -166,10 +166,34 @@ export class ApiClient {
         const url = new URL(this.sessionUri() + `/${session.id}/files`)
         url.searchParams.set("path", file.relativePath)
         return fetch(url.toString(), {
-            method: 'DELETE',
-          })
+          method: 'DELETE',
+          headers: {
+            [authHeader]: this.token()
+          }
+        })
       })
+      .then(rejectError)
+      .then(this.updateWSToken.bind(this))
       .then(_ => {})
+  }
+
+  public renameFile(file:File, name:string): Promise<File> {
+    return this.withSession("can't rename a file if there is no session!")
+      .then(session => {
+        const data = {oldPath: file.relativePath, newPath: name}
+        return fetch(this.sessionUri() + `/${session.id}/files`, {
+          method: 'PUT',
+          headers: {
+            [authHeader]: this.token(),
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(data)
+        })
+      })
+      .then(rejectError)
+      .then(this.updateWSToken.bind(this))
+      .then(res => res.json())
   }
 
   public simulate(r:SimulateRequest): Promise<string> {
