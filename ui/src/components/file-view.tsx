@@ -166,7 +166,7 @@ class FileViewCon extends React.Component<Props, State> {
     const uploadArchiveClicked = () => { this.setState({showUploadDialog: true}) }
     return (<>
         <h5 className="text-secondary">Actions</h5>
-        <ButtonGroup vertical>
+        <ButtonGroup vertical style={{width: "100%"}}>
           <Button variant="outline-success" onClick={this.props.onSaveClicked}><Octicon name="check" /> Save</Button>
           <Button variant="outline-primary" onClick={newFileClicked}><Octicon name="plus" /> New File</Button>
           <Button variant="outline-primary" onClick={uploadArchiveClicked}><Octicon name="file-zip" /> Upload Archive</Button>
