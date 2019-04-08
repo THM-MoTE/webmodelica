@@ -1,5 +1,5 @@
 import React from 'react'
-import { Col, Row, ListGroup, Nav, Button, Modal, Form, Alert, Badge } from 'react-bootstrap'
+import { Col, Row, ListGroup, Nav, ButtonGroup, Button, Modal, Form, Alert, Badge } from 'react-bootstrap'
 //@ts-ignore
 import Octicon from 'react-octicon'
 import { bindActionCreators } from 'redux'
@@ -14,6 +14,7 @@ import Dropzone from 'react-dropzone'
 interface Props {
   api: ApiClient
   files: File[]
+  activeFile?: File
   compilerErrors: CompilerError[]
   newFile(f: File): Action
   setSessionFiles(f:File[]): Action
@@ -164,23 +165,24 @@ class FileViewCon extends React.Component<Props, State> {
     const newFileClicked = () => { this.setState({ showNewFileDialog: true }) }
     const uploadArchiveClicked = () => { this.setState({showUploadDialog: true}) }
     return (<>
-      <Nav className="flex-column border">
         <h5 className="text-secondary">Actions</h5>
-        <Button variant="outline-success" onClick={this.props.onSaveClicked}><Octicon name="check" /> Save</Button>
-        <Button variant="outline-primary" onClick={newFileClicked}><Octicon name="plus" /> New File</Button>
-        <Button variant="outline-primary" onClick={uploadArchiveClicked}><Octicon name="file-zip" /> Upload Archive</Button>
-        <Button variant="outline-primary" onClick={this.props.onCompileClicked}>
-          <Octicon name="gear" /> Compile</Button>
+        <ButtonGroup vertical>
+          <Button variant="outline-success" onClick={this.props.onSaveClicked}><Octicon name="check" /> Save</Button>
+          <Button variant="outline-primary" onClick={newFileClicked}><Octicon name="plus" /> New File</Button>
+          <Button variant="outline-primary" onClick={uploadArchiveClicked}><Octicon name="file-zip" /> Upload Archive</Button>
+          <Button variant="outline-primary" onClick={this.props.onCompileClicked}><Octicon name="gear" /> Compile</Button>
+        </ButtonGroup>
         <h5 className="text-secondary">Files</h5>
-        {this.props.files.map((f: File) =>
-          <Nav.Link href="#" key={f.relativePath} onSelect={() => fileClicked(f)}>
-            <Octicon name="file-code" /> {f.relativePath + "  "}
-            {errorsInFile(f).length != 0 &&
-              (<Badge variant="danger">{errorsInFile(f).length}</Badge>)
-            }
-          </Nav.Link>
-        )}
-      </Nav>
+      <ListGroup>
+          {this.props.files.map((f: File) =>
+            <ListGroup.Item key={f.relativePath} onClick={() => fileClicked(f)} active={f == this.props.activeFile}>
+              <Octicon name="file-code" /> {f.relativePath + "  "}
+              {errorsInFile(f).length != 0 &&
+                (<Badge variant="danger">{errorsInFile(f).length}</Badge>)
+              }
+            </ListGroup.Item>
+          )}
+        </ListGroup>
       {this.newFileDialog()}
       {this.uploadDialog()}
     </>

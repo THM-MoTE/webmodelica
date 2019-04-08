@@ -122,7 +122,8 @@ class SessionPaneCon extends React.Component<Props, State> {
               onSaveClicked={this.handleSaveClicked.bind(this)}
               onCompileClicked={this.handleCompileClicked.bind(this)}
               onFileClicked={(f: File) => this.handleFileClicked(f)}
-              api={this.api} />
+              api={this.api}
+              activeFile={this.state.editingFiles[0] } />
           </Col>
           <Col sm={10}>
           <EditorsPane
