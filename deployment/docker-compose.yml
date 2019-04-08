@@ -8,7 +8,7 @@ services:
     ports:
       - 9010:27017
   mope:
-    image: "thmmote/mope-server:0.6.8"
+    image: "thmmote/mope-server:0.6.8-1"
     user: openmodelica:openmodelica
     ports:
       - 9015:3000
