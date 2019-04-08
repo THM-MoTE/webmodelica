@@ -15,6 +15,14 @@ abstract class WMSpec
   AppModule.env.parse("test")
 }
 
+abstract class AsyncWMSpec
+    extends AsyncFlatSpec
+    with Matchers
+    with Inspectors
+    with BeforeAndAfterAll {
+  def uuidStr: String = java.util.UUID.randomUUID().toString
+}
+
 abstract class DBSpec(collectionName:Option[String]=None) extends WMSpec {
   val conf = AppModule.configProvider
   val database = AppModule.mongoDBProvider(conf.mongodb, AppModule.mongoClientProvider(conf.mongodb))
