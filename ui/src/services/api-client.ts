@@ -3,6 +3,8 @@ import { File, Project, TokenWrapper, Session, AppState, UserAuth, CompilerError
 import React, { Component } from 'react';
 import { Store } from 'redux';
 import { updateToken } from '../redux/index';
+import * as R from 'ramda'
+import { Uri } from 'monaco-editor';
 
 function rejectError(res: Response): Promise<Response> {
   if (res.ok) return Promise.resolve(res)
@@ -42,6 +44,15 @@ export class ApiClient {
     return res
   }
   private token(): string { return this.store.getState().authentication!.token.raw }
+
+  private withSession<A>(err:string): Promise<Session> {
+    const session = this.store.getState().session
+    if (session) {
+      return Promise.resolve(session)
+    } else {
+      return Promise.reject(err)
+    }
+  }
 
   public login(user: string, pw: string): Promise<TokenWrapper> {
     return fetch(this.userUri() + "/login", {
@@ -147,6 +158,18 @@ export class ApiClient {
     } else {
       return Promise.reject("can't create a file if there is no session!")
     }
+  }
+
+  public deleteFile(file:File): Promise<void> {
+    return this.withSession("can't delete a file if there is no session!")
+      .then(session =>  {
+        const url = new URL(this.sessionUri() + `/${session.id}/files`)
+        url.searchParams.set("path", file.relativePath)
+        return fetch(url.toString(), {
+            method: 'DELETE',
+          })
+      })
+      .then(_ => {})
   }
 
   public simulate(r:SimulateRequest): Promise<string> {

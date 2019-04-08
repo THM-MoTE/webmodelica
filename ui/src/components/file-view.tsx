@@ -75,6 +75,12 @@ class FileViewCon extends React.Component<Props, State> {
     }
   }
 
+  private deleteFile(ev:any, f:File) {
+    ev.preventDefault()
+    this.props.api.deleteFile(f)
+      .then(() => console.log("deleted: ", f.relativePath))
+  }
+
   private newFileDialog() {
     const handleClose = () => {
       console.log("close: ", this.state)
