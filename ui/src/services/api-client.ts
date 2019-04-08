@@ -196,6 +196,25 @@ export class ApiClient {
       .then(res => res.json())
   }
 
+  public uploadArchive(f:any): Promise<File[]> {
+    return this.withSession("can't upload archive if there is no session!")
+      .then(session => {
+        const data = new FormData()
+        data.append("archive", f)
+        return fetch(this.sessionUri() + `/${session.id}/files/upload`, {
+          method: 'POST',
+          headers: {
+            [authHeader]: this.token(),
+            'Accept': 'application/json'
+          },
+          body: data
+        })
+      })
+      .then(rejectError)
+      .then(this.updateWSToken.bind(this))
+      .then(res => res.json())
+  }
+
   public simulate(r:SimulateRequest): Promise<string> {
     const session = this.store.getState().session
     if (session) {
