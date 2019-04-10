@@ -5,6 +5,7 @@ import org.scalatest._
 import webmodelica._
 import webmodelica.core._
 import webmodelica.models._
+import webmodelica.models.mope.responses._
 import webmodelica.controllers._
 import webmodelica.conversions.futures._
 import webmodelica.constants
@@ -77,5 +78,22 @@ class SessionEndpointSpec
     req2.send[ModelicaFile]().handle(catchError).map { newFile =>
       newFile shouldBe (file)
     }.asScala
+  }
+  it should "compile project at POST /api/v1/sessions/:sessionId/compile" in {
+    val file = ModelicaFile(Paths.get("a/b/simple.mo"), "model simp end simple;")
+    val createFile = client.post(s"${session.id}/files/update")
+        .withHeader(constants.authorizationHeader, token)
+        .withContent(file, "application/json")
+        .accept("application/json")
+
+    val compileFile = client.post(s"${session.id}/compile")
+        .withHeader(constants.authorizationHeader, token)
+        .withContent(Json.obj("path" -> file.relativePath.asJson), "application/json")
+        .accept("application/json")
+
+    (for {
+      file <- createFile.send[ModelicaFile]().handle(catchError)
+      errors <- compileFile.send[Seq[CompilerError]]().handle(catchError)
+    } yield (errors should not be ('empty))).asScala
   }
 }
