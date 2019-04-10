@@ -181,7 +181,7 @@ export class ApiClient {
     return this.withSession("can't rename a file if there is no session!")
       .then(session => {
         const data = {oldPath: file.relativePath, newPath: name}
-        return fetch(this.sessionUri() + `/${session.id}/files`, {
+        return fetch(this.sessionUri() + `/${session.id}/files/rename`, {
           method: 'PUT',
           headers: {
             [authHeader]: this.token(),
