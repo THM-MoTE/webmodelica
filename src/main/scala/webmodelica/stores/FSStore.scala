@@ -26,7 +26,7 @@ class FSStore(root:Path)
     Future {
       val newFile = root.resolve(newPath)
       File(root.resolve(oldPath)).renameTo(newFile.toString)
-      ModelicaFile(newFile, File(newFile).contentAsString)
+      ModelicaFile(root.relativize(newFile), File(newFile).contentAsString)
     }
 
   override def files: Future[List[ModelicaFile]] = {
