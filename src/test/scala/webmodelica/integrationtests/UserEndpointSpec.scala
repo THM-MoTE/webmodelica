@@ -16,24 +16,21 @@ import com.twitter.util.{Future,Await}
 class UserEndpointSpec
     extends AsyncWMSpec {
 
-  val baseUrl = "http://localhost:8888/api/v1/users/"
-  val client = new featherbed.Client(new java.net.URL(baseUrl))
-
-  val user = RegisterRequest("test-user", "test-user@xample.org", "456789")
+  val client = new featherbed.Client(new java.net.URL(baseUrl+"users/"))
 
   "The /users endpoint" should "register a user" in {
     val req = client.post("register")
       .withContent(user, "application/json")
       .accept("application/json")
 
-    req.send[TokenResponse]().map(x => succeed).asScala
+    req.send[TokenResponse]().handle(catchError).map(x => succeed).asScala
   }
   it should "login a user" in {
     val req = client.post("login")
       .withContent(LoginRequest(user.username, user.password), "application/json")
       .accept("application/json")
 
-    req.send[TokenResponse]().map(t => succeed).asScala
+    req.send[TokenResponse]().handle(catchError).map(t => succeed).asScala
   }
   it should "refresh a token" in {
     val loginReq = client.post("login")
@@ -46,9 +43,9 @@ class UserEndpointSpec
     }
 
     (for {
-      t <- loginReq.send[TokenResponse]()
+      t <- loginReq.send[TokenResponse]().handle(catchError)
       _ <- Future { Thread.sleep(3000) }
-      t2 <- refreshReq(t.token).send[TokenResponse]()
+      t2 <- refreshReq(t.token).send[TokenResponse]().handle(catchError)
     } yield (t should not be t2)
     ).asScala
   }

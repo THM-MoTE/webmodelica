@@ -18,32 +18,18 @@ import com.twitter.util.{Future,Await}
 
 class ProjectEndpointSpec
     extends AsyncWMSpec {
-  val baseUrl = "http://localhost:8888"
-  val userClient = new featherbed.Client(new java.net.URL(baseUrl+"/api/v1/users/"))
-  val client = new featherbed.Client(new java.net.URL(baseUrl+"/api/v1/projects"))
-  val user = RegisterRequest("test-user", "test-user@xample.org", "456789")
+  val userClient = new featherbed.Client(new java.net.URL(baseUrl+"users/"))
+  val client = new featherbed.Client(new java.net.URL(baseUrl+"projects"))
 
   var token: String = _
   override def beforeAll = {
     super.beforeAll
-    val req = userClient.post("login")
-      .withContent(LoginRequest(user.username, user.password), "application/json")
-      .accept("application/json")
-    val resp = Await.result(req.send[TokenResponse]())
-    token = resp.token
+    token = loginTestUser(userClient).token
   }
-
-  def catchError[A]: PartialFunction[Throwable, A] = {
-      case request.ErrorResponse(req,resp) =>
-        val str = s"Error response $resp to request $req : ${resp.contentString}"
-        throw new RuntimeException(str)
-    }
-
 
   def projectsReq = client.get("projects")
     .withHeader(constants.authorizationHeader, token)
     .accept("application/json")
-
 
   "The /projects endpoint" should "create a project" in {
     val req = client.post("projects")
