@@ -29,7 +29,7 @@ class SimulationPlotCon extends React.Component<Props, State> {
   render() {
     console.log("dataset: ", this.state.dataSet)
     return (
-      <Chart chartType="LineChart" width='800px' height='600px' data={this.state.dataSet} legendToggle options={this.chartOptions}/>
+      <Chart chartType="LineChart" height="80vh" data={this.state.dataSet} legendToggle options={this.chartOptions}/>
     )
   }
 }
