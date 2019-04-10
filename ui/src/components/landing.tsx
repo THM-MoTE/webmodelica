@@ -10,6 +10,7 @@ import { Action } from '../redux/index'
 import { renderErrors } from '../partials/errors'
 import { connect } from 'react-redux'
 import * as R from 'ramda'
+import { userIsAuthenticated } from '../models';
 
 class LandingCon extends Component<any, any> {
   private username: string = ''
@@ -23,7 +24,7 @@ class LandingCon extends Component<any, any> {
   }
 
   componentDidMount() {
-    if (this.props.authentication)
+    if (userIsAuthenticated(this.props.authentication))
       this.props.history.push("/projects")
   }
 
