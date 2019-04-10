@@ -1,7 +1,9 @@
 package webmodelica.models
 
 import io.scalaland.chimney.dsl._
+import io.circe.generic.JsonCodec
 
+@JsonCodec
 case class User(username:String,
                 email: String,
                 hashedPassword:String)
