@@ -19,7 +19,7 @@ const reducerMap = {
       return state
     }
   },
-  [ActionTypes.SetSessionFiles.toString()]: (state: AppState, files: File[]) => ({...state, session: {...state.session!, files}}),
+  [ActionTypes.SetSessionFiles.toString()]: (state: AppState, files: File[]) => ({...state, session: {...state.session!, files: R.sortBy(f => f.relativePath, files)}}),
   [ActionTypes.AddProject.toString()]: (state: AppState, data: Project) => ({ ...state, projects: R.prepend(data, state.projects) }),
   [ActionTypes.SetSession.toString()]: (state: AppState, session: Session) => ({ ...state, session: session }),
   [ActionTypes.UpdateWsToken.toString()]: (state: AppState, token: string) => {
