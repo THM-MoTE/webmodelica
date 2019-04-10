@@ -5,11 +5,12 @@ A web-based Modelica-Toolbox.
 image::doc/screenshot.png[]
 
 === Docker
-The backend, frontend and MoPE server are published as docker containers to https://cloud.docker.com/u/thmmote/repository/list[DockerHub]:
+The backend, frontend and MoPE server are published as docker containers to https://hub.docker.com/u/thmmote[DockerHub]:
 
-- https://cloud.docker.com/u/thmmote/repository/docker/thmmote/webmodelica[backend]
-- https://cloud.docker.com/u/thmmote/repository/docker/thmmote/webmodelica-ui[frontend]
-- https://cloud.docker.com/u/thmmote/repository/docker/thmmote/mope-server[mope]
+
+- https://hub.docker.com/r/thmmote/webmodelica[backend]
+- https://hub.docker.com/r/thmmote/webmodelica-ui[frontend]
+- https://hub.docker.com/r/thmmote/mope-server[mope]
 
 Starting a production deployment should be as simple as:
 
