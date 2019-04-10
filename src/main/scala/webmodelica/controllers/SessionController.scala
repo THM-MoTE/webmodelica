@@ -99,7 +99,8 @@ class SessionController@Inject()(
       }
       post("/sessions/:sessionId/files/update") { req: NewFileRequest =>
         withSession(req.sessionId) { service =>
-          service.update(ModelicaFile(req.relativePath, req.content))
+          val file = ModelicaFile(req.relativePath, req.content)
+          service.update(file).map(_ => file)
         }
       }
 
