@@ -26,6 +26,7 @@ interface Props {
 interface State {
   showNewFileDialog: boolean
   showUploadDialog: boolean
+  fileToRename?: File
   errors: string[]
 }
 
@@ -159,12 +160,57 @@ class FileViewCon extends React.Component<Props, State> {
     )
   }
 
+  private renameFile(f:File, name:string) {
+    if(R.isEmpty(name) || R.contains(" ", name)) {
+      this.updateErrors([
+        "The filename can't contain spaces!",
+        "The filename can't be empty!"
+      ])
+    } else {
+      this.props.api.renameFile(f, name)
+        .then(newFile => {
+          const otherFiles = this.props.files.filter(other => other.relativePath != f.relativePath)
+          this.props.setSessionFiles(R.append(newFile, otherFiles))
+          this.setState({ fileToRename: undefined })
+        })
+    }
+  }
+
+  private renameDialog() {
+    const handleClose = () => {
+      console.log("close: ", this.state)
+      if (R.isEmpty(this.state.errors))
+        this.setState({ fileToRename: undefined })
+    }
+    let newFilename:string = ""
+    const handleFilenameChange = (ev:any) => newFilename = ev.target.value
+    return (
+      <Modal show={this.state.fileToRename!==undefined} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Rename file</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group>
+              <Form.Label>Filename</Form.Label>
+              <Form.Control type="text" size="lg" defaultValue={this.state.fileToRename && this.state.fileToRename!.relativePath} onChange={handleFilenameChange} />
+            </Form.Group>
+            </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="success" type="submit" onClick={() => this.renameFile(this.state.fileToRename!, newFilename)}>Rename</Button>
+        </Modal.Footer>
+      </Modal>
+    )
+  }
+
   render() {
     const files = this.props.files
     const fileClicked = this.props.onFileClicked
     const errorsInFile = (f: File) => this.props.compilerErrors.filter(e => e.file == f.relativePath)
     const newFileClicked = () => { this.setState({ showNewFileDialog: true }) }
     const uploadArchiveClicked = () => { this.setState({showUploadDialog: true}) }
+    const renameFileClicked = (f:File) => this.setState({fileToRename: f})
     return (<>
         <h5 className="text-secondary">Actions</h5>
         <ButtonGroup vertical className="full-width">
@@ -183,13 +229,14 @@ class FileViewCon extends React.Component<Props, State> {
               size="sm"
               id={`file-view-dropdown-${f.relativePath}`}
               variant={(f === this.props.activeFile) ? "secondary" : "outline-secondary"}>
+              <Dropdown.Item className="text-warning" onSelect={() => renameFileClicked(f)}><Octicon name="pencil" /> Rename</Dropdown.Item>
               <Dropdown.Item className="text-danger" onSelect={() => this.deleteFile(f)}><Octicon name="x" /> Delete</Dropdown.Item>
-              <Dropdown.Item className="text-warning"><Octicon name="pencil" /> Rename</Dropdown.Item>
             </SplitButton>
           )}
         </ButtonGroup>
       {this.newFileDialog()}
       {this.uploadDialog()}
+      {this.renameDialog()}
     </>
     )
   }
