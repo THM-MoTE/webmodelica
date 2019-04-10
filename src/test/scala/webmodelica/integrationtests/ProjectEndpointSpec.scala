@@ -31,7 +31,7 @@ class ProjectEndpointSpec
     .withHeader(constants.authorizationHeader, token)
     .accept("application/json")
 
-  "The /projects endpoint" should "create a project" in {
+  "The /projects endpoint" should "create a project at POST /api/v1/projects" in {
     val req = client.post("projects")
       .withHeader(constants.authorizationHeader, token)
       .withContent(
@@ -48,13 +48,13 @@ class ProjectEndpointSpec
       proj.owner shouldBe (user.username)
     }.asScala
   }
-  it should "return all projects" in {
+  it should "return all projects at GET /api/v1/projects" in {
     projectsReq.send[Seq[JSProject]]()
       .map{ seq => seq should not be ('empty) }
       .handle(catchError)
       .asScala
   }
-  it should "return a specific project" in {
+  it should "return a specific project at GET /api/v1/projects/:id" in {
     projectsReq.send[Seq[JSProject]]()
       .handle(catchError)
       .map(seq => seq.last)

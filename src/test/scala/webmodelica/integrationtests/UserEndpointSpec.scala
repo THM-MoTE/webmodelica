@@ -18,21 +18,21 @@ class UserEndpointSpec
 
   val client = new featherbed.Client(new java.net.URL(baseUrl+"users/"))
 
-  "The /users endpoint" should "register a user" in {
+  "The /users endpoint" should "register a user at POST /api/v1/users/register" in {
     val req = client.post("register")
       .withContent(user, "application/json")
       .accept("application/json")
 
     req.send[TokenResponse]().handle(catchError).map(x => succeed).asScala
   }
-  it should "login a user" in {
+  it should "login a user at POST /api/v1/users/login" in {
     val req = client.post("login")
       .withContent(LoginRequest(user.username, user.password), "application/json")
       .accept("application/json")
 
     req.send[TokenResponse]().handle(catchError).map(t => succeed).asScala
   }
-  it should "refresh a token" in {
+  it should "refresh a token at POST /api/v1/users/refresh" in {
     val loginReq = client.post("login")
       .withContent(LoginRequest(user.username, user.password), "application/json")
       .accept("application/json")
