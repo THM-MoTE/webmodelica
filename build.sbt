@@ -21,6 +21,7 @@ lazy val root = (project in file("."))
   .enablePlugins(BuildInfoPlugin, JavaAppPackaging)
   .settings(Common.settings)
   .settings(
+    addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
     version := IO.read(file("./project/version.txt")).trim(),
     buildInfoKeys := Seq[BuildInfoKey](name, version,
       BuildInfoKey.action("license") (s"(c) $copyrightYear $copyrightName - $license"),

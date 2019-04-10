@@ -3,7 +3,7 @@ package webmodelica.models
 import webmodelica.stores.FSStore
 import java.util.UUID
 import io.scalaland.chimney.dsl._
-
+import io.circe.generic.JsonCodec
 import webmodelica.UUIDStr
 
 case class Session(
@@ -15,6 +15,7 @@ case class Session(
   def basePath:String = s"${owner}_${project.name}"
 }
 
+@JsonCodec
 case class JSSession(project: JSProject,
   id: UUIDStr,
   files: List[ModelicaFile])

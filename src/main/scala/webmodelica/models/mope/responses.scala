@@ -1,7 +1,10 @@
 package webmodelica.models.mope
 
+import io.circe.generic.JsonCodec
+
 /** mope-server response types. */
 object responses {
+  @JsonCodec
   case class CompilerError(
     `type`: String,
     file: String,
@@ -13,6 +16,7 @@ object responses {
     val Type, Variable, Function, Keyword, Package, Model, Class, Property = Value
   }
 
+  @JsonCodec
   case class Suggestion(kind: String,
     name: String,
     parameters: Option[Seq[String]],
@@ -22,5 +26,6 @@ object responses {
       s"$kind - $name"
   }
 
+  @JsonCodec
   case class SimulationResult(modelName:String, variables:Map[String,Seq[Double]])
 }
