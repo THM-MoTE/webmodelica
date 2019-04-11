@@ -6,7 +6,7 @@ import webmodelica.models.errors.UsernameAlreadyInUse
 import webmodelica.{DBSpec, WMSpec, constants}
 
 class UserStoreSpec extends DBSpec(Some(constants.userCollection)) {
-  val store  = new UserStore(database)
+  val store  = new UserStoreImpl(database)
 
   val user = User("nico", "nico@test.example", "123456")
   "The UserStore" should "save users" in {

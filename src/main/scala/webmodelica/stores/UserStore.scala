@@ -14,7 +14,12 @@ import webmodelica.models.{DocumentWriters, Project, User, UserDocument}
 import webmodelica.conversions.futures._
 import webmodelica.models.errors.UsernameAlreadyInUse
 
-class UserStore @Inject()(db:MongoDatabase)
+trait UserStore {
+  def add(u:User): Future[Unit]
+  def findBy(username: String): Future[Option[User]]
+}
+
+class UserStoreImpl @Inject()(db:MongoDatabase)
   extends DocumentWriters {
   private val collection:MongoCollection[UserDocument] = db.getCollection(constants.userCollection)
 
