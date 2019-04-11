@@ -20,7 +20,8 @@ trait UserStore {
 }
 
 class UserStoreImpl @Inject()(db:MongoDatabase)
-  extends DocumentWriters {
+    extends UserStore
+    with DocumentWriters {
   private val collection:MongoCollection[UserDocument] = db.getCollection(constants.userCollection)
 
   def add(u:User): Future[Unit] =
