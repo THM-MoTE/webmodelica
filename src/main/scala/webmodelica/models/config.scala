@@ -9,7 +9,8 @@ package config {
     mope: MopeClientConfig,
     mongodb: MongoDBConfig,
     secret: String,
-    tokenExpiration: Duration
+    tokenExpiration: Duration,
+    cacheUsers:Boolean
   )
 
   case class MongoDBConfig(

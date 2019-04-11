@@ -10,6 +10,7 @@ import org.mongodb.scala._
 import webmodelica.ApiPrefix
 import webmodelica.models._
 import webmodelica.services._
+import webmodelica.stores._
 
 import scala.concurrent.ExecutionContext
 
@@ -63,6 +64,19 @@ object AppModule
   def mongoDBProvider(dbConf:MongoDBConfig, client:MongoClient): MongoDatabase = {
     client.getDatabase(dbConf.database)
       .withCodecRegistry(codecRegistry)
+  }
+
+  @Singleton
+  @Provides
+  def userStore(db:MongoDatabase, config:WMConfig):UserStore = {
+    val store = new UserStoreImpl(db)
+    if(config.cacheUsers) {
+      info(s"caching users enabled")
+      new UserService(store)
+    } else {
+      info(s"caching users disabled")
+      store
+    }
   }
 
   @Singleton
