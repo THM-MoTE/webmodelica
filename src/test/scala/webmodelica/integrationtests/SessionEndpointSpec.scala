@@ -19,7 +19,7 @@ import featherbed._
 import featherbed.circe._
 import java.nio.file.{Paths, Path}
 import com.twitter.util.{Future,Await}
-import com.twitter.finagle.http.Response
+import com.twitter.finagle.http.{Response, Status}
 
 class SessionEndpointSpec
   extends AsyncWMSpec {
@@ -32,6 +32,15 @@ class SessionEndpointSpec
   override def beforeAll = {
     super.beforeAll
     token = loginTestUser(client).token
+  }
+
+  val simpleFile = ModelicaFile(Paths.get("a/b/simple.mo"), "model simple end simple;")
+  def createSimpleFile:Future[ModelicaFile] = {
+    val req = client.post(s"${session.id}/files/update")
+        .withHeader(constants.authorizationHeader, token)
+        .withContent(simpleFile, "application/json")
+        .accept("application/json")
+    req.send[ModelicaFile]().handle(catchError)
   }
 
   "The /project endpoint" should "create a session at POST /api/v1/projects/:projectId/sessions/new" in {
@@ -58,14 +67,8 @@ class SessionEndpointSpec
     session.id should not be ('empty)
   }
   "The /session endpoint" should "create a file at POST /api/v1/sessions/:sessionId/files/update" in {
-    val file = ModelicaFile(Paths.get("a/b/simple.mo"), "model simple end simple;")
-    val req2 = client.post(s"${session.id}/files/update")
-        .withHeader(constants.authorizationHeader, token)
-        .withContent(file, "application/json")
-        .accept("application/json")
-
-    req2.send[ModelicaFile]().handle(catchError).map { newFile =>
-      newFile shouldBe (file)
+    createSimpleFile.map { newFile =>
+      newFile shouldBe (simpleFile)
     }.asScala
   }
   it should "update a file at POST /api/v1/sessions/:sessionId/files/update" in {
@@ -78,6 +81,31 @@ class SessionEndpointSpec
     req2.send[ModelicaFile]().handle(catchError).map { newFile =>
       newFile shouldBe (file)
     }.asScala
+  }
+  it should "rename a file at PUT /api/v1/sessions/:sessionId/files/rename" in {
+    val renameFile = (f:ModelicaFile) =>
+      client.put(s"${session.id}/files/rename")
+        .withHeader(constants.authorizationHeader, token)
+        .withContent(Json.obj(
+          "oldPath" -> f.relativePath.asJson,
+          "newPath" -> f.relativePath.getParent.resolve("simple-new.mo").asJson
+        ), "application/json")
+        .accept("application/json")
+
+    (for {
+      oldFile <- createSimpleFile
+      newFile <- renameFile(oldFile).send[ModelicaFile]().handle(catchError)
+    } yield (newFile.relativePath should not be (oldFile.relativePath))).asScala
+  }
+  it should "delete a file at DELETE  /api/v1/sessions/:sessionId/files" in {
+    val deleteFile = (p:String) =>
+      client.delete(s"${session.id}/files?path=$p")
+        .withHeader(constants.authorizationHeader, token)
+
+    (for {
+      file <- createSimpleFile
+      req <- deleteFile(file.relativePath.toString).send[Response]().handle(catchError)
+    } yield req.status shouldBe (Status.NoContent)).asScala
   }
   it should "compile project at POST /api/v1/sessions/:sessionId/compile" in {
     val file = ModelicaFile(Paths.get("a/b/simple.mo"), "model simp end simple;")
@@ -97,3 +125,8 @@ class SessionEndpointSpec
     } yield (errors should not be ('empty))).asScala
   }
 }
+
+//TODO:
+// [info] POST    /api/v1/sessions/:sessionId/files/upload
+// [info] POST    /api/v1/sessions/:sessionId/simulate
+// [info] GET     /api/v1/sessions/:sessionId/simulate
