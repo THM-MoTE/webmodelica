@@ -143,16 +143,7 @@ class SessionController@Inject()(
       }
       post("/sessions/:sessionId/complete") { req: CompleteRequest =>
         withSession(req.sessionId) { service =>
-          val complete = req.toMopeRequest
-          debug(s"complete request is $complete")
-          Future.value(Seq(
-            Suggestion("Keyword", "model"),
-            Suggestion("Keyword", "class"),
-            Suggestion("Type", "Real"),
-            Suggestion("Model", "BouncingBall"),
-            Suggestion("Package", "Modelica"),
-            Suggestion("Variable", "h"),
-          ))
+          service.complete(req.toMopeRequest)
         }
       }
       post("/sessions/:sessionId/simulate") { req: FSimulateRequest =>
