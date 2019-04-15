@@ -24,10 +24,10 @@ const typeMap: { [k: string]: monaco.languages.CompletionItemKind } = {
   'variable': monaco.languages.CompletionItemKind.Variable,
   'function': monaco.languages.CompletionItemKind.Function,
   'keyword': monaco.languages.CompletionItemKind.Keyword,
-  'package': monaco.languages.CompletionItemKind.Variable,
-  'model': monaco.languages.CompletionItemKind.Variable,
-  'class': monaco.languages.CompletionItemKind.Variable,
-  'property': monaco.languages.CompletionItemKind.Variable
+  'package': monaco.languages.CompletionItemKind.Folder,
+  'model': monaco.languages.CompletionItemKind.Class,
+  'class': monaco.languages.CompletionItemKind.Class,
+  'property': monaco.languages.CompletionItemKind.Property
 }
 
 export function toVSCodeComplete(s:Suggestion):monaco.languages.CompletionItem {
