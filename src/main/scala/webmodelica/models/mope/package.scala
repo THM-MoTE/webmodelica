@@ -8,10 +8,4 @@ import io.circe.generic.JsonCodec
   * https://github.com/THM-MoTE/mope-server
   */
 package object mope {
-  /** Wrapper around a path to a file. */
-  @JsonCodec
-  case class FilePath(path: String) extends AnyVal
-  /** A position (2D Point) inside of a file */
-  @JsonCodec
-  case class FilePosition(line: Int, column: Int)
 }
