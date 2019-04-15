@@ -2,6 +2,8 @@ import React from 'react'
 import { Col, Nav } from 'react-bootstrap'
 import * as monaco from 'monaco-editor';
 
+const language = "modelica"
+
 export class EditorsPane extends React.Component<any, any> {
 
   static editorName: string = "monaco-editor"
@@ -12,16 +14,32 @@ export class EditorsPane extends React.Component<any, any> {
   }
 
   componentDidMount() {
-    // console.log("files", this.props.files)
-
     if (!EditorsPane.monacoEditor) {
       EditorsPane.monacoEditor = monaco.editor.create(document.getElementById(EditorsPane.editorName) as HTMLElement, {
         value: "your editor for modelica code!",
-        language: "modelica",
+        language: language,
         glyphMargin: true
       })
+      this.setupAutoComplete()
     } else {
     }
+  }
+
+  private setupAutoComplete() {
+    const suggestions:monaco.languages.CompletionItem[] = [
+      {label: 'model', kind: monaco.languages.CompletionItemKind.Keyword, insertText: 'model'},
+      {label: 'class', kind: monaco.languages.CompletionItemKind.Keyword, insertText: 'class'},
+      {label: 'annotation', kind: monaco.languages.CompletionItemKind.Keyword, insertText: 'annotation'},
+      {label: 'Modelica', kind: monaco.languages.CompletionItemKind.Folder, insertText: 'Modelica'},
+      { label: 'BouncingBall', kind: monaco.languages.CompletionItemKind.Class, insertText: 'BouncingBall'},
+    ]
+    monaco.languages.registerCompletionItemProvider(language, {
+      provideCompletionItems: (model: monaco.editor.ITextModel, position: monaco.Position) => {
+        return {
+          suggestions: suggestions
+        }
+      }
+    })
   }
 
   render() {
