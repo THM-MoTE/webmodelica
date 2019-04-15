@@ -1,5 +1,5 @@
 
-import { File, Project, TokenWrapper, Session, AppState, UserAuth, CompilerError, SimulationResult, TableFormat, SimulateRequest } from '../models/index'
+import { File, Project, TokenWrapper, Session, AppState, UserAuth, CompilerError, SimulationResult, TableFormat, SimulateRequest, Complete, Suggestion } from '../models/index'
 import React, { Component } from 'react';
 import { Store } from 'redux';
 import { updateToken } from '../redux/index';
@@ -252,5 +252,24 @@ export class ApiClient {
     } else {
       return Promise.reject("can't simulate without a session!")
     }
+  }
+
+  public autocomplete(c: Complete): Promise<Suggestion[]> {
+    return this.withSession("can't complete without a session")
+      .then(session =>
+        fetch(this.sessionUri()+`/${session.id}/complete`, {
+          method: 'POST',
+          headers: {
+            [authHeader]: this.token(),
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(c)
+        })
+      )
+      .then(rejectError)
+      .then(this.updateWSToken.bind(this))
+      .then(res => res.json())
+      .then(lst => lst.map((s:Suggestion) => ({ ...s, kind: s.kind.toLowerCase()})))
   }
 }
