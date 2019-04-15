@@ -7,8 +7,9 @@ import com.twitter.finatra.http.Controller
 import com.twitter.finatra.http.fileupload._
 import org.mongodb.scala.bson.BsonObjectId
 import webmodelica.models._
-import webmodelica.models.mope.requests.SimulateRequest
-import webmodelica.models.mope.responses.SimulationResult
+import webmodelica.models.mope.{FilePosition, FilePath}
+import webmodelica.models.mope.requests.{Complete, SimulateRequest}
+import webmodelica.models.mope.responses.{SimulationResult, Suggestion}
 import webmodelica.services.{TokenGenerator, SessionRegistry, SessionService}
 import webmodelica.stores.{
   UserStore,
@@ -38,6 +39,15 @@ case class CompileRequest(
   @RouteParam() sessionId: String,
   @JsonProperty() path: java.nio.file.Path,
 )
+case class CompleteRequest(
+  @RouteParam() sessionId: String,
+  @JsonProperty() file: String,
+  @JsonProperty() position: FilePosition,
+  @JsonProperty() word: String
+) {
+  def toMopeRequest: Complete =
+    this.into[Complete].transform
+}
 case class FSimulateRequest(
   @RouteParam() sessionId: String,
   @JsonProperty() modelName: String,
@@ -129,6 +139,20 @@ class SessionController@Inject()(
       post("/sessions/:sessionId/compile") { req: CompileRequest =>
         withSession(req.sessionId) { service =>
           service.compile(req.path)
+        }
+      }
+      post("/sessions/:sessionId/complete") { req: CompleteRequest =>
+        withSession(req.sessionId) { service =>
+          val complete = req.toMopeRequest
+          debug(s"complete request is $complete")
+          Future.value(Seq(
+            Suggestion("Keyword", "model"),
+            Suggestion("Keyword", "class"),
+            Suggestion("Type", "Real"),
+            Suggestion("Model", "BouncingBall"),
+            Suggestion("Package", "Modelica"),
+            Suggestion("Variable", "h"),
+          ))
         }
       }
       post("/sessions/:sessionId/simulate") { req: FSimulateRequest =>
