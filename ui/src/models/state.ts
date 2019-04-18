@@ -20,7 +20,11 @@ export interface Session {
   files: File[],
   openedFiles: File[],
   compilerErrors: CompilerError[],
-  simulationOptions: SimulationOption[]
+  simulation: SimulationState
+}
+
+export interface SimulationState {
+  options: SimulationOption[]
 }
 
 export interface SimulationOption {

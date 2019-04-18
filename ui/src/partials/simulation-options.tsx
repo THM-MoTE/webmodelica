@@ -52,7 +52,7 @@ class SimulationOptionsCon extends React.Component<Props, State> {
         <Form.Row key={idx}>
           <Col sm={4}>
             <Form.Control as="select" placeholder="name" value={opt.name} onChange={(ev:any) => this.updateName(idx, ev.target.value)}>
-              {availableSimulationOptions.map(o => (<option>{o.key}</option>))}
+              {availableSimulationOptions.map(o => (<option key={o.key}>{o.key}</option>))}
             </Form.Control>
           </Col>
           <Col sm={6}><Form.Control placeholder="value" value={opt.value.toString()} onChange={(ev:any) => this.updateValue(idx, ev.target.value)}/></Col>
@@ -66,7 +66,7 @@ class SimulationOptionsCon extends React.Component<Props, State> {
 }
 
 function mapProps(state: AppState) {
-  return {options: state.session!.simulationOptions}
+  return {options: state.session!.simulation.options}
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {

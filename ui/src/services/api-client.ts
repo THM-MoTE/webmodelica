@@ -114,11 +114,12 @@ export class ApiClient {
       .then(this.updateWSToken.bind(this))
       .then(res => res.json())
       .then((obj: any) => ({
-        ...obj, compilerErrors: [], simulationOptions: [
+        ...obj, compilerErrors: [], simulation: { options: [
           { name: "startTime", value: 0 },
           { name: "stopTime", value: 5 },
           { name: "numberOfIntervals", value: 500 }
-        ]}))
+        ]}
+      }))
   }
 
   public compile(file: File): Promise<CompilerError[]> {

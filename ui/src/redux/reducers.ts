@@ -42,16 +42,16 @@ const reducerMap = {
   [ActionTypes.SetCompilerErrors.toString()]: (state: AppState, errors: CompilerError[]) => ({ ...state, session: { ...state.session!, compilerErrors: errors}}),
   [ActionTypes.UpdateSimulationOption.toString()]: (state: AppState, payload: any) => {
     const { idx, option } = payload
-    const simulationOptions:SimulationOption[] = state.session!.simulationOptions.map((opt, i) => {
+    const simulationOptions:SimulationOption[] = state.session!.simulation.options.map((opt, i) => {
       if(i === idx) return option
       else return opt
     })
-    return R.assocPath(["session", "simulationOptions"], simulationOptions, state) as AppState
+    return R.assocPath(["session", "simulation", "options"], simulationOptions, state) as AppState
   },
   [ActionTypes.AddSimulationOption.toString()]: (state: AppState, payload:SimulationOption) =>
-    R.assocPath(["session", "simulationOptions"], R.append(payload, state.session!.simulationOptions), state) as AppState,
+    R.assocPath(["session", "simulation", "options"], R.append(payload, state.session!.simulation.options), state) as AppState,
   [ActionTypes.DeleteSimulationOption.toString()]: (state: AppState, idx: number) =>
-    R.assocPath(["session", "simulationOptions"], state.session!.simulationOptions.filter((_,i) => i !== idx), state) as AppState
+    R.assocPath(["session", "simulation", "options"], state.session!.simulation.options.filter((_,i) => i !== idx), state) as AppState
 }
 
 export function rootReducer(state: AppState = initialState(), action: Action): AppState {

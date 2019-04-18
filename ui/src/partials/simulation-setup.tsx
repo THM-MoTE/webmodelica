@@ -44,7 +44,7 @@ class SimulationSetupCon extends React.Component<Props, State> {
 }
 
 function mapProps(state: AppState) {
-  return { options: state.session!.simulationOptions }
+  return { options: state.session!.simulation.options }
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {

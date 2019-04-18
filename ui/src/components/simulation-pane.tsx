@@ -31,14 +31,6 @@ class SimulationPaneCon extends React.Component<Props, State> {
     this.state = {simulating: false}
   }
 
-  componentDidMount() {
-    // this.props.api
-    //   .getSimulationResults("/simulation-example.json")
-    //   .then(rs => this.setState({
-    //     resultSet: (rs as TableFormat)
-    //   }))
-  }
-
   private simulate(sr: SimulateRequest): void {
     console.log("gonna simulate: ", sr)
     this.setState({ resultSet: undefined, resultLocation: undefined, simulating: true })
