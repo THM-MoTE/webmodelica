@@ -1,4 +1,4 @@
-import { initialState, AppState, Session, SimulationOption } from '../models/state'
+import { initialState, AppState, Session, SimulationOption, SimulationData } from '../models/state'
 import { Project } from '../models/project'
 import { File } from '../models/file'
 import { Action, ActionTypes } from './actions'
@@ -51,7 +51,9 @@ const reducerMap = {
   [ActionTypes.AddSimulationOption.toString()]: (state: AppState, payload:SimulationOption) =>
     R.assocPath(["session", "simulation", "options"], R.append(payload, state.session!.simulation.options), state) as AppState,
   [ActionTypes.DeleteSimulationOption.toString()]: (state: AppState, idx: number) =>
-    R.assocPath(["session", "simulation", "options"], state.session!.simulation.options.filter((_,i) => i !== idx), state) as AppState
+    R.assocPath(["session", "simulation", "options"], state.session!.simulation.options.filter((_,i) => i !== idx), state) as AppState,
+  [ActionTypes.AddSimulationData.toString()]: (state: AppState, data:SimulationData) =>
+    R.assocPath(["session", "simulation", "data"], [data], state)
 }
 
 export function rootReducer(state: AppState = initialState(), action: Action): AppState {

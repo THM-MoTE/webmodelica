@@ -1,4 +1,4 @@
-import { UserAuth, Project, File, Session, CompilerError, SimulationOption } from '../models/index'
+import { UserAuth, Project, File, Session, CompilerError, SimulationOption, SimulationData } from '../models/index'
 
 export enum ActionTypes {
   Logout,
@@ -12,7 +12,8 @@ export enum ActionTypes {
   SetCompilerErrors,
   AddSimulationOption,
   UpdateSimulationOption,
-  DeleteSimulationOption
+  DeleteSimulationOption,
+  AddSimulationData
 }
 
 export interface Action {
@@ -31,3 +32,4 @@ export const addOption = (o: SimulationOption) => ({ type: ActionTypes.AddSimula
 export const updateOption = (idx: number, o: SimulationOption) => ({ type: ActionTypes.UpdateSimulationOption, payload: {idx: idx, option: o}})
 export const deleteOption = (idx: number) => ({type: ActionTypes.DeleteSimulationOption, payload: idx})
 export const setSessionFiles = (files:File[]) => ({type: ActionTypes.SetSessionFiles, payload: files})
+export const addSimulationData = (data: SimulationData) => ({type: ActionTypes.AddSimulationData, payload: data})

@@ -1,5 +1,5 @@
 
-import { CompilerError, File, Project } from './index'
+import { CompilerError, File, Project, TableFormat } from './index'
 import {isFuture} from 'date-fns'
 
 export interface UserAuth {
@@ -23,8 +23,14 @@ export interface Session {
   simulation: SimulationState
 }
 
+export interface SimulationData {
+  data?: TableFormat
+  address: URL
+}
+
 export interface SimulationState {
   options: SimulationOption[]
+  data: SimulationData[]
 }
 
 export interface SimulationOption {

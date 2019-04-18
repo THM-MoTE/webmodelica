@@ -9,19 +9,20 @@ import Octicon from 'react-octicon'
 import { Row, Col, Button, ButtonGroup, Container as RContainer, Card } from 'react-bootstrap'
 import { renderErrors } from '../partials/errors';
 import * as R from 'ramda';
-import { Action } from '../redux/actions'
-import { AppState, Session, SimulationResult, TableFormat, SimulateRequest } from '../models/index'
+import { Action, addSimulationData } from '../redux/actions'
+import { AppState, Session, SimulationResult, TableFormat, SimulateRequest, SimulationState } from '../models/index'
 import { ApiClient } from '../services/api-client'
 import { LoadingSpinner } from '../partials/loading-spinner';
+import { SimulationData } from '../models';
 
 interface Props {
   api: ApiClient
   session: Session
+  simulationData?: SimulationData
+  addSimulationData(data:SimulationData):void
 }
 
 interface State {
-  resultSet?: TableFormat
-  resultLocation?: URL
   simulating:boolean
 }
 
@@ -33,12 +34,12 @@ class SimulationPaneCon extends React.Component<Props, State> {
 
   private simulate(sr: SimulateRequest): void {
     console.log("gonna simulate: ", sr)
-    this.setState({ resultSet: undefined, resultLocation: undefined, simulating: true })
+    this.setState({ simulating: true })
     this.props.api.simulate(sr)
       .then(l => {
         const url = new URL(l)
         url.host = window.location.host
-        this.setState({ resultLocation: url })
+        this.props.addSimulationData({ address: url })
         this.queryResults(url)
       })
   }
@@ -47,7 +48,11 @@ class SimulationPaneCon extends React.Component<Props, State> {
     console.log("query results ...")
     this.props.api
       .getSimulationResults(location)
-      .then(rs => this.setState({ resultSet: (rs as TableFormat) }))
+      .then(rs => {
+        //TODO: handle multiple simulation results
+        this.props.addSimulationData({address: location, data:rs as TableFormat})
+        this.setState({simulating: false})
+      })
       .catch(er => window.setTimeout(() => this.queryResults(location), 5000))
   }
 
@@ -57,19 +62,19 @@ class SimulationPaneCon extends React.Component<Props, State> {
 
         <SimulationSetup api={this.props.api} simulate={this.simulate.bind(this)} />
 
-        {this.state.resultSet && (<SimulationPlot data={this.state.resultSet} api={this.props.api} />)}
-        <LoadingSpinner msg={"simulating be patient.."} display={this.state.resultSet === undefined && this.state.simulating}/>
+        {this.props.simulationData && this.props.simulationData.data && (<SimulationPlot data={this.props.simulationData.data!} api={this.props.api} />)}
+        <LoadingSpinner msg={"simulating be patient.."} display={this.state.simulating}/>
       </WmContainer>
     )
   }
 }
 
 function mapProps(state: AppState) {
-  return { session: state.session! }
+  return { session: state.session!, simulationData: state.session!.simulation.data[0] }
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({}, dispatch)
+  return bindActionCreators({addSimulationData}, dispatch)
 }
 
 const SimulationPane = connect(mapProps, dispatchToProps)(SimulationPaneCon)
