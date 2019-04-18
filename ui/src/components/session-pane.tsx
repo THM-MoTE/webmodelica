@@ -70,7 +70,7 @@ class SessionPaneCon extends React.Component<Props, State> {
   }
 
   private saveCurrentFiles(): Promise<File[]> {
-    let content = EditorsPane.monacoEditor.getValue()
+    let content = EditorsPane.monacoEditor!.getValue()
     let files: File[] = this.currentFile() ? [{ ...this.currentFile(), content: content }] : []
     const updatePromises = files.map((f: File) => this.api.updateFile(f))
     return Promise.all(updatePromises).then((files) => {
@@ -102,7 +102,7 @@ class SessionPaneCon extends React.Component<Props, State> {
   markErrors(oldMarkers: string[], errors: CompilerError[]): string[] {
     console.log("old markers ", oldMarkers)
     const decos = deltaDecorations(this.currentFile(), errors)
-    return EditorsPane.monacoEditor.deltaDecorations(oldMarkers, decos)
+    return EditorsPane.monacoEditor!.deltaDecorations(oldMarkers, decos)
   }
 
   render() {

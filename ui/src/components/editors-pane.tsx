@@ -3,18 +3,24 @@ import { Col, Nav } from 'react-bootstrap'
 import * as monaco from 'monaco-editor';
 import { ApiClient } from '../services/api-client';
 import { File, toVSCodeComplete } from '../models/index'
+import * as R from 'ramda'
 
 const language = "modelica"
-
 interface Props {
   api: ApiClient
   files: File[]
 }
 
+function extractWord(model: monaco.editor.ITextModel, position: monaco.Position): string | undefined {
+  const value = model.getValueInRange(new monaco.Range(position.lineNumber, 0, position.lineNumber, position.column))
+  const matches = /[\w\.]+$/.exec(value)
+  return (matches) ? R.last(matches) : undefined
+}
+
 export class EditorsPane extends React.Component<Props, any> {
 
   static editorName: string = "monaco-editor"
-  static monacoEditor: any = undefined
+  static monacoEditor?: monaco.editor.ICodeEditor = undefined
 
   componentDidMount() {
     if (!EditorsPane.monacoEditor) {
@@ -24,28 +30,31 @@ export class EditorsPane extends React.Component<Props, any> {
         glyphMargin: true
       })
       this.setupAutoComplete()
-    } else {
     }
   }
 
   private setupAutoComplete() {
     monaco.languages.registerCompletionItemProvider(language, {
       provideCompletionItems: (model: monaco.editor.ITextModel, position: monaco.Position) => {
-        const wordAtCursor = model.getWordAtPosition(position)
-        const c = {
-          file: this.props.files[0].relativePath,
-          position: {line: position.lineNumber, column: position.column},
-          word: wordAtCursor!.word
+        const wordAtCursor = extractWord(model, position)
+        if(wordAtCursor) {
+          const c = {
+            file: this.props.files[0].relativePath,
+            position: {line: position.lineNumber, column: position.column},
+            word: wordAtCursor
+          }
+          console.log("word below cursor: ", wordAtCursor)
+          return this.props.api
+            .autocomplete(c)
+            .then(sugs => {
+              console.log("suggestions from backend are: ", sugs)
+              return {
+                suggestions: sugs.map(toVSCodeComplete)
+              }
+            })
+        } else {
+          return undefined
         }
-        console.log("word below cursor: ", wordAtCursor)
-        return this.props.api
-          .autocomplete(c)
-          .then(sugs => {
-            console.log("suggestions from backend are: ", sugs)
-            return {
-              suggestions: sugs.map(toVSCodeComplete)
-            }
-          })
       }
     })
   }

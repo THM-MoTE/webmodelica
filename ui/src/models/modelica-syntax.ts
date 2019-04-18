@@ -24,7 +24,7 @@ let ModelicaTokenizer = {
 
   tokenizer: {
     root: [
-      [/[a-z_$][\w$]*/, {
+      [/[a-z_$][\w\.$]*/, {
         cases: {
           '@keywords': { token: 'keyword.$0' },
           '@default': 'identifier'
