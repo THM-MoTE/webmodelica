@@ -5,6 +5,7 @@
 .project
 .settings
 .externalToolBuilders
+.metals
 
 *.log
 *.class
