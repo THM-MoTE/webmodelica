@@ -22,7 +22,7 @@ class SimulationPlotCon extends React.Component<Props, State> {
     this.state = { dataSet: dataSet }
     this.chartOptions = {
       //display edges as soft curves, not hard edges
-      curveType: 'function'
+      //curveType: 'function'
     }
   }
 
