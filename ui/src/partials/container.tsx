@@ -37,16 +37,16 @@ export class WmContainer extends React.Component<any, any> {
       <footer className="footer">
         <Container>
           <Row>
-            <Col>
-              <small>(c) N. Justus</small>
+            <Col xs="5">
+              <small>(c) 2019-Today by N. Justus. Distributed under the <a href="https://www.mozilla.org/en-US/MPL/2.0/">MPLv2</a>.</small>
             </Col>
-            <Col>
+            <Col xs="2">
               <small>V: v456 Rev: #123456</small>
             </Col>
-            <Col>
+            <Col xs="5">
               <small>
                 <a href="https://github.com/thm-mote/webmodelica"><Octicon name="mark-github" />&nbsp;Repository</a>&nbsp;&nbsp;
-                <a href="https://github.com/THM-MoTE/webmodelica/issues"><Octicon name="issue-opened"/>&nbsp; Issues</a><br/>
+                <a href="https://github.com/thm-mote/webmodelica/issues"><Octicon name="issue-opened"/>&nbsp; Issues</a><br/>
               </small>
             </Col>
           </Row>
