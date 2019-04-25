@@ -70,7 +70,8 @@ class SimulationPaneCon extends React.Component<Props, State> {
 }
 
 function mapProps(state: AppState) {
-  return { session: state.session!, simulationData: state.session!.simulation.data[0] }
+  const results = state.session!.simulation.data
+  return { session: state.session!, simulationData: (results.length>0) ? results[0] : undefined }
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {
