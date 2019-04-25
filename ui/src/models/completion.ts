@@ -30,11 +30,12 @@ const typeMap: { [k: string]: monaco.languages.CompletionItemKind } = {
   'property': monaco.languages.CompletionItemKind.Property
 }
 
-export function toVSCodeComplete(s:Suggestion):monaco.languages.CompletionItem {
-  let kind = typeMap[s.kind] || monaco.languages.CompletionItemKind.Class
+export function toVSCodeComplete(wordAtCursor: string|undefined, s:Suggestion):monaco.languages.CompletionItem {
+  const kind = typeMap[s.kind] || monaco.languages.CompletionItemKind.Class
+  const text = (wordAtCursor) ? s.name.substring(wordAtCursor.length-1) : s.name;
   return {
     label: s.name,
-    insertText: s.name,
+    insertText: text,
     kind: kind,
     documentation: s.classComment,
     detail: s.type

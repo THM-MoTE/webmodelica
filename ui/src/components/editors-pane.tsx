@@ -49,7 +49,7 @@ export class EditorsPane extends React.Component<Props, any> {
             .then(sugs => {
               console.log("suggestions from backend are: ", sugs)
               return {
-                suggestions: sugs.map(toVSCodeComplete)
+                suggestions: sugs.map(s => toVSCodeComplete(wordAtCursor, s))
               }
             })
         } else {
