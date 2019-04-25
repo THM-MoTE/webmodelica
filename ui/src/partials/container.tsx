@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Navbar, Nav } from 'react-bootstrap'
+import { Navbar, Nav, Row, Col, Container } from 'react-bootstrap'
 //@ts-ignore
 import Octicon from 'react-octicon'
 
@@ -34,6 +34,24 @@ export class WmContainer extends React.Component<any, any> {
       <div className="container-fluid">
         {this.props.children}
       </div>
+      <footer className="footer">
+        <Container>
+          <Row>
+            <Col>
+              <small>(c) N. Justus</small>
+            </Col>
+            <Col>
+              <small>V: v456 Rev: #123456</small>
+            </Col>
+            <Col>
+              <small>
+                <a href="https://github.com/thm-mote/webmodelica"><Octicon name="mark-github" />&nbsp;Repository</a>&nbsp;&nbsp;
+                <a href="https://github.com/THM-MoTE/webmodelica/issues"><Octicon name="issue-opened"/>&nbsp; Issues</a><br/>
+              </small>
+            </Col>
+          </Row>
+          </Container>
+      </footer>
     </>)
   }
 }
