@@ -108,25 +108,28 @@ trait MopeService {
   }
 
 
-  def simulate(sim:SimulateRequest): Future[URI] = {
-    projectId.flatMap {id =>
-      info(s"simulating for $id")
-      withClient { client =>
-        val req = client.post(s"project/$id/simulate")
-          .withContent(sim, "application/json")
-        req.send[Response]()
-          .map(r => r.headerMap.get("Location"))
-          .flatMap {
-            case Some(l) => Future.value(new URI(l))
-            case None =>
-              error(s"/simulate $req didn't return a Location header!")
-              Future.exception(new RuntimeException(s"POST /simulate didn't return a Location header!"))
-          }
-          .handle {
-            case request.ErrorResponse(req, resp) =>
-              val str = s"Error response $resp to request $req"
-              throw new Exception(str)
-          }
+  def simulate(simParam:SimulateRequest): Future[URI] = {
+    scala.concurrent.Future.fromTry(simParam.convertStepSize).asTwitter.flatMap { sim =>
+      debug(s"converting stepSize returned $sim")
+      projectId.flatMap { id =>
+        info(s"simulating for $id")
+        withClient { client =>
+          val req = client.post(s"project/$id/simulate")
+            .withContent(sim, "application/json")
+          req.send[Response]()
+            .map(r => r.headerMap.get("Location"))
+            .flatMap {
+              case Some(l) => Future.value(new URI(l))
+              case None =>
+                error(s"/simulate $req didn't return a Location header!")
+                Future.exception(new RuntimeException(s"POST /simulate didn't return a Location header!"))
+            }
+            .handle {
+              case request.ErrorResponse(req, resp) =>
+                val str = s"Error response $resp to request $req"
+                throw new Exception(str)
+            }
+        }
       }
     }
   }
