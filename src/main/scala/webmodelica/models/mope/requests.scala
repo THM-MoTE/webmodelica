@@ -34,7 +34,7 @@ object requests {
             start <- startTime.as[Double].toTry
             end <- stopTime.as[Double].toTry
             if end >= start
-          } yield (start-end) / size
+          } yield (end-start) / size
       }
 
       //if there is a stepSize provided, conversion should be working; otherwise return this

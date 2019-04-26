@@ -51,6 +51,7 @@ object Dependencies {
     "javax.activation" % "activation" % "1.1.1", //java EE package needed for finagle because it's not provided anymore since java 11
     "org.mongodb.scala" %% "mongo-scala-driver" % "2.5.+",
     "org.scalatest" %% "scalatest" % "3.0.+" % "test",
+    "org.scalacheck" %% "scalacheck" % "1.14.+" % "test",
     "io.github.finagle" %% "featherbed" % "0.3.+",
   ) ++ utils
 }
