@@ -30,4 +30,5 @@ object errors {
     override def getMessage: String = s"You can't create a ${resourceName} for another user!"
   }
   case class ArchiveError(reason:String) extends RuntimeException(reason)
+  case class StepSizeCalculationError(reason:String) extends RuntimeException(reason)
 }
