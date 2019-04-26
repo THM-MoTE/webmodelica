@@ -30,6 +30,7 @@ function simSugestion(k: string, ...values: string[]): SimulationOptionSuggestio
 export const availableSimulationOptions: SimulationOptionSuggestions[] = [
   simSugestion("startTime"),
   simSugestion("stopTime"),
+  simSugestion("stepSize"),
   simSugestion("numberOfIntervals"),
   simSugestion("method", "dassl", "euler", "ida", "heun"),
   simSugestion("tolerance")
