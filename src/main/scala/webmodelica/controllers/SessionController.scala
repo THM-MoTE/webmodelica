@@ -153,7 +153,10 @@ class SessionController@Inject()(
             response
               .ok(SimulationResponse(new java.net.URI(location)))
               .header("Location", location)
-          }
+          }.handle {
+            case e:errors.StepSizeCalculationError =>
+              response.badRequest(e.getMessage)
+            }
         }
       }
       get("/sessions/:sessionId/simulate") { req: FSimulateStatusRequest =>
