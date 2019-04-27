@@ -27,6 +27,11 @@ function simSugestion(k: string, ...values: string[]): SimulationOptionSuggestio
   }
 }
 
+export function simulationValuesFor(name:string): string[] {
+  const option = availableSimulationOptions.find(opt => opt.key===name)
+  return (option) ? option.values || [] : []
+}
+
 export const availableSimulationOptions: SimulationOptionSuggestions[] = [
   simSugestion("startTime"),
   simSugestion("stopTime"),
