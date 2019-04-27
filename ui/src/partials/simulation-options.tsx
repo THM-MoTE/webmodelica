@@ -34,11 +34,7 @@ class SimulationOptionsCon extends React.Component<Props, State> {
     this.props.updateOption(idx, {...this.props.options[idx], name: value})
   }
   private updateValue(idx: number, value: string): void {
-    //convert string to number if it's a true float number
-    //parseFloat returns NaN if it couldn't convert to float
-    const f = parseFloat(value)
-    const v = (!isNaN(f)) ? f : value
-    this.props.updateOption(idx, { ...this.props.options[idx], value: v })
+    this.props.updateOption(idx, { ...this.props.options[idx], value: value })
   }
 
   private addOptionField(): void {

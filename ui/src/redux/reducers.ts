@@ -52,6 +52,16 @@ const reducerMap = {
     R.assocPath(["session", "simulation", "options"], R.append(payload, state.session!.simulation.options), state) as AppState,
   [ActionTypes.DeleteSimulationOption.toString()]: (state: AppState, idx: number) =>
     R.assocPath(["session", "simulation", "options"], state.session!.simulation.options.filter((_,i) => i !== idx), state) as AppState,
+  [ActionTypes.ParseSimulationOptions.toString()]: (state:AppState, options:SimulationOption[]) => {
+    const opts:SimulationOption[] = options.map(o => {
+        //convert string to number if it's a true float number
+        //parseFloat returns NaN if it couldn't convert to float
+        const f: number = parseFloat(o.value as any)
+        const v: string | number = (!isNaN(f)) ? f : o.value
+        return ({ name: o.name, value: v })
+      })
+    return R.assocPath(["session", "simulation", "options"], opts, state)
+  },
   [ActionTypes.AddSimulationData.toString()]: (state: AppState, data:SimulationData) =>
     R.assocPath(["session", "simulation", "data"], [data], state)
 }

@@ -13,6 +13,7 @@ export enum ActionTypes {
   AddSimulationOption,
   UpdateSimulationOption,
   DeleteSimulationOption,
+  ParseSimulationOptions,
   AddSimulationData
 }
 
@@ -33,3 +34,4 @@ export const updateOption = (idx: number, o: SimulationOption) => ({ type: Actio
 export const deleteOption = (idx: number) => ({type: ActionTypes.DeleteSimulationOption, payload: idx})
 export const setSessionFiles = (files:File[]) => ({type: ActionTypes.SetSessionFiles, payload: files})
 export const addSimulationData = (data: SimulationData) => ({type: ActionTypes.AddSimulationData, payload: data})
+export const parseSimulationOptions = (pl: SimulationOption[]) => ({type: ActionTypes.ParseSimulationOptions, payload: pl})

@@ -6,7 +6,7 @@ import { Row, Col, Button, Form } from 'react-bootstrap'
 import Octicon from 'react-octicon'
 import { AppState, Session, TableFormat, SimulateRequest, SimulationOption, availableSimulationOptions } from '../models/index'
 import { ApiClient } from '../services/api-client'
-import { Action } from '../redux/actions'
+import { Action, parseSimulationOptions } from '../redux/actions'
 import * as R from 'ramda';
 import SimulationOptions from './simulation-options'
 import { strictEqual } from 'assert';
@@ -15,6 +15,7 @@ interface Props {
   api: ApiClient
   simulate(sr: SimulateRequest):void
   options: SimulationOption[]
+  parseSimulationOptions(options:SimulationOption[]):void
 }
 type State = any
 
@@ -22,10 +23,11 @@ class SimulationSetupCon extends React.Component<Props, State> {
   private modelName:string = ""
 
   private simulateClicked() {
+    this.props.parseSimulationOptions(this.props.options)
     const opts = R.fromPairs(
       this.props.options
         .filter(o => !R.empty(o.name.trim()))
-        .map(o => R.pair(o.name, o.value) )
+        .map(o => R.pair(o.name, o.value))
       )
     this.props.simulate({modelName: this.modelName, options: opts})
   }
@@ -48,7 +50,7 @@ function mapProps(state: AppState) {
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({}, dispatch)
+  return bindActionCreators({ parseSimulationOptions }, dispatch)
 }
 
 const SimulationSetup = connect(mapProps, dispatchToProps)(SimulationSetupCon)
