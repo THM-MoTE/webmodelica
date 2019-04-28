@@ -1,13 +1,17 @@
 import React, { Component } from 'react';
 import { Navbar, Nav, Row, Col, Container } from 'react-bootstrap'
+import {Footer} from './footer'
 //@ts-ignore
 import Octicon from 'react-octicon'
 
 export class WmContainer extends React.Component<any, any> {
+  private readonly appName:string = "Webmodelica"
   constructor(props: any) {
     super(props)
   }
-  componentDidMount() { }
+  componentDidMount() {
+    document.title = this.appName+" "+this.props.title
+  }
 
   simLink() {
     if (this.props.sessionId && this.props.active === 'session') {
@@ -23,7 +27,7 @@ export class WmContainer extends React.Component<any, any> {
   render() {
     return (<>
       <Navbar>
-        <Navbar.Brand href="#home">Webmodelica {this.props.title}</Navbar.Brand>
+        <Navbar.Brand href="#home">{this.appName} {this.props.title}</Navbar.Brand>
         <Navbar.Toggle />
         <div className="collapse navbar-collapse justify-content-end">
           {this.simLink()}
@@ -34,24 +38,7 @@ export class WmContainer extends React.Component<any, any> {
       <div className="container-fluid">
         {this.props.children}
       </div>
-      <footer className="footer">
-        <Container>
-          <Row>
-            <Col xs="5">
-              <small>(c) 2019-Today by N. Justus. Distributed under the <a href="https://www.mozilla.org/en-US/MPL/2.0/">MPLv2</a>.</small>
-            </Col>
-            <Col xs="2">
-              <small>V: v456 Rev: #123456</small>
-            </Col>
-            <Col xs="5">
-              <small>
-                <a href="https://github.com/thm-mote/webmodelica"><Octicon name="mark-github" />&nbsp;Repository</a>&nbsp;&nbsp;
-                <a href="https://github.com/thm-mote/webmodelica/issues"><Octicon name="issue-opened"/>&nbsp; Issues</a><br/>
-              </small>
-            </Col>
-          </Row>
-          </Container>
-      </footer>
+      <Footer />
     </>)
   }
 }
