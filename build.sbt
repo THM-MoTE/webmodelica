@@ -14,7 +14,7 @@ resolvers += Resolver.sonatypeRepo("releases")
 initialCommands in console := Common.consoleInit
 
 val copyrightName = "N. Justus"
-val copyrightYear = "2019"
+val copyrightYear = "2019-Today"
 val license = "MPLv2"
 
 lazy val root = (project in file("."))
@@ -24,7 +24,9 @@ lazy val root = (project in file("."))
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
     version := IO.read(file("./project/version.txt")).trim(),
     buildInfoKeys := Seq[BuildInfoKey](name, version,
-      BuildInfoKey.action("license") (s"(c) $copyrightYear $copyrightName - $license"),
+      BuildInfoKey.action("license") (license),
+      BuildInfoKey.action("licenseUri") ("https://www.mozilla.org/en-US/MPL/2.0"),
+      BuildInfoKey.action("copyright")(s"(c) $copyrightYear $copyrightName"),
       BuildInfoKey.action("commit") {
         Common.latestCommitHash()
       }), // re-computed each time at compile,

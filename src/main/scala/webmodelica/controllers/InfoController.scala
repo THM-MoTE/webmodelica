@@ -8,7 +8,9 @@ import webmodelica.models.config._
 case class Infos(
   appName:String,
   version:String,
+  copyright:String,
   license:String,
+  licenseUri:String,
   commitHash:String,
 )
 
@@ -22,7 +24,9 @@ class InfoController @Inject()(config: WMConfig, prefix:webmodelica.ApiPrefix)
       Infos(
         BuildInfo.name,
         BuildInfo.version,
+        BuildInfo.copyright,
         BuildInfo.license,
+        BuildInfo.licenseUri,
         BuildInfo.commit
       )
     }

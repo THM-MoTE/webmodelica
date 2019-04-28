@@ -1,5 +1,5 @@
 
-import { File, Project, TokenWrapper, Session, AppState, UserAuth, CompilerError, SimulationResult, TableFormat, SimulateRequest, Complete, Suggestion } from '../models/index'
+import { File, Project, TokenWrapper, Session, AppState, UserAuth, CompilerError, SimulationResult, TableFormat, SimulateRequest, Complete, Suggestion, AppInfo } from '../models/index'
 import React, { Component } from 'react';
 import { Store } from 'redux';
 import { updateToken } from '../redux/index';
@@ -17,13 +17,26 @@ function rejectError(res: Response): Promise<Response> {
 const authHeader = "Authorization"
 const apiPrefix = "/api/v1/"
 
+const backendUri: () => string =
+  () => window.location.protocol + "//" + window.location.host + apiPrefix
+
+export function fetchAppInfos(): Promise<AppInfo> {
+  return fetch(backendUri()+"info", {
+    method: 'GET',
+    headers: {
+      "Accept": 'application/json'
+    }
+  })
+  .then(res => res.json())
+}
+
 export class ApiClient {
   private readonly base: string
   private readonly store: Store<AppState>
 
   constructor(store: Store<AppState>) {
     this.store = store
-    this.base = window.location.protocol + "//" + window.location.host + apiPrefix
+    this.base = backendUri()
   }
 
   private userUri(): string {
