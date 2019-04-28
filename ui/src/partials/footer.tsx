@@ -27,17 +27,17 @@ export class Footer extends React.Component<any, State> {
           <Row>
             <Col xs="5">
               {this.state.infos && (
-                <small>{this.state.infos.copyright}. Distributed under the <a href={this.state.infos.licenseUri}>{this.state.infos.license}</a>.</small>
+                <small>{this.state.infos.copyright}. Distributed under the <a target="_blank" href={this.state.infos.licenseUri}>{this.state.infos.license}</a>.</small>
               )}
             </Col>
             <Col xs="2">
               {this.state.infos && (
-                <small>V: {this.state.infos.version} Rev: <a href={`https://github.com/THM-MoTE/webmodelica/commit/${this.state.infos.commitHash}`}>#{this.state.infos.commitHash}</a></small>)}
+                <small>V: {this.state.infos.version} Rev: <a target="_blank" href={`https://github.com/THM-MoTE/webmodelica/commit/${this.state.infos.commitHash}`}>#{this.state.infos.commitHash}</a></small>)}
             </Col>
             <Col xs="5">
               <small>
-                <a href="https://github.com/thm-mote/webmodelica"><Octicon name="mark-github" />&nbsp;Repository</a>&nbsp;&nbsp;
-                <a href="https://github.com/thm-mote/webmodelica/issues"><Octicon name="issue-opened" />&nbsp; Issues</a><br />
+                <a target="_blank" href="https://github.com/thm-mote/webmodelica"><Octicon name="mark-github" />&nbsp;Repository</a>&nbsp;&nbsp;
+                <a target="_blank" href="https://github.com/thm-mote/webmodelica/issues"><Octicon name="issue-opened" />&nbsp; Issues</a><br />
               </small>
             </Col>
           </Row>
