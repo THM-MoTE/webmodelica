@@ -26,16 +26,15 @@ class SimulationPlotCon extends React.Component<Props, State> {
       //curveType: 'function'
     }
   }
-
   render() {
-    const csvUrl = new URL(this.props.address.toString())
+    const csvUrl = new URL('', this.props.address)
     csvUrl.searchParams.set("format", "csv")
     return (<><Row>
       <Col xs={10}>
         <Chart chartType="LineChart" height="80vh" data={this.state.dataSet} legendToggle options={this.chartOptions}/>
       </Col>
       <Col>
-        <a className="outline-primary" href={csvUrl.toString()} target="_blank">Download CSV</a>
+        <Button variant="outline-primary" href={csvUrl.toString()}>Download CSV</Button>
       </Col>
     </Row></>)
   }
