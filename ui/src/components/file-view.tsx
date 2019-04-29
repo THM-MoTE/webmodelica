@@ -216,7 +216,8 @@ class FileViewCon extends React.Component<Props, State> {
         <ButtonGroup vertical className="full-width">
           <Button variant="outline-success" onClick={this.props.onSaveClicked}><Octicon name="check" /> Save</Button>
           <Button variant="outline-primary" onClick={newFileClicked}><Octicon name="plus" /> New File</Button>
-          <Button variant="outline-primary" onClick={uploadArchiveClicked}><Octicon name="file-zip" /> Upload Archive</Button>
+          <Button variant="outline-primary" onClick={uploadArchiveClicked}><Octicon name="cloud-upload" /> Upload Archive</Button>
+          <Button variant="outline-primary" href={this.props.api.projectDownloadUrl()}><Octicon name="cloud-download" /> Download Archive</Button>
           <Button variant="outline-primary" onClick={this.props.onCompileClicked}><Octicon name="gear" /> Compile</Button>
         </ButtonGroup>
         <h5 className="text-secondary">Files</h5>

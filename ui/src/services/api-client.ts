@@ -68,6 +68,11 @@ export class ApiClient {
     }
   }
 
+  public projectDownloadUrl(): string {
+    const sid = this.store.getState().session!.id
+    return this.sessionUri() + `/${sid}/files/download`
+  }
+
   public login(user: string, pw: string): Promise<TokenWrapper> {
     return fetch(this.userUri() + "/login", {
       method: 'POST',
