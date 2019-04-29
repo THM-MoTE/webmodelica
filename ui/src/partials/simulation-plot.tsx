@@ -34,6 +34,7 @@ class SimulationPlotCon extends React.Component<Props, State> {
         <Chart chartType="LineChart" height="80vh" data={this.state.dataSet} legendToggle options={this.chartOptions}/>
       </Col>
       <Col>
+        <h5 className="text-secondary">Plot Actions</h5>
         <Button variant="outline-primary" href={csvUrl.toString()}>Download CSV</Button>
       </Col>
     </Row></>)
