@@ -54,7 +54,12 @@ class SessionService @Inject()(
   def packageProjectArchive(): Future[java.io.File] = Future {
     import scala.sys.process._
     val outDir = File(fsStore.rootDir) / projDescr.outputDirectory
-    val files = File(fsStore.rootDir).list(file => file!=outDir && !outDir.isParentOf(file) && !file.toString.endsWith(".zip"))
+    //package up all files except:
+    // - inside ${root}/out/*
+    // - ${root} itself
+    // - ${root}/out itself
+    // - all .zip archives
+    val files = File(fsStore.rootDir).list(file => file!=outDir && file!=File(fsStore.rootDir) && !outDir.isParentOf(file) && !file.toString.endsWith(".zip"))
     val zipFile = File(s"/tmp/${session.project.name}.zip").zipIn(files)
     zipFile.toJava
   }
