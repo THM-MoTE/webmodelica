@@ -62,7 +62,7 @@ class SimulationPaneCon extends React.Component<Props, State> {
 
         <SimulationSetup api={this.props.api} simulate={this.simulate.bind(this)} />
 
-        {this.props.simulationData && this.props.simulationData.data && (<SimulationPlot data={this.props.simulationData.data!} api={this.props.api} />)}
+        {this.props.simulationData && this.props.simulationData.data && (<SimulationPlot data={this.props.simulationData.data!} address={this.props.simulationData.address} api={this.props.api} />)}
         <LoadingSpinner msg={"simulating be patient.."} display={this.state.simulating}/>
       </WmContainer>
     )

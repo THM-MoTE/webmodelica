@@ -11,6 +11,7 @@ import * as R from 'ramda';
 interface Props {
   api: ApiClient
   data: TableFormat
+  address:URL
 }
 type State = any
 
@@ -27,10 +28,16 @@ class SimulationPlotCon extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("dataset: ", this.state.dataSet)
-    return (
-      <Chart chartType="LineChart" height="80vh" data={this.state.dataSet} legendToggle options={this.chartOptions}/>
-    )
+    const csvUrl = new URL(this.props.address.toString())
+    csvUrl.searchParams.set("format", "csv")
+    return (<><Row>
+      <Col xs={10}>
+        <Chart chartType="LineChart" height="80vh" data={this.state.dataSet} legendToggle options={this.chartOptions}/>
+      </Col>
+      <Col>
+        <a className="outline-primary" href={csvUrl.toString()} target="_blank">Download CSV</a>
+      </Col>
+    </Row></>)
   }
 }
 
