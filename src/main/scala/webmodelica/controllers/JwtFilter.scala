@@ -15,8 +15,9 @@ class JwtFilter@Inject()(gen:TokenGenerator, store:UserStore) extends SimpleFilt
   with com.twitter.inject.Logging {
 
   override def apply(request: Request, service: Service[Request, Response]): Future[Response] = {
-    request.headerMap.get(constants.authorizationHeader) match {
-      case Some(token) if gen.isValid(token) =>
+    val headerField = request.headerMap.get(constants.authorizationHeader)
+    lazy val cookie = request.cookies.get(constants.authorizationHeader).map(_.value)
+    val resultOpt = headerField.orElse(cookie).filter(gen.isValid).map { token =>
         val userF = gen.decode(token).flatMap(t => store.findBy(t.username))
         val respF = service(request)
         for {
@@ -27,7 +28,8 @@ class JwtFilter@Inject()(gen:TokenGenerator, store:UserStore) extends SimpleFilt
           response.authorization = token
           response
         }
-      case _ =>
+    }
+    resultOpt.getOrElse {
         warn(s"provided token invalid!")
         val res = Response()
         res.status = Status.Unauthorized
