@@ -1,5 +1,6 @@
 package webmodelica.services
 
+import webmodelica.models.mope.requests.ProjectDescription
 import com.google.inject.Inject
 import com.twitter.finagle.Service
 import com.twitter.finagle.Http
@@ -26,10 +27,7 @@ class SessionService @Inject()(
   with com.twitter.inject.Logging
   with com.twitter.util.Closable {
   override def clientProvider() = new featherbed.Client(new java.net.URL(conf.address+"mope/"))
-
-
   val fsStore = new FSStore(conf.data.hostDirectory.resolve(session.basePath))
-
   override val pathMapper = MopeService.pathMapper(fsStore.rootDir.toAbsolutePath, conf.data.bindDirectory.resolve(fsStore.rootDir.toAbsolutePath.getFileName()))
 
   info(s"mapper: $pathMapper")
@@ -50,5 +48,11 @@ class SessionService @Inject()(
       case status:Int if status==0 => this.files
       case _ => Future.exception(errors.ArchiveError("Unzipping $path failed!"))
     }
+  }
+
+  def locateSimulationCsv(modelName:String): Future[Option[java.io.File]] = Future {
+    val projDescr = ProjectDescription(fsStore.rootDir.toString)
+    val outputDir = fsStore.rootDir.resolve(projDescr.outputDirectory)
+    File(outputDir).list(f => f.name == s"${modelName}_res.csv").take(1).toSeq.headOption.map(_.toJava)
   }
 }

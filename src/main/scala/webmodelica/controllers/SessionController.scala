@@ -163,12 +163,18 @@ class SessionController@Inject()(
         withSession(req.sessionId) { service =>
           service
             .simulationResults(req.addr)
-            .map {
+            .flatMap {
+              case SimulationResult(name, variables) if req.format=="csv" =>
+                service.locateSimulationCsv(name)
+                  .map {
+                    case Some(file) => response.ok.contentType("text/csv").file(file)
+                    case None => response.notFound(s"no results for $name available!")
+                  }
               case SimulationResult(name, variables) if req.format == "chartjs" =>
                 val headers = variables.keys.filterNot(k => k=="time").toList
                 val tableData = (variables("time")+:headers.map(k => variables(k)).toSeq).transpose
-                TableFormat(name, tableData, "time"::headers)
-              case results => results
+                Future.value(TableFormat(name, tableData, "time"::headers))
+              case results => Future.value(results)
             }
         }
       }
