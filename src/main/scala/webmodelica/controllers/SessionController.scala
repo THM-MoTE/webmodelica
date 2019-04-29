@@ -125,6 +125,14 @@ class SessionController@Inject()(
         }
       }
 
+      get("/sessions/:sessionId/files/download") { req: Request =>
+        withSession(req.getParam("sessionId")) { service =>
+          service.packageProjectArchive().map { file =>
+            sendFile(response)("application/zip", file)
+          }
+        }
+      }
+
       delete("/sessions/:sessionId/files") { req: DeleteRequest =>
         withSession(req.sessionId) { service =>
           service.delete(Paths.get(req.path)).map(_ => response.noContent)
@@ -152,7 +160,7 @@ class SessionController@Inject()(
             val location = req.request.uri.toString+s"?addr=${uri.toString}"
             response
               .ok(SimulationResponse(new java.net.URI(location)))
-              .header("Location", location)
+              .location(location)
           }.handle {
             case e:errors.StepSizeCalculationError =>
               response.badRequest(e.getMessage)
@@ -167,7 +175,7 @@ class SessionController@Inject()(
               case SimulationResult(name, variables) if req.format=="csv" =>
                 service.locateSimulationCsv(name)
                   .map {
-                    case Some(file) => response.ok.contentType("text/csv").file(file)
+                    case Some(file) => sendFile(response)("text/csv", file)
                     case None => response.notFound(s"no results for $name available!")
                   }
               case SimulationResult(name, variables) if req.format == "chartjs" =>

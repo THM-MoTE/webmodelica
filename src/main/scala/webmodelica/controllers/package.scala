@@ -1,6 +1,7 @@
 package webmodelica
 
-import com.twitter.finagle.http.Request
+import com.twitter.finagle.http.{Request, Response}
+import com.twitter.finatra.http.response.ResponseBuilder
 import com.twitter.util.Future
 import webmodelica.models.{User, errors}
 import webmodelica.services.{TokenGenerator, UserToken}
@@ -17,5 +18,12 @@ package object controllers {
       token <- extractTokenProvider(tokenGenerator)(req)
       user <- userStore.findBy(token.username).flatMap(errors.notFoundExc("web-token contains invalid user informations!"))
     } yield user
+  }
+
+  def sendFile(builder:ResponseBuilder)(contentType:String, file:java.io.File): Response = {
+    builder.ok
+      .header("Content-Disposition", s"""attachment; filename="${file.getName}"""")
+      .contentType(contentType)
+      .file(file)
   }
 }

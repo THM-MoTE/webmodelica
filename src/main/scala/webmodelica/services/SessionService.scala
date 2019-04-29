@@ -28,6 +28,7 @@ class SessionService @Inject()(
   with com.twitter.util.Closable {
   override def clientProvider() = new featherbed.Client(new java.net.URL(conf.address+"mope/"))
   val fsStore = new FSStore(conf.data.hostDirectory.resolve(session.basePath))
+  private val projDescr = ProjectDescription(fsStore.rootDir.toString)
   override val pathMapper = MopeService.pathMapper(fsStore.rootDir.toAbsolutePath, conf.data.bindDirectory.resolve(fsStore.rootDir.toAbsolutePath.getFileName()))
 
   info(s"mapper: $pathMapper")
@@ -50,8 +51,13 @@ class SessionService @Inject()(
     }
   }
 
+  def packageProjectArchive(): Future[java.io.File] = Future {
+    val directoryContent = File(fsStore.rootDir).list(f => f.name != projDescr.outputDirectory)
+    val zipFile = File(s"/tmp/${session.project.name}.zip").zipIn(directoryContent)
+    zipFile.toJava
+  }
+
   def locateSimulationCsv(modelName:String): Future[Option[java.io.File]] = Future {
-    val projDescr = ProjectDescription(fsStore.rootDir.toString)
     val outputDir = fsStore.rootDir.resolve(projDescr.outputDirectory)
     File(outputDir).list(f => f.name == s"${modelName}_res.csv").take(1).toSeq.headOption.map(_.toJava)
   }
