@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { AppState, Project, projectIsPrivate, projectIsPublic} from '../models/index'
-import { Action, setProjects, addProject, setSession } from '../redux/index'
+import { Action, setProjects, addProject, setSession, setProjectPreview } from '../redux/index'
 import { WmContainer } from '../partials/container'
 import { ApiClient } from '../services/api-client'
 // import * as alerts from './partials/alerts'
@@ -42,6 +42,15 @@ class ProjectViewCon extends Component<any, any> {
     ev.preventDefault()
   }
 
+  private previewProject(ev: any, p:Project): void {
+    ev.preventDefault()
+    this.api.projectFiles(p.id)
+      .then(files => {
+        this.props.setProjectPreview(p, files)
+        this.props.history.push(`/projects/${p.id}/preview`)
+      })
+  }
+
   private newProject() {
     this.api.newProject(this.props.username, this.newProjectName)
       .then(this.props.addProject)
@@ -71,6 +80,7 @@ class ProjectViewCon extends Component<any, any> {
                   {projectIsPublic(p) && <Octicon name="key" className="text-success"/>}
                   &nbsp;<Octicon name="repo" />
                   &nbsp;{p.owner} - {p.name}
+                  <Button variant="outline-secondary" onClick={(ev:any) => this.previewProject(ev, p)}><Octicon name="device-desktop"/></Button>
               </ListGroup.Item>))
           }
         </ListGroup>
@@ -83,7 +93,7 @@ function mapToProps(state: AppState) {
   return { projects: state.projects, username: state.authentication!.username }
 }
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({ setProjects, addProject, setSession }, dispatch)
+  return bindActionCreators({ setProjects, addProject, setSession, setProjectPreview }, dispatch)
 }
 const ProjectView = connect(mapToProps, dispatchToProps)(ProjectViewCon)
 export default ProjectView;

@@ -103,6 +103,16 @@ export class ApiClient {
       .then(res => res.json())
   }
 
+  public projectFiles(pid:string): Promise<File[]> {
+    return fetch(this.projectUri()+`/${pid}/files`,{
+      headers: {
+        [authHeader]: this.token(),
+        'Accept': 'application/json',
+      },
+      })
+      .then(res => res.json())
+  }
+
   public newProject(user: string, title: string): Promise<Project> {
     if (user.length > 0 && title.length > 0) {
       return fetch(this.projectUri(), {

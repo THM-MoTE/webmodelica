@@ -14,7 +14,8 @@ export enum ActionTypes {
   UpdateSimulationOption,
   DeleteSimulationOption,
   ParseSimulationOptions,
-  AddSimulationData
+  AddSimulationData,
+  SetProjectPreview
 }
 
 export interface Action {
@@ -35,3 +36,4 @@ export const deleteOption = (idx: number) => ({type: ActionTypes.DeleteSimulatio
 export const setSessionFiles = (files:File[]) => ({type: ActionTypes.SetSessionFiles, payload: files})
 export const addSimulationData = (data: SimulationData) => ({type: ActionTypes.AddSimulationData, payload: data})
 export const parseSimulationOptions = (pl: SimulationOption[]) => ({type: ActionTypes.ParseSimulationOptions, payload: pl})
+export const setProjectPreview = (p: Project, files: []) => ({ type: ActionTypes.SetProjectPreview, payload: {project:p, files:files}})
