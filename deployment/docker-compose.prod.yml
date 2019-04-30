@@ -8,6 +8,8 @@ services:
       - "8080:8080" # The Web UI (enabled by --api)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
+    labels:
+      - "de.thm.webmodelica.name=traefik-proxy"
   backend:
     image: "thmmote/webmodelica:0.6.8"
     restart: on-failure
@@ -17,6 +19,7 @@ services:
       - "traefik.frontend.rule=PathPrefix:/api"
       - "traefik.backend=webmodelica-backend"
       - "traefik.port=3000"
+      - "de.thm.webmodelica.name=webmodelica-backend"
     volumes:
       - webmodelica_data:/data
   ui:
@@ -28,10 +31,13 @@ services:
       - "traefik.frontend.rule=PathPrefix:/"
       - "traefik.backend=webmodelica-ui"
       - "traefik.port=3000"
+      - "de.thm.webmodelica.name=webmodelica-frontend"
   mope:
     image: "thmmote/mope-server:0.6.9"
     restart: on-failure
     user: openmodelica:openmodelica
+    labels:
+      - "de.thm.webmodelica.name=mope-server"
     volumes:
       - webmodelica_data:/home/openmodelica/data
       - ./mope.conf:/home/openmodelica/.config/mope/mope.conf

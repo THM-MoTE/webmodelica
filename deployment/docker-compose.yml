@@ -7,12 +7,16 @@ services:
       - webmodelica_db:/data/db
     ports:
       - 9010:27017
+    labels:
+      - "de.thm.webmodelica.name=mongodb"
   mope:
     image: "thmmote/mope-server:0.6.9"
     restart: on-failure
     user: openmodelica:openmodelica
     ports:
       - 9015:3000
+    labels:
+      - "de.thm.webmodelica.name=mope-server"
     volumes:
       - ../private/data:/home/openmodelica/data
       - ./mope.conf:/home/openmodelica/.config/mope/mope.conf
