@@ -13,7 +13,7 @@ services:
     image: "redis:5.0.4-alpine"
     restart: on-failure
     ports:
-      - 9011:5000
+      - 9011:6379
     volumes:
       - redis_cache:/data
     labels:
