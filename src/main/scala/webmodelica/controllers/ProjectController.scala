@@ -4,10 +4,12 @@ import com.google.inject.Inject
 import com.twitter.util.Future
 import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
+import cats.implicits._
 import org.mongodb.scala.bson.BsonObjectId
 import webmodelica.models.{JSProject, Project, ProjectRequest, errors}
 import webmodelica.models.config.WMConfig
 import webmodelica.models.errors
+import webmodelica.conversions.futures._
 import webmodelica.services.{
   TokenGenerator,
   UserToken
@@ -50,7 +52,7 @@ class ProjectController@Inject()(
 
       get("/projects") { requ: Request =>
         extractToken(requ).flatMap { case UserToken(username,_,_) =>
-          store.byUsername(username).map(_.map(JSProject.apply))
+          store.byUsername(username, true).map(_.map(JSProject.apply))
         }
       }
    }

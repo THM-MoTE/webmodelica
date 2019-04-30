@@ -35,8 +35,16 @@ class ProjectStore @Inject()(db:MongoDatabase)
     collection.find(Filters.and(Filters.equal("_id", id), Filters.equal("owner", username)))
       .headOption()
       .asTwitter
-  def byUsername(username:String): TFuture[Seq[Project]] =
-    collection.find(Filters.equal("owner", username))
+  def byUsername(username:String, includePublicProjects:Boolean=false): TFuture[Seq[Project]] =
+    collection.find(Filters.or(
+      Filters.equal("owner", username),
+      Filters.equal("visibility", Project.publicVisibility)))
+      .sort(Sorts.ascending("name"))
+      .toFuture()
+      .asTwitter
+
+  def publicProjects(): TFuture[Seq[Project]] =
+    collection.find(Filters.equal("visibility", Project.publicVisibility))
       .sort(Sorts.ascending("name"))
       .toFuture()
       .asTwitter
