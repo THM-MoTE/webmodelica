@@ -72,7 +72,7 @@ object AppModule
     val store = new UserStoreImpl(db)
     if(config.cacheUsers) {
       info(s"caching users enabled")
-      new UserService(store)
+      new UserService(config.redis, store)
     } else {
       info(s"caching users disabled")
       store

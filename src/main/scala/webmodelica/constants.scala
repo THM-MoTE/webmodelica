@@ -6,4 +6,8 @@ object constants {
   val projectCollection = "projects"
   val userCollection = "users"
   val authorizationHeader = "Authorization"
+
+  val cacheRootSuffix = "webmodelica:"
+  val userCacheSuffix = cacheRootSuffix+"users"
+  val completionCacheSuffix = cacheRootSuffix+"completions"
 }
