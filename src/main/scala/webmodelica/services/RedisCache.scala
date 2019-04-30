@@ -16,6 +16,12 @@ trait RedisCache[A] {
   def update(key:String, value:A): Future[A]
 }
 
+/** Does no caching, just forwards to the given 'fn' */
+class NoCaching[A](fn: String => Future[Option[A]]) extends RedisCache[A] {
+  def find(key:String): Future[Option[A]] = fn(key)
+  def update(key:String, value:A): Future[A] = Future.value(value)
+}
+
 class RedisCacheImpl[A:Encoder:Decoder](
   config:RedisConfig,
   keySuffix: String,
