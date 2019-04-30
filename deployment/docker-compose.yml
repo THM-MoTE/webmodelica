@@ -9,6 +9,15 @@ services:
       - 9010:27017
     labels:
       - "de.thm.webmodelica.name=mongodb"
+  cache:
+    image: "redis:5.0.4-alpine"
+    restart: on-failure
+    ports:
+      - 9011:5000
+    volumes:
+      - redis_cache:/data
+    labels:
+      - "de.thm.webmodelica.name=redis-cache"
   mope:
     image: "thmmote/mope-server:0.6.9"
     restart: on-failure
@@ -25,3 +34,4 @@ services:
 volumes:
   webmodelica_data:
   webmodelica_db:
+  redis_cache:
