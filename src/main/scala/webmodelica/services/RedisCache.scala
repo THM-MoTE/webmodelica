@@ -11,11 +11,11 @@ import cats.data.OptionT
 import cats.implicits._
 
 trait RedisCache[A] {
-  def find[A:Decoder](key:String): Future[Option[A]]
-  def update[A:Encoder](key:String, value:A): Future[A]
+  def find(key:String): Future[Option[A]]
+  def update(key:String, value:A): Future[A]
 }
 
-class RedisCacheImpl[A](
+class RedisCacheImpl[A:Encoder:Decoder](
   config:RedisConfig,
   keySuffix: String,
   cacheMiss: String => Future[Option[A]])
@@ -27,7 +27,7 @@ class RedisCacheImpl[A](
 
   private def makeKey(k:String): String = s"${keySuffix}:${k}"
 
-  def find[A:Decoder](key:String): Future[Option[A]] = {
+  def find(key:String): Future[Option[A]] = {
     (for {
       buf <- OptionT(client.get(StringToBuf(makeKey(key))))
       json <- OptionT.liftF(eitherToFuture(parse(BufToString(buf))))
@@ -38,19 +38,18 @@ class RedisCacheImpl[A](
         Future.value(Some(a))
       case None =>
         info(s"cache miss for $key")
-        // cacheMiss(key).map(updateIfAvailable[A](key))
-        Future.value(None)
+        cacheMiss(key).map(updateIfAvailable(key))
     }
   }
 
-  private def updateIfAvailable[A:Encoder](key:String)(valueOpt:Option[A]): Option[A] = {
+  private def updateIfAvailable(key:String)(valueOpt:Option[A]): Option[A] = {
     valueOpt.map { v =>
       update(key, v)
       v
     }
   }
 
-  def update[A:Encoder](key:String, value:A): Future[A] = {
+  def update(key:String, value:A): Future[A] = {
     val finalKey = makeKey(key)
     val json = implicitly[Encoder[A]].apply(value).noSpaces
     val keyBuf = StringToBuf(finalKey)

@@ -41,15 +41,15 @@ class RedisCacheSpec
     Await.result(cache.update("tim", tim))
   }
   it should "find the added value" in {
-    Await.result(cache.find[Person]("tim")) shouldBe Some(tim)
+    Await.result(cache.find("tim")) shouldBe Some(tim)
     storeCounter shouldBe 0 //check that no backend was called
   }
   it should "call underlying store if no value available" in {
-    Await.result(cache.find[Person]("nico")) shouldBe Some(nico)
+    Await.result(cache.find("nico")) shouldBe Some(nico)
     storeCounter shouldBe 1
   }
   it should "not save a value if it's not in the underlying store" in {
-    Await.result(cache.find[Person]("blup")) shouldBe None
+    Await.result(cache.find("blup")) shouldBe None
     storeCounter shouldBe 2
   }
 }
