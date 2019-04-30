@@ -6,3 +6,13 @@ export interface Project {
   owner: string,
   visibility: string
 }
+
+const publicVisibility = "public"
+const privateVisibility = "private"
+
+export function projectIsPrivate(p:Project): boolean {
+  return p.visibility === privateVisibility
+}
+export function projectIsPublic(p: Project): boolean {
+  return p.visibility === publicVisibility
+}

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { AppState, Project } from '../models/index'
+import { AppState, Project, projectIsPrivate, projectIsPublic} from '../models/index'
 import { Action, setProjects, addProject, setSession } from '../redux/index'
 import { WmContainer } from '../partials/container'
 import { ApiClient } from '../services/api-client'
@@ -67,7 +67,10 @@ class ProjectViewCon extends Component<any, any> {
           </ListGroup.Item>
           {
             this.props.projects && this.props.projects.map((p: Project) =>
-              (<ListGroup.Item action href={"#" + p.id} onClick={(ev: any) => this.newSession(ev, p)} key={p.id}><Octicon name="repo" /> {p.owner} - {p.name}
+              (<ListGroup.Item action href={"#" + p.id} onClick={(ev: any) => this.newSession(ev, p)} key={p.id}>
+                  {projectIsPublic(p) && <Octicon name="key" className="text-success"/>}
+                  &nbsp;<Octicon name="repo" />
+                  &nbsp;{p.owner} - {p.name}
               </ListGroup.Item>))
           }
         </ListGroup>
