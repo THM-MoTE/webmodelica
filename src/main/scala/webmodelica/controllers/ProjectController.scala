@@ -6,9 +6,11 @@ import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
 import cats.implicits._
 import org.mongodb.scala.bson.BsonObjectId
-import webmodelica.models.{JSProject, Project, ProjectRequest, errors}
-import webmodelica.models.config.WMConfig
+import java.nio.file._
+import webmodelica.models.{Session, JSProject, Project, ProjectRequest, errors}
+import webmodelica.models.config.MopeClientConfig
 import webmodelica.models.errors
+import webmodelica.stores.FSStore
 import webmodelica.conversions.futures._
 import webmodelica.services.{
   TokenGenerator,
@@ -22,6 +24,7 @@ import webmodelica.stores.{
 class ProjectController@Inject()(
   store:ProjectStore,
   prefix:webmodelica.ApiPrefix,
+  mopeConf:MopeClientConfig,
   override val userStore: UserStore,
   override val gen: TokenGenerator)
     extends Controller
@@ -50,9 +53,20 @@ class ProjectController@Inject()(
           }
       }
 
+      get("/projects/:id/files") { requ: Request =>
+        val id = requ.getParam("id")
+        for {
+          UserToken(username,_,_) <- extractToken(requ)
+          project <- store.findBy(id, username).flatMap(errors.notFoundExc(s"project with $id not found!"))
+          path = Session(project).basePath
+          store = new FSStore(mopeConf.data.hostDirectory.resolve(path))
+          files <- store.files
+        } yield files
+      }
+
       get("/projects") { requ: Request =>
         extractToken(requ).flatMap { case UserToken(username,_,_) =>
-          store.byUsername(username, true).map(_.map(JSProject.apply))
+          store.byUsername(username).map(_.map(JSProject.apply))
         }
       }
    }

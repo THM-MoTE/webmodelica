@@ -32,10 +32,13 @@ class ProjectStore @Inject()(db:MongoDatabase)
     .toFuture()
     .asTwitter
   def findBy(id:String, username:String): TFuture[Option[Project]] =
-    collection.find(Filters.and(Filters.equal("_id", id), Filters.equal("owner", username)))
+    collection.find(Filters.and(Filters.equal("_id", id),
+      Filters.or(Filters.equal("owner", username),
+      Filters.equal("visibility", Project.publicVisibility))))
       .headOption()
       .asTwitter
-  def byUsername(username:String, includePublicProjects:Boolean=false): TFuture[Seq[Project]] =
+
+  def byUsername(username:String): TFuture[Seq[Project]] =
     collection.find(Filters.or(
       Filters.equal("owner", username),
       Filters.equal("visibility", Project.publicVisibility)))
