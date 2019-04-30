@@ -9,17 +9,18 @@ import webmodelica.constants
 import com.twitter.util.Future
 import com.twitter.cache.FutureCache
 import com.twitter.finatra.http.exceptions.NotFoundException
+import com.twitter.finagle.stats.StatsReceiver
 import com.google.inject.Inject
 import scala.collection.JavaConverters._
 
-class UserService@Inject()(redisConfig:RedisConfig, underlying:UserStore)
+class UserService@Inject()(redisConfig:RedisConfig, statsReceiver:StatsReceiver, underlying:UserStore)
     extends UserStore
     with com.twitter.inject.Logging {
 
   info("UserService with caching started...")
 
   val fallback = (k:String) => underlying.findBy(k)
-  val cache = new RedisCacheImpl[User](redisConfig, constants.userCacheSuffix, fallback)
+  val cache = new RedisCacheImpl[User](redisConfig, constants.userCacheSuffix, fallback, statsReceiver)
 
   override def add(u:User): Future[Unit] = underlying add u
   override def findBy(username: String): Future[Option[User]] = {

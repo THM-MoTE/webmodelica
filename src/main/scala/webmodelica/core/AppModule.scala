@@ -6,6 +6,7 @@ import webmodelica.models.config._
 import com.twitter.util.{Await, Time}
 import com.twitter.inject.{Injector, TwitterModule}
 import com.google.inject.{Provides, Singleton}
+import com.twitter.finagle.stats.StatsReceiver
 import org.mongodb.scala._
 import webmodelica.ApiPrefix
 import webmodelica.models._
@@ -17,6 +18,7 @@ import scala.concurrent.ExecutionContext
 object AppModule
   extends TwitterModule
     with webmodelica.models.DocumentWriters {
+
   private val confDefault = "webmodelica.conf"
   val env = flag(name="env", default="development", help="environment to use")
   val configFile = flag(name="configFile", default=confDefault, help="the config file to use")
@@ -68,11 +70,11 @@ object AppModule
 
   @Singleton
   @Provides
-  def userStore(db:MongoDatabase, config:WMConfig):UserStore = {
+  def userStore(db:MongoDatabase, config:WMConfig, statsReceiver:StatsReceiver):UserStore = {
     val store = new UserStoreImpl(db)
     if(config.cacheUsers) {
       info(s"caching users enabled")
-      new UserService(config.redis, store)
+      new UserService(config.redis, statsReceiver, store)
     } else {
       info(s"caching users disabled")
       store

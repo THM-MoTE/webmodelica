@@ -3,6 +3,7 @@ package webmodelica.services
 import com.twitter.finagle.redis._
 import com.twitter.finagle.redis.util._
 import com.twitter.util.Future
+import com.twitter.finagle.stats.StatsReceiver
 import webmodelica.models.config.RedisConfig
 import webmodelica.conversions.futures._
 import io.circe._
@@ -18,10 +19,14 @@ trait RedisCache[A] {
 class RedisCacheImpl[A:Encoder:Decoder](
   config:RedisConfig,
   keySuffix: String,
-  cacheMiss: String => Future[Option[A]])
+  cacheMiss: String => Future[Option[A]],
+  statsReceiver: StatsReceiver)
   extends RedisCache[A]
   with com.twitter.inject.Logging  {
+
   val client = Client(config.address)
+  val hitCounter = statsReceiver.counter(s"redis/$keySuffix/cache-hits")
+  val missCounter = statsReceiver.counter(s"redis/$keySuffix/cache-miss")
 
   info(s"redis cache for $keySuffix loaded using config: $config")
 
@@ -35,9 +40,11 @@ class RedisCacheImpl[A:Encoder:Decoder](
     } yield a).value.flatMap {
       case Some(a) =>
         info(s"cache hit for $key")
+        hitCounter.incr()
         Future.value(Some(a))
       case None =>
         info(s"cache miss for $key")
+        missCounter.incr()
         cacheMiss(key).map(updateIfAvailable(key))
     }
   }

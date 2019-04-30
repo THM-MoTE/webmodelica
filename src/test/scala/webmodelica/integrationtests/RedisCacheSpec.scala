@@ -8,6 +8,7 @@ import webmodelica.models.mope.requests._
 import webmodelica.models.mope.responses._
 import webmodelica.core.AppModule
 import com.twitter.util.{Future,Await}
+import com.twitter.finagle.stats.NullStatsReceiver
 import io.circe.generic.JsonCodec
 import io.circe.generic.semiauto._
 
@@ -35,7 +36,7 @@ class RedisCacheSpec
   }
 
   val config = AppModule.configProvider
-  val cache = new RedisCacheImpl[Person](config.redis, "test:stub", underlyingStore)
+  val cache = new RedisCacheImpl[Person](config.redis, "test:stub", underlyingStore, new NullStatsReceiver())
 
   "The redis cache service" should "add a value to the cache" in {
     Await.result(cache.update("tim", tim))
