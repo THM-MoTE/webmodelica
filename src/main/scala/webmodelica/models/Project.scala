@@ -8,6 +8,7 @@ case class Project(
   _id: String,
   owner: String,
   name: String,
+  visibility:String = Project.privateVisibility
 )
 
 case class ProjectRequest(
@@ -19,7 +20,8 @@ case class ProjectRequest(
 case class JSProject(
   id: String,
   owner: String,
-  name: String)
+  name: String,
+  visibility:String)
 
 object JSProject {
   def apply(p:Project): JSProject = {
@@ -29,6 +31,13 @@ object JSProject {
 }
 
 object Project {
+
+  val publicVisibility = "public"
+  val privateVisibility = "private"
+
   def apply(request: ProjectRequest): Project =
-    request.into[Project].withFieldComputed(_._id, req => s"${req.owner}_${req.name}").transform
+    request.into[Project]
+      .withFieldComputed(_._id, req => s"${req.owner}_${req.name}")
+      .withFieldComputed(_.visibility, _ => privateVisibility)
+      .transform
 }
