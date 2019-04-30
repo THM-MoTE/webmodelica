@@ -7,9 +7,8 @@ import com.twitter.finatra.http.Controller
 import cats.implicits._
 import org.mongodb.scala.bson.BsonObjectId
 import java.nio.file._
-import webmodelica.models.{Session, JSProject, Project, ProjectRequest, errors}
+import webmodelica.models._
 import webmodelica.models.config.MopeClientConfig
-import webmodelica.models.errors
 import webmodelica.stores.FSStore
 import webmodelica.conversions.futures._
 import webmodelica.services.{
@@ -29,6 +28,12 @@ class ProjectController@Inject()(
   override val gen: TokenGenerator)
     extends Controller
     with UserExtractor {
+
+  def projectFiles(project:Project): Future[List[ModelicaFile]] = {
+    val path = Session(project).basePath
+    val store = new FSStore(mopeConf.data.hostDirectory.resolve(path))
+    store.files
+  }
 
   filter[JwtFilter]
     .prefix(prefix.p) {
@@ -58,9 +63,7 @@ class ProjectController@Inject()(
         for {
           UserToken(username,_,_) <- extractToken(requ)
           project <- store.findBy(id, username).flatMap(errors.notFoundExc(s"project with $id not found!"))
-          path = Session(project).basePath
-          store = new FSStore(mopeConf.data.hostDirectory.resolve(path))
-          files <- store.files
+          files <- projectFiles(project)
         } yield files
       }
 
