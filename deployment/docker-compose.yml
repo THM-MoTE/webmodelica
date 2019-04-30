@@ -9,6 +9,7 @@ services:
       - 9010:27017
   mope:
     image: "thmmote/mope-server:0.6.9"
+    restart: on-failure
     user: openmodelica:openmodelica
     ports:
       - 9015:3000
