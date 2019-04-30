@@ -83,7 +83,7 @@ object AppModule
 
   @Singleton
   @Provides
-  def sessionRegistry(conf:MopeClientConfig):SessionRegistry = new SessionRegistry(conf)
+  def sessionRegistry(conf:WMConfig, statsReceiver:StatsReceiver):SessionRegistry = new SessionRegistry(conf, statsReceiver)
 
   @Provides
   def tokenGenerator(conf:WMConfig): TokenGenerator = new TokenGenerator(conf.secret, conf.tokenExpiration)
