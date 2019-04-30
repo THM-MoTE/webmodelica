@@ -13,6 +13,7 @@ abstract class WMSpec
     with Inspectors
     with BeforeAndAfterAll {
   AppModule.env.parse("test")
+  val appConf = AppModule.configProvider
 }
 
 abstract class DBSpec(collectionName:Option[String]=None) extends WMSpec {

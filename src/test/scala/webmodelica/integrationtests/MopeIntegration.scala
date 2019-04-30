@@ -15,12 +15,14 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.twitter.finatra.json.FinatraObjectMapper
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import com.twitter.util.{Future,Await}
+import com.twitter.finagle.stats.NullStatsReceiver
+
 
 class MopeIntegration
     extends webmodelica.WMSpec {
   val conf = AppModule.configProvider.mope
   val session = Session(Project(ProjectRequest("nico", "awesomeProject", com.twitter.finagle.http.Request())))
-  val service = new SessionService(conf,session)
+  val service = new SessionService(conf,session, appConf.redis, new NullStatsReceiver())
 
   val files = Seq(
     ModelicaFile(
