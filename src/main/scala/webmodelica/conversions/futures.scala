@@ -7,6 +7,7 @@ object futures {
   import com.twitter.util.{Future => TwitterFuture, Promise => TwitterPromise, Return, Throw}
   import scala.concurrent.{Future => ScalaFuture, Promise => ScalaPromise, ExecutionContext}
   import scala.util.{Success, Failure}
+  import cats.Monad
 
   /** Convert from a Twitter Future to a Scala Future */
   implicit class RichTwitterFuture[A](val tf: TwitterFuture[A]) extends AnyVal {
@@ -30,5 +31,21 @@ object futures {
       }
       promise
     }
+  }
+
+  implicit val twitterFutureMonad = new Monad[TwitterFuture]() {
+    override def flatMap[A, B](fa: TwitterFuture[A])(f: A => TwitterFuture[B]): TwitterFuture[B] = fa.flatMap(f)
+    override def pure[A](a: A): TwitterFuture[A] = TwitterFuture.value(a)
+
+    override def tailRecM[A, B](init: A)(fn: A => TwitterFuture[Either[A, B]]): TwitterFuture[B] =
+      fn(init) flatMap {
+        case Right(b) => pure(b)
+        case Left(a) => tailRecM(a)(fn)
+      }
+  }
+
+  def eitherToFuture[A](e:Either[Throwable, A]): TwitterFuture[A] = e match {
+    case Left(ex) => TwitterFuture.exception(ex)
+    case Right(v) => TwitterFuture.value(v)
   }
 }
