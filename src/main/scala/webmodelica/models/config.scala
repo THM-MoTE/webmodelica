@@ -8,14 +8,15 @@ package config {
   case class WMConfig(
     mope: MopeClientConfig,
     mongodb: MongoDBConfig,
+    redis: RedisConfig,
     secret: String,
     tokenExpiration: Duration,
-    cacheUsers:Boolean
+    cacheUsers: Boolean
   )
 
   case class MongoDBConfig(
     address: String,
-    database:String,
+    database: String,
   )
 
   case class MopeClientConfig(
@@ -25,6 +26,10 @@ package config {
   case class MopeDataConfig(
     hostDirectory: Path,
     bindDirectory: Path
+  )
+  case class RedisConfig(
+    address: String,
+    defaultTtl: Duration
   )
 
   object configReaders {
