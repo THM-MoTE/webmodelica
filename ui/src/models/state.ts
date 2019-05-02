@@ -3,23 +3,23 @@ import { CompilerError, File, Project, TableFormat } from './index'
 import {isFuture} from 'date-fns'
 
 export interface UserAuth {
-  username: string,
+  username: string
   token: JwtToken
 }
 
 export interface JwtToken {
-  username: string,
-  issued: Date,
-  expires: Date,
+  username: string
+  issued: Date
+  expires: Date
   raw: string
 }
 
 export interface Session {
-  project: Project,
-  id: string,
+  project: Project
+  id: string
   files: File[],
-  openedFiles: File[],
-  compilerErrors: CompilerError[],
+  openedFiles: File[]
+  compilerErrors: CompilerError[]
   simulation: SimulationState
 }
 
@@ -38,10 +38,15 @@ export interface SimulationOption {
   value: number | string
 }
 
+export interface ProjectPreviewState {
+  project: Project
+  files: File[]
+}
 
 export interface AppState {
   authentication?: UserAuth
-  projects: Project[],
+  projects: Project[]
+  projectPreview?: ProjectPreviewState
   session?: Session
 }
 

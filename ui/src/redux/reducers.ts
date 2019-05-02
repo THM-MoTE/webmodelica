@@ -1,4 +1,4 @@
-import { initialState, AppState, Session, SimulationOption, SimulationData } from '../models/state'
+import { initialState, AppState, Session, SimulationOption, SimulationData, ProjectPreviewState } from '../models/state'
 import { Project } from '../models/project'
 import { File } from '../models/file'
 import { Action, ActionTypes } from './actions'
@@ -21,6 +21,7 @@ const reducerMap = {
   },
   [ActionTypes.SetSessionFiles.toString()]: (state: AppState, files: File[]) => ({...state, session: {...state.session!, files: R.sortBy(f => f.relativePath, files)}}),
   [ActionTypes.AddProject.toString()]: (state: AppState, data: Project) => ({ ...state, projects: R.prepend(data, state.projects) }),
+  [ActionTypes.SetProjectPreview.toString()]: (state:AppState, data:ProjectPreviewState) => ({...state, projectPreview: data }),
   [ActionTypes.SetSession.toString()]: (state: AppState, session: Session) => ({ ...state, session: session }),
   [ActionTypes.UpdateWsToken.toString()]: (state: AppState, token: string) => {
     let payload = JSON.parse(atob(token.split('.')[1]))
