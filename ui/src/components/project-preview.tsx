@@ -4,7 +4,7 @@ import { AppState, Project, projectIsPrivate, projectIsPublic, File, ProjectPrev
 import { Action, setProjectPreview } from '../redux/index'
 import { WmContainer } from '../partials/container'
 import { ApiClient } from '../services/api-client'
-import { ListGroup, Card, Form, Button, Col, Row } from 'react-bootstrap'
+import { ListGroup, Card, Form, Button, ButtonGroup, Col, Row } from 'react-bootstrap'
 //@ts-ignore
 import Octicon from 'react-octicon'
 import { connect } from 'react-redux'
@@ -37,6 +37,10 @@ class ProjectPreviewCon extends Component<Props, State> {
     return (<WmContainer title={"Preview: "+project.name}>
     <Row>
       <Col xs={2}>
+          <ButtonGroup vertical className="full-width">
+            <Button variant="outline-primary"><Octicon name="repo-clone" /> Copy Project</Button>
+            <Button variant="outline-primary" href={this.props.api.projectDownloadUrl()}><Octicon name="cloud-download" /> Download Archive</Button>
+        </ButtonGroup>
         <ListGroup>
           {files.map(file => (
             <ListGroup.Item key={file.relativePath} onClick={() => this.updatePreviewFile(file)}>
