@@ -6,10 +6,10 @@ import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
 import cats.implicits._
 import org.mongodb.scala.bson.BsonObjectId
-import java.nio.file._
+import java.nio.file.{Path, Paths}
 import webmodelica.models._
 import webmodelica.models.config.MopeClientConfig
-import webmodelica.stores.FSStore
+import webmodelica.stores.FileStore
 import webmodelica.conversions.futures._
 import webmodelica.services.{
   TokenGenerator,
@@ -30,9 +30,7 @@ class ProjectController@Inject()(
     with UserExtractor {
 
   def projectFiles(project:Project): Future[List[ModelicaFile]] = {
-    val path = Session(project).basePath
-    val store = new FSStore(mopeConf.data.hostDirectory.resolve(path))
-    store.files
+    FileStore.fromProject(mopeConf.data.hostDirectory, project).files
   }
 
   filter[JwtFilter]

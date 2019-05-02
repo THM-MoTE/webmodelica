@@ -1,7 +1,7 @@
 package webmodelica.stores
 
 import com.twitter.util.Future
-import webmodelica.models.{ModelicaFile, ModelicaFileDocument}
+import webmodelica.models.{Session, Project, ModelicaFile, ModelicaFileDocument}
 import java.nio.file.Path
 
 trait FileStore {
@@ -16,4 +16,10 @@ trait FileStore {
   def updateDocuments(documents: Seq[ModelicaFileDocument]): Future[Unit] = {
     update(documents.map(ModelicaFile.apply))
   }
+}
+
+
+object FileStore {
+  def fromProject(basePath:Path, project:Project): FileStore = fromSession(basePath, Session(project))
+  def fromSession(basePath:Path, s:Session): FileStore = new FSStore(basePath resolve s.basePath)
 }
