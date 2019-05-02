@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { AppState, Project, projectIsPrivate, projectIsPublic, ProjectPreviewState } from '../models/index'
+import { AppState, Project, projectIsPrivate, projectIsPublic, File, ProjectPreviewState } from '../models/index'
 import { Action, setProjectPreview } from '../redux/index'
 import { WmContainer } from '../partials/container'
 import { ApiClient } from '../services/api-client'
-import { ListGroup, Card, Form, Button, Col, Alert } from 'react-bootstrap'
+import { ListGroup, Card, Form, Button, Col, Row } from 'react-bootstrap'
 //@ts-ignore
 import Octicon from 'react-octicon'
 import { connect } from 'react-redux'
@@ -14,16 +14,40 @@ interface Props {
   api: ApiClient
   projectPreview: ProjectPreviewState
 }
-type State = any
+
+interface State {
+  previewFile?: File
+}
 
 class ProjectPreviewCon extends Component<Props, State> {
 
-  componentDidMount() {
+  constructor(p:Props) {
+    super(p)
+    this.state = { previewFile: (p.projectPreview.files.length>0) ? p.projectPreview.files[0] : undefined }
+  }
+
+  private updatePreviewFile(previewFile:File): void {
+    this.setState({previewFile})
   }
 
   render() {
-    return (<WmContainer title="Project Preview">
-      <h4>preview year: {this.props.projectPreview.project.name}</h4>
+    const project = this.props.projectPreview.project
+    const files = this.props.projectPreview.files
+    return (<WmContainer title={"Preview: "+project.name}>
+    <Row>
+      <Col xs={2}>
+        <ListGroup>
+          {files.map(file => (
+            <ListGroup.Item key={file.relativePath} onClick={() => this.updatePreviewFile(file)}>
+              {file.relativePath}
+            </ListGroup.Item>
+          ))}
+        </ListGroup>
+      </Col>
+      <Col>
+        {this.state.previewFile && this.state.previewFile.content}
+      </Col>
+    </Row>
     </WmContainer>)
   }
 }
