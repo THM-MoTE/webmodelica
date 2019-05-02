@@ -125,14 +125,6 @@ class SessionController@Inject()(
         }
       }
 
-      get("/sessions/:sessionId/files/download") { req: Request =>
-        withSession(req.getParam("sessionId")) { service =>
-          service.packageProjectArchive().map { file =>
-            sendFile(response)("application/zip", file)
-          }
-        }
-      }
-
       delete("/sessions/:sessionId/files") { req: DeleteRequest =>
         withSession(req.sessionId) { service =>
           service.delete(Paths.get(req.path)).map(_ => response.noContent)

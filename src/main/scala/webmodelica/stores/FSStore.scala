@@ -4,6 +4,7 @@ import better.files._
 import better.files.Dsl._
 import java.nio.file.Path
 import webmodelica.models._
+import webmodelica.models.mope.requests._
 import com.twitter.util.Future
 
 class FSStore(root:Path)
@@ -38,6 +39,20 @@ class FSStore(root:Path)
         .sortBy(_.relativePath)
     )
   }
+
+  override def packageProjectArchive(name:String): Future[java.io.File] = Future {
+    import scala.sys.process._
+    val outDir = File(rootDir) / ProjectDescription(rootDir.toString).outputDirectory
+    //package up all files except:
+    // - inside ${root}/out/*
+    // - ${root} itself
+    // - ${root}/out itself
+    // - all .zip archives
+    val files = File(rootDir).list(file => file!=outDir && file!=File(rootDir) && !outDir.isParentOf(file) && !file.toString.endsWith(".zip"))
+    val zipFile = File(s"/tmp/${name}.zip").zipIn(files)
+    zipFile.toJava
+  }
+
 
   override def toString:String = s"FSStore($root)"
 }

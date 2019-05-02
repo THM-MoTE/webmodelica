@@ -16,6 +16,7 @@ trait FileStore {
   def updateDocuments(documents: Seq[ModelicaFileDocument]): Future[Unit] = {
     update(documents.map(ModelicaFile.apply))
   }
+  def packageProjectArchive(name:String): Future[java.io.File]
 }
 
 

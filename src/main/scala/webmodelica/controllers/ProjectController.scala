@@ -29,9 +29,8 @@ class ProjectController@Inject()(
     extends Controller
     with UserExtractor {
 
-  def projectFiles(project:Project): Future[List[ModelicaFile]] = {
-    FileStore.fromProject(mopeConf.data.hostDirectory, project).files
-  }
+  val fileStore: Project => FileStore = FileStore.fromProject(mopeConf.data.hostDirectory, _)
+  val projectFiles: Project => Future[List[ModelicaFile]] = fileStore(_).files
 
   filter[JwtFilter]
     .prefix(prefix.p) {
@@ -63,6 +62,14 @@ class ProjectController@Inject()(
           project <- store.findBy(id, username).flatMap(errors.notFoundExc(s"project with $id not found!"))
           files <- projectFiles(project)
         } yield files
+      }
+      get("/projects/:id/files/download") { requ: Request =>
+        val id = requ.getParam("id")
+        for {
+          UserToken(username,_,_) <- extractToken(requ)
+          project <- store.findBy(id, username).flatMap(errors.notFoundExc(s"project with $id not found!"))
+          file <- fileStore(project).packageProjectArchive(project.name)
+        } yield sendFile(response)("application/zip", file)
       }
 
       get("/projects") { requ: Request =>

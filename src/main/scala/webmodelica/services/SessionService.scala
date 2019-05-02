@@ -47,6 +47,7 @@ class SessionService @Inject()(
   override def delete(p: Path): Future[Unit] = fsStore.delete(p)
   override def rename(oldPath: Path,newPath: Path):Future[ModelicaFile] = fsStore.rename(oldPath, newPath)
   override def close(deadline:Time):Future[Unit] = disconnect()
+  override def packageProjectArchive(name:String): Future[java.io.File] = fsStore.packageProjectArchive(name)
 
   override def complete(c:Complete): Future[Seq[Suggestion]] = {
     suggestionCache.find(c.word).flatMap {
@@ -66,20 +67,6 @@ class SessionService @Inject()(
       case _ => Future.exception(errors.ArchiveError("Unzipping $path failed!"))
     }
   }
-
-  def packageProjectArchive(): Future[java.io.File] = Future {
-    import scala.sys.process._
-    val outDir = File(fsStore.rootDir) / projDescr.outputDirectory
-    //package up all files except:
-    // - inside ${root}/out/*
-    // - ${root} itself
-    // - ${root}/out itself
-    // - all .zip archives
-    val files = File(fsStore.rootDir).list(file => file!=outDir && file!=File(fsStore.rootDir) && !outDir.isParentOf(file) && !file.toString.endsWith(".zip"))
-    val zipFile = File(s"/tmp/${session.project.name}.zip").zipIn(files)
-    zipFile.toJava
-  }
-
   def locateSimulationCsv(modelName:String): Future[Option[java.io.File]] = Future {
     val outputDir = fsStore.rootDir.resolve(projDescr.outputDirectory)
     File(outputDir).list(f => f.name == s"${modelName}_res.csv").take(1).toSeq.headOption.map(_.toJava)
