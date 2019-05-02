@@ -8,7 +8,8 @@ import * as R from 'ramda'
 const language = "modelica"
 interface Props {
   api: ApiClient
-  files: File[]
+  file?: File
+  interactive?:boolean
 }
 
 function extractWord(model: monaco.editor.ITextModel, position: monaco.Position): string | undefined {
@@ -29,7 +30,9 @@ export class EditorsPane extends React.Component<Props, any> {
         language: language,
         glyphMargin: true
       })
-      this.setupAutoComplete()
+      if(this.props.interactive) {
+        this.setupAutoComplete()
+      }
     }
   }
 
@@ -39,7 +42,7 @@ export class EditorsPane extends React.Component<Props, any> {
         const wordAtCursor = extractWord(model, position)
         if(wordAtCursor) {
           const c = {
-            file: this.props.files[0].relativePath,
+            file: this.props.file!.relativePath,
             position: {line: position.lineNumber, column: position.column},
             word: wordAtCursor
           }
@@ -61,7 +64,7 @@ export class EditorsPane extends React.Component<Props, any> {
 
   render() {
     const tabSelected = (key: string) => console.log("editor tab selected:", key)
-    const file = (this.props.files.length > 0) ? this.props.files[0] : undefined
+    const file = this.props.file
     //only overwrite editor-content if it really changed; otherwise decorations would be removed
     if (EditorsPane.monacoEditor && file &&
       EditorsPane.monacoEditor.getValue() !== file.content) {

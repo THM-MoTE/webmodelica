@@ -127,8 +127,9 @@ class SessionPaneCon extends React.Component<Props, State> {
           </Col>
           <Col sm={10}>
           <EditorsPane
-            files={this.state.editingFiles}
-            api={this.props.api} />
+            file={(this.state.editingFiles.length>0) ? this.state.editingFiles[0] : undefined}
+            api={this.props.api}
+            interactive />
           </Col>
         </Row>
         <Row>
