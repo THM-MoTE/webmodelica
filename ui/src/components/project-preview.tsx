@@ -43,7 +43,7 @@ class ProjectPreviewCon extends Component<Props, State> {
         </ButtonGroup>
         <ListGroup>
           {files.map(file => (
-            <ListGroup.Item key={file.relativePath} onClick={() => this.updatePreviewFile(file)}>
+            <ListGroup.Item key={file.relativePath} onClick={() => this.updatePreviewFile(file)} action>
               {file.relativePath}
             </ListGroup.Item>
           ))}
