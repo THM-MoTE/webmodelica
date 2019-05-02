@@ -4,7 +4,7 @@ import { Action, setProjects, addProject, setSession, setProjectPreview } from '
 import { WmContainer } from '../partials/container'
 import { ApiClient } from '../services/api-client'
 // import * as alerts from './partials/alerts'
-import { ListGroup, Card, Form, Button, Col, Alert } from 'react-bootstrap'
+import { ListGroup, Card, Form, Button, Col, Row, Alert, ButtonGroup } from 'react-bootstrap'
 //@ts-ignore
 import Octicon from 'react-octicon'
 import { connect } from 'react-redux'
@@ -76,11 +76,21 @@ class ProjectViewCon extends Component<any, any> {
           </ListGroup.Item>
           {
             this.props.projects && this.props.projects.map((p: Project) =>
-              (<ListGroup.Item action href={"#" + p.id} onClick={(ev: any) => this.newSession(ev, p)} key={p.id}>
-                  {projectIsPublic(p) && <Octicon name="key" className="text-success"/>}
-                  &nbsp;<Octicon name="repo" />
-                  &nbsp;{p.owner} - {p.name}
-                  <Button variant="outline-secondary" onClick={(ev:any) => this.previewProject(ev, p)}><Octicon name="device-desktop"/></Button>
+              (<ListGroup.Item key={p.id}>
+                <Row>
+                  <Col>
+                    <Button variant="link" href={"#" + p.id} onClick={(ev: any) => this.newSession(ev, p)}>
+                      <Octicon name="key" className={projectIsPublic(p) ? "text-success" : "text-danger"}/>
+                      &nbsp;&nbsp;<Octicon name="repo" />
+                      &nbsp;{p.owner} - {p.name}
+                    </Button>
+                  </Col>
+                  <Col>
+                    <ButtonGroup className="float-right">
+                      <Button variant="outline-info" href={`#${p.id}/preview`} onClick={(ev:any) => this.previewProject(ev, p)}><Octicon name="device-desktop"/></Button>
+                    </ButtonGroup>
+                  </Col>
+                </Row>
               </ListGroup.Item>))
           }
         </ListGroup>

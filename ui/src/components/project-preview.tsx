@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { AppState, Project, projectIsPrivate, projectIsPublic } from '../models/index'
+import { AppState, Project, projectIsPrivate, projectIsPublic, ProjectPreviewState } from '../models/index'
 import { Action, setProjectPreview } from '../redux/index'
 import { WmContainer } from '../partials/container'
 import { ApiClient } from '../services/api-client'
@@ -12,8 +12,7 @@ import * as R from 'ramda'
 
 interface Props {
   api: ApiClient
-  project: Project
-  files: File[]
+  projectPreview: ProjectPreviewState
 }
 type State = any
 
@@ -24,13 +23,13 @@ class ProjectPreviewCon extends Component<Props, State> {
 
   render() {
     return (<WmContainer title="Project Preview">
-      <h4>preview year: {this.props.project.name}</h4>
+      <h4>preview year: {this.props.projectPreview.project.name}</h4>
     </WmContainer>)
   }
 }
 
 function mapToProps(state: AppState) {
-  return { }
+  return { projectPreview: state.projectPreview! }
 }
 function dispatchToProps(dispatch: (a: Action) => any) {
   return bindActionCreators({ }, dispatch)

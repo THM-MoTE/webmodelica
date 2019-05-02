@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
-import { ProjectView, Landing, SessionPane, SimulationPane } from './components/index'
+import { ProjectView, Landing, SessionPane, SimulationPane, ProjectPreview } from './components/index'
 import { ApiClient } from './services/api-client'
 import { rootReducer } from './redux/reducers'
 import { createStore } from "redux";
@@ -56,6 +56,7 @@ class App extends Component {
             <Route exact path="/" component={withApi(client, Landing)} />
             <Route exact path="/logout" render={() => destroySession()} />
             <AuthenticatedRoute exact path="/projects" component={withApi(client, ProjectView)} />
+            <AuthenticatedRoute exact path="/projects/:projectId/preview" component={withApi(client, ProjectPreview)} />
             <AuthenticatedRoute exact path="/session/:sessionId/simulate" component={withApi(client, SimulationPane)} />
             <AuthenticatedRoute exact path="/session/:sessionId" component={withApi(client, SessionPane)} />
           </Switch>
