@@ -5,7 +5,7 @@ import Octicon from 'react-octicon'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as R from 'ramda'
-import { File, AppState, CompilerError } from '../models/index'
+import { File, AppState, CompilerError, Project } from '../models/index'
 import { newFile, setSessionFiles, Action } from '../redux/index'
 import { ApiClient } from '../services/api-client';
 import { renderErrors } from '../partials/errors'
@@ -14,6 +14,7 @@ import Dropzone from 'react-dropzone'
 interface Props {
   api: ApiClient
   files: File[]
+  project: Project
   activeFile?: File
   compilerErrors: CompilerError[]
   newFile(f: File): Action
@@ -217,7 +218,7 @@ class FileViewCon extends React.Component<Props, State> {
           <Button variant="outline-success" onClick={this.props.onSaveClicked}><Octicon name="check" /> Save</Button>
           <Button variant="outline-primary" onClick={newFileClicked}><Octicon name="plus" /> New File</Button>
           <Button variant="outline-primary" onClick={uploadArchiveClicked}><Octicon name="cloud-upload" /> Upload Archive</Button>
-          <Button variant="outline-primary" href={this.props.api.projectDownloadUrl()}><Octicon name="cloud-download" /> Download Archive</Button>
+          <Button variant="outline-primary" href={this.props.api.projectDownloadUrl(this.props.project.id)}><Octicon name="cloud-download" /> Download Archive</Button>
           <Button variant="outline-primary" onClick={this.props.onCompileClicked}><Octicon name="gear" /> Compile</Button>
         </ButtonGroup>
         <h5 className="text-secondary">Files</h5>
@@ -244,7 +245,11 @@ class FileViewCon extends React.Component<Props, State> {
 }
 
 function mapProps(state: AppState) {
-  return { files: state.session!.files, compilerErrors: state.session!.compilerErrors }
+  return {
+    files: state.session!.files,
+    project: state.session!.project,
+    compilerErrors: state.session!.compilerErrors
+  }
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {

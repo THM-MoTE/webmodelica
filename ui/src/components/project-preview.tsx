@@ -39,7 +39,7 @@ class ProjectPreviewCon extends Component<Props, State> {
       <Col xs={2}>
           <ButtonGroup vertical className="full-width">
             <Button variant="outline-primary"><Octicon name="repo-clone" /> Copy Project</Button>
-            <Button variant="outline-primary" href={this.props.api.projectDownloadUrl()}><Octicon name="cloud-download" /> Download Archive</Button>
+            <Button variant="outline-primary" href={this.props.api.projectDownloadUrl(project.id)}><Octicon name="cloud-download" /> Download Archive</Button>
         </ButtonGroup>
         <ListGroup>
           {files.map(file => (
