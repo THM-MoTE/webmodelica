@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { EditorsPane } from './index';
 import { AppState, Project, projectIsPrivate, projectIsPublic, File, ProjectPreviewState } from '../models/index'
 import { Action, setProjectPreview } from '../redux/index'
 import { WmContainer } from '../partials/container'
@@ -45,7 +46,10 @@ class ProjectPreviewCon extends Component<Props, State> {
         </ListGroup>
       </Col>
       <Col>
-        {this.state.previewFile && this.state.previewFile.content}
+          <EditorsPane
+            file={this.state.previewFile}
+            api={this.props.api}
+          />
       </Col>
     </Row>
     </WmContainer>)
