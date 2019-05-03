@@ -4,7 +4,10 @@ import com.google.inject.Inject
 import com.twitter.util.Future
 import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.twitter.finatra.request._
 import cats.implicits._
+import io.scalaland.chimney.dsl._
 import org.mongodb.scala.bson.BsonObjectId
 import java.nio.file.{Path, Paths}
 import webmodelica.models._
@@ -18,6 +21,22 @@ import webmodelica.services.{
 import webmodelica.stores.{
   ProjectStore,
   UserStore
+}
+
+case class CopyProjectRequest(
+  @RouteParam() projectId: String,
+  @JsonProperty() name: Option[String],
+  request: Request,
+) {
+  def newProject(p:Project, owner:String): Project = {
+    Project(
+      this.into[ProjectRequest]
+        .withFieldComputed(_.owner, _ => owner)
+        .withFieldComputed(_.name, req => req.name.getOrElse(p.name))
+        .withFieldComputed(_.request, req => req.request)
+        .transform
+    )
+  }
 }
 
 class ProjectController@Inject()(
@@ -52,6 +71,19 @@ class ProjectController@Inject()(
             store.findBy(id, username)
               .flatMap(errors.notFoundExc(s"project with $id not found!"))
               .map(JSProject.apply)
+          }
+      }
+
+      post("/projects/:projectId/copy") { copyReq: CopyProjectRequest =>
+        val id = copyReq.projectId
+        (for {
+          UserToken(username,_,_) <- extractToken(copyReq.request)
+          project <- store.findBy(id, username).flatMap(errors.notFoundExc(s"project with $id not found!"))
+          newProject = copyReq.newProject(project, username)
+          _ <- store.add(newProject)
+        } yield JSProject(newProject))
+          .handle {
+            case e:errors.AlreadyInUse => response.conflict(e.getMessage)
           }
       }
 
