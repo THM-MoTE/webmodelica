@@ -3,6 +3,7 @@ package webmodelica.stores
 import com.twitter.util.Future
 import webmodelica.models.{Session, Project, ModelicaFile, ModelicaFileDocument}
 import java.nio.file.Path
+import better.files._
 
 trait FileStore {
   def rootDir: Path
@@ -17,6 +18,7 @@ trait FileStore {
     update(documents.map(ModelicaFile.apply))
   }
   def packageProjectArchive(name:String): Future[java.io.File]
+  def copyTo(destination:Path): Future[Unit]
 }
 
 

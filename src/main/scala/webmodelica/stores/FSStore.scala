@@ -53,6 +53,11 @@ class FSStore(root:Path)
     zipFile.toJava
   }
 
+  override def copyTo(destination:Path): Future[Unit] = Future {
+    val dest = File(destination.toString)
+    File(rootDir.toString).copyTo(dest)
+  }
+
 
   override def toString:String = s"FSStore($root)"
 }

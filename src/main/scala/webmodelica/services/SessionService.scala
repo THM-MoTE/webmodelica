@@ -48,6 +48,7 @@ class SessionService @Inject()(
   override def rename(oldPath: Path,newPath: Path):Future[ModelicaFile] = fsStore.rename(oldPath, newPath)
   override def close(deadline:Time):Future[Unit] = disconnect()
   override def packageProjectArchive(name:String): Future[java.io.File] = fsStore.packageProjectArchive(name)
+  override def copyTo(destination:Path): Future[Unit] = fsStore.copyTo(destination)
 
   override def complete(c:Complete): Future[Seq[Suggestion]] = {
     suggestionCache.find(c.word).flatMap {

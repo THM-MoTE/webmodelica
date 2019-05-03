@@ -80,7 +80,8 @@ class ProjectController@Inject()(
           UserToken(username,_,_) <- extractToken(copyReq.request)
           project <- store.findBy(id, username).flatMap(errors.notFoundExc(s"project with $id not found!"))
           newProject = copyReq.newProject(project, username)
-          _ <- store.add(newProject)
+          _ <- store add newProject
+          _ <- fileStore(project) copyTo fileStore(newProject).rootDir
         } yield JSProject(newProject))
           .handle {
             case e:errors.AlreadyInUse => response.conflict(e.getMessage)
