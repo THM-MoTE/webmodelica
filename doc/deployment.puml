@@ -6,12 +6,14 @@ node Traefik
 node Webmodelica #Yellow
 node WebmodelicaUi #Yellow
 node MongoDB
+node RedisCache
 
 Browser -- Traefik : HTTP /
 Traefik -- Webmodelica : HTTP /api/*
 Traefik -- WebmodelicaUi : HTTP /*/*
 
 Webmodelica --> MongoDB
+Webmodelica --> RedisCache
 
 node MopeServer {
   Webmodelica --> [MoPE] : HTTP /mope/*
