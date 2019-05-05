@@ -10,9 +10,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
     labels:
       - "de.thm.webmodelica.name=traefik-proxy"
+    restart: unless-stopped
   backend:
     image: "thmmote/webmodelica:0.6.8"
-    restart: on-failure
+    restart: unless-stopped
     ports:
       - 9002:3000
     labels:
@@ -24,7 +25,7 @@ services:
       - webmodelica_data:/data
   ui:
     image: "thmmote/webmodelica-ui:0.6.8"
-    restart: on-failure
+    restart: unless-stopped
     ports:
       - 9003:3000
     labels:
@@ -32,12 +33,12 @@ services:
       - "traefik.backend=webmodelica-ui"
       - "traefik.port=3000"
       - "de.thm.webmodelica.name=webmodelica-frontend"
+  mongo:
+    restart: unless-stopped
+  cache:
+    restart: unless-stopped
   mope:
-    image: "thmmote/mope-server:0.6.9"
-    restart: on-failure
-    user: openmodelica:openmodelica
-    labels:
-      - "de.thm.webmodelica.name=mope-server"
+    restart: unless-stopped
     volumes:
       - webmodelica_data:/home/openmodelica/data
       - ./mope.conf:/home/openmodelica/.config/mope/mope.conf
