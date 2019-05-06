@@ -4,11 +4,9 @@ import io.scalaland.chimney.dsl._
 import io.circe.generic.JsonCodec
 
 @JsonCodec
-case class User(username:String,
-                email: String,
-                hashedPassword:String)
+case class User(username:String, email: String, first_name: Option[String], last_name: Option[String], hashedPassword:String)
 
-case class UserDocument(_id: String, email: String, hashedPassword: String)
+case class UserDocument(_id: String, email: String, first_name: Option[String], last_name: Option[String], hashedPassword: String)
 
 object User {
   def apply(u:UserDocument): User = u.into[User].withFieldRenamed(_._id, _.username).transform
