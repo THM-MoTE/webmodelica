@@ -22,6 +22,8 @@ case class RegisterRequest(
       this.into[User]
         .withFieldRenamed(_.password, _.hashedPassword)
         .withFieldComputed(_.username, _.username.toLowerCase)
+        .withFieldComputed(_.first_name, _ => None)
+        .withFieldComputed(_.last_name, _ => None)
         .transform)
 }
 
