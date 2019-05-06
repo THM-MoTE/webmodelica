@@ -31,7 +31,7 @@ services:
       - ./mope.conf:/home/openmodelica/.config/mope/mope.conf
 #      - ../moie-server/target/scala-2.12/mope-server-0.6.5.jar:/opt/mope-server.jar
   user-svc:
-    image: thmmote/webmodelica-user-svc:0.1
+    image: thmmote/webmodelica-user-svc:0.1.1
     restart: on-failure
     ports:
       - 9012:3000
