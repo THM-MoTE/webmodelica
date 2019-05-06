@@ -40,8 +40,30 @@ services:
       - RAILS_MASTER_KEY=ee58f8f3dfb3b3fd40391087bfd38c4e
       - MONGO_HOST=mongo
       - MONGO_PORT=27017
+  auth-db:
+    image: postgres:11-alpine
+    restart: on-failure
+    environment:
+      - POSTGRES_USER=webmodelica
+      - POSTGRES_PASSWORD=au6ureeZi8uang3Oonah8zu
+    volumes:
+      - auth_db:/var/lib/postgresql/data
+  auth-svc:
+    image: thmmsgroup3/service.auth:latest
+    restart: on-failure
+    ports:
+      - 9013:3000
+    environment:
+      - RAILS_MASTER_KEY=f84a1e93cf144b98ded39b233d03b60f
+      - USER_SERVICE_HOST=user-svc
+      - USER_SERVICE_PORT=3000
+      - POSTGRESQL_HOST=auth-db
+      - POSTGRESQL_PORT=5432
+      - POSTGRESQL_USER=webmodelica
+      - POSTGRESQL_PASSWORD=au6ureeZi8uang3Oonah8zu
 
 volumes:
   webmodelica_data:
   webmodelica_db:
   redis_cache:
+  auth_db:
