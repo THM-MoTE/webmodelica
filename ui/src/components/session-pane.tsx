@@ -9,7 +9,7 @@ import { Row, Col, Button, ButtonGroup, Container as RContainer, Card } from 're
 //@ts-ignore
 import Octicon from 'react-octicon'
 import { File, AppState, CompilerError, Session } from '../models/index'
-import { Action, updateSessionFiles, setCompilerErrors } from '../redux/actions'
+import { Action, updateSessionFiles, setCompilerErrors, notifyInfo } from '../redux/actions'
 import * as monaco from 'monaco-editor';
 import { renderErrors } from '../partials/errors';
 import * as R from 'ramda';
@@ -26,6 +26,7 @@ interface Props {
   compilerErrors: CompilerError[]
   updateSessionFiles(f: File[]): void
   setCompilerErrors(ers: CompilerError[]): void
+  notifyInfo(msg:string):void
   history: History
 }
 
@@ -83,6 +84,7 @@ class SessionPaneCon extends React.Component<Props, State> {
     return this.saveCurrentFiles()
       .then((files) => {
         this.setState({ editingFiles: files })
+        this.props.notifyInfo("all files saved!")
         return files
       })
   }
@@ -93,6 +95,9 @@ class SessionPaneCon extends React.Component<Props, State> {
       .then(files => this.api.compile(this.currentFile()))
       .then(errors => {
         console.log("errors:", errors)
+        if(R.isEmpty(errors)) {
+          this.props.notifyInfo("compilation success!")
+        }
         const newMarkers = this.markErrors(this.state.deltaMarkers, errors)
         this.props.setCompilerErrors(errors)
         this.setState({ deltaMarkers: newMarkers, compiling: false })
@@ -149,7 +154,7 @@ function mapProps(state: AppState) {
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({ updateSessionFiles, setCompilerErrors }, dispatch)
+  return bindActionCreators({ updateSessionFiles, setCompilerErrors, notifyInfo }, dispatch)
 }
 
 const SessionPane = connect(mapProps, dispatchToProps)(SessionPaneCon)
