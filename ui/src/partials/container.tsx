@@ -1,10 +1,22 @@
 import React, { Component } from 'react';
-import { Navbar, Nav, Row, Col, Container } from 'react-bootstrap'
+import { Navbar, Nav, Row, Col, Container, NavDropdown } from 'react-bootstrap'
 import {Footer} from './footer'
 //@ts-ignore
 import Octicon from 'react-octicon'
+import { connect } from 'react-redux'
+import { compose } from 'redux'
+import { AppState } from '../models/index'
+import * as R from 'ramda';
+import { oc } from 'ts-optchain';
 
-export class WmContainer extends React.Component<any, any> {
+interface Props {
+  title:string
+  username?:string
+  active?:string
+  children: any
+}
+
+class WmContainerCon extends React.Component<any, any> {
   private readonly appName:string = "Webmodelica"
   constructor(props: any) {
     super(props)
@@ -29,11 +41,15 @@ export class WmContainer extends React.Component<any, any> {
       <Navbar>
         <Navbar.Brand href="#home">{this.appName} {this.props.title}</Navbar.Brand>
         <Navbar.Toggle />
-        <div className="collapse navbar-collapse justify-content-end">
-          {this.simLink()}
-          <Nav.Item><Nav.Link href="/projects"><Octicon name="repo" /> Projects</Nav.Link></Nav.Item>
-          <Nav.Item><Nav.Link href="/logout"><Octicon name="sign-out" /> Logout</Nav.Link></Nav.Item>
-        </div>
+        {this.props.username && (
+          <div className="collapse navbar-collapse justify-content-end">
+            {this.simLink()}
+            <Nav.Item><Nav.Link href="/projects"><Octicon name="repo" /> Projects</Nav.Link></Nav.Item>
+            <NavDropdown title={this.props.username} id="nav-profile-dropwdown">
+              <NavDropdown.Item href="/logout"><Octicon name="sign-out" /> Logout</NavDropdown.Item>
+            </NavDropdown>
+          </div>
+        )}
       </Navbar>
       <div className="container-fluid">
         {this.props.children}
@@ -42,3 +58,10 @@ export class WmContainer extends React.Component<any, any> {
     </>)
   }
 }
+
+function mapProps(state: AppState) {
+  return { username: oc(state).authentication.username() }
+}
+
+export const WmContainer = connect(mapProps, null)(WmContainerCon)
+export default WmContainer
