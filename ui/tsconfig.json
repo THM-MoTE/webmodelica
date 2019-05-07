@@ -6,6 +6,11 @@
       "dom.iterable",
       "esnext"
     ],
+    "plugins": [
+      {
+        "transform": "ts-optchain/transform"
+      },
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
