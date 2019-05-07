@@ -10,6 +10,7 @@ import Octicon from 'react-octicon'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as R from 'ramda'
+import { CopyProjectDialog } from '../partials/copy-project-dialog';
 
 interface Props {
   api: ApiClient
@@ -18,6 +19,7 @@ interface Props {
 
 interface State {
   previewFile?: File
+  projectToCopy?: Project
 }
 
 class ProjectPreviewCon extends Component<Props, State> {
@@ -31,15 +33,22 @@ class ProjectPreviewCon extends Component<Props, State> {
     this.setState({previewFile})
   }
 
+  private copyProject(projectToCopy:Project=this.props.projectPreview.project) {
+    this.setState({projectToCopy})
+  }
+  private clearCopyProject() {
+    this.setState({projectToCopy: undefined})
+  }
+
   render() {
     const project = this.props.projectPreview.project
     const files = this.props.projectPreview.files
     return (<WmContainer title={"Preview: "+project.name}>
     <Row>
       <Col xs={2}>
-          <ButtonGroup vertical className="full-width">
-            <Button variant="outline-primary"><Octicon name="repo-clone" /> Copy Project</Button>
-            <Button variant="outline-primary" href={this.props.api.projectDownloadUrl(project.id)}><Octicon name="cloud-download" /> Download Archive</Button>
+        <ButtonGroup vertical className="full-width">
+            <Button variant="outline-primary" onClick={() => this.copyProject()}><Octicon name="repo-clone" /> Copy Project</Button>
+          <Button variant="outline-primary" href={this.props.api.projectDownloadUrl(project.id)}><Octicon name="cloud-download" /> Download Archive</Button>
         </ButtonGroup>
         <ListGroup>
           {files.map(file => (
@@ -56,6 +65,7 @@ class ProjectPreviewCon extends Component<Props, State> {
           />
       </Col>
     </Row>
+    <CopyProjectDialog api={this.props.api} project={this.state.projectToCopy} onClose={this.clearCopyProject.bind(this)}/>
     </WmContainer>)
   }
 }

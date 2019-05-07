@@ -152,6 +152,22 @@ export class ApiClient {
       }))
   }
 
+  public copyProject(p:Project, newName?:string): Promise<Project> {
+    //POST / api / v1 / projects /: projectId / copy
+    return fetch(this.projectUri()+`/${p.id}/copy`, {
+      method: 'POST',
+      headers: {
+        [authHeader]: this.token(),
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: (newName) ? JSON.stringify({ name: newName }) : undefined
+    })
+    .then(rejectError)
+    .then(this.updateWSToken.bind(this))
+    .then(res => res.json())
+  }
+
   public compile(file: File): Promise<CompilerError[]> {
     const session = this.store.getState().session
     if (session) {
