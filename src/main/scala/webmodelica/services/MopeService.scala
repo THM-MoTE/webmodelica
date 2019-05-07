@@ -155,10 +155,10 @@ trait MopeService {
     //TODO: don't know if this really works though.. accepting nothing as json is awkward ?!
     projectId.flatMap { id =>
       withClient{ client =>
-        val req = client.post(s"/project/$id/disconnect")
+        val req = client.post(s"project/$id/disconnect")
           .withContent((), "application/json")
-          .accept("application/json")
-        req.send[Unit]()
+        req.send[Response]()
+          .map(_ => ())
           .handle {
             case request.ErrorResponse(req, resp) =>
               val str = s"Error response $resp to request $req"
