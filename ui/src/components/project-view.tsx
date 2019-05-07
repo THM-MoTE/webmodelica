@@ -58,6 +58,20 @@ class ProjectViewCon extends Component<any, any> {
       .catch(er => this.setState({ errors: [er] }))
   }
 
+  private renderProjectLine(p: Project) {
+    //if the current user is project owner: create a session, open preview otherwise
+    const currentUserIsOwner = p.owner === this.props.username
+    const link = (currentUserIsOwner) ? "#" + p.id : `#${p.id}/preview`
+    const onClick = (currentUserIsOwner) ? (ev: any) => this.newSession(ev, p) : (ev: any) => this.previewProject(ev, p)
+    return (
+      <Button variant="link" href={link} onClick={onClick}>
+        <Octicon name="key" className={projectIsPublic(p) ? "text-success" : "text-danger"} />
+        &nbsp;&nbsp;<Octicon name="repo" />
+        &nbsp;{p.owner} - {p.name}
+      </Button>
+    )
+  }
+
   public render() {
     const newProjectNameChanged = (ev: any) => this.newProjectName = ev.target.value
 
@@ -79,11 +93,7 @@ class ProjectViewCon extends Component<any, any> {
               (<ListGroup.Item key={p.id}>
                 <Row>
                   <Col>
-                    <Button variant="link" href={"#" + p.id} onClick={(ev: any) => this.newSession(ev, p)}>
-                      <Octicon name="key" className={projectIsPublic(p) ? "text-success" : "text-danger"}/>
-                      &nbsp;&nbsp;<Octicon name="repo" />
-                      &nbsp;{p.owner} - {p.name}
-                    </Button>
+                    {this.renderProjectLine(p)}
                   </Col>
                   <Col>
                     <ButtonGroup className="float-right">
