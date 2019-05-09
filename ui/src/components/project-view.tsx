@@ -92,7 +92,7 @@ class ProjectViewCon extends Component<any, any> {
           {
             this.props.projects && this.props.projects.map((p: Project) =>
               (<ListGroup.Item key={p.id}>
-                <Row>
+                <Row className="editor-row">
                   <Col>
                     {this.renderProjectLine(p)}
                   </Col>
