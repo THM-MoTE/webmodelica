@@ -51,7 +51,8 @@ class ProjectViewCon extends Component<any, any> {
       })
   }
 
-  private newProject() {
+  private newProject(ev:any) {
+    ev.preventDefault()
     this.api.newProject(this.props.username, this.newProjectName)
       .then(this.props.addProject)
       .then(this.clearErrors.bind(this))
@@ -81,12 +82,12 @@ class ProjectViewCon extends Component<any, any> {
         <Card.Header>Your Projects</Card.Header>
         <ListGroup variant="flush">
           <ListGroup.Item>
+            <Form onSubmit={this.newProject.bind(this)}>
             <Form.Row className="justify-content-md-center">
               <Col sm={10}><Form.Control placeholder="Enter project name" onChange={newProjectNameChanged} /></Col>
-              <Col sm={1}><Button variant="outline-primary" onClick={this.newProject.bind(this)}>
-                <Octicon name="plus" />New Project
-            </Button></Col>
+              <Col sm={1}><Button variant="outline-primary" type="submit"><Octicon name="plus" />New Project</Button></Col>
             </Form.Row>
+            </Form>
           </ListGroup.Item>
           {
             this.props.projects && this.props.projects.map((p: Project) =>
