@@ -191,16 +191,14 @@ class FileViewCon extends React.Component<Props, State> {
           <Modal.Title>Rename file</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
+          <Form onSubmit={(ev:any) => {ev.preventDefault(); this.renameFile(this.state.fileToRename!, newFilename)} }>
             <Form.Group>
               <Form.Label>Filename</Form.Label>
               <Form.Control type="text" size="lg" defaultValue={this.state.fileToRename && this.state.fileToRename!.relativePath} onChange={handleFilenameChange} />
             </Form.Group>
-            </Form>
+            <Button variant="success" type="submit">Rename</Button>
+          </Form>
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="success" type="submit" onClick={() => this.renameFile(this.state.fileToRename!, newFilename)}>Rename</Button>
-        </Modal.Footer>
       </Modal>
     )
   }
