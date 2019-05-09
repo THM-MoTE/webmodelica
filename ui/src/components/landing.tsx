@@ -48,7 +48,7 @@ class LandingCon extends Component<any, any> {
         <div className="card sm-10 mx-auto">
           <h5 className="card-title">Login</h5>
           <div className="card-body">
-            <Form>
+            <Form  onSubmit={this.handleSubmit.bind(this)}>
               <Form.Group controlId="formUsername">
                 <Form.Label>Username</Form.Label>
                 <Form.Control required placeholder="Enter username" onChange={usernameChanged} />
@@ -58,9 +58,9 @@ class LandingCon extends Component<any, any> {
                 <Form.Control required type="password" placeholder="Password" onChange={passwordChanged} />
               </Form.Group>
               {renderErrors(this.state.errors)}
-              <Button variant="primary" type="submit" onClick={this.handleSubmit.bind(this)}>
+              <Button variant="primary" type="submit">
                 <Octicon name="sign-in" /> Submit
-                </Button>
+              </Button>
             </Form>
           </div>
         </div>
