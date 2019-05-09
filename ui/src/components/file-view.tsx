@@ -54,7 +54,8 @@ class FileViewCon extends React.Component<Props, State> {
     return R.any(p => p == name, paths)
   }
 
-  private createNewFile() {
+  private createNewFile(ev:any) {
+    ev.preventDefault()
     const extractModelname = (path: string) => {
       //the "model" name is the last part after / or . ;) (my/awesome/Class)
       const m = path.match(/[\.\/]?(\w+)$/)
@@ -103,7 +104,7 @@ class FileViewCon extends React.Component<Props, State> {
           <Modal.Title>Create a new file</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
+          <Form onSubmit={this.createNewFile.bind(this)}>
             <Form.Group>
               <Form.Label>Filename</Form.Label>
               <Form.Control type="text" size="lg" placeholder="my.package.awesome-file.mo" onChange={handleFilenameChange} />
@@ -114,11 +115,11 @@ class FileViewCon extends React.Component<Props, State> {
                 {this.fileTypes.map(tpe => <option key={tpe} onClick={() => handleFileTypeSelect(tpe)}>{tpe}</option>)}
               </Form.Control>
             </Form.Group>
+            <Button variant="success" type="submit" >Create</Button>
           </Form>
           {renderErrors(this.state.errors)}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="success" type="submit" onClick={this.createNewFile.bind(this)}>Create</Button>
         </Modal.Footer>
       </Modal >)
   }
