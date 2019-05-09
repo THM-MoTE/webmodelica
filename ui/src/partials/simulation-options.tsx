@@ -7,7 +7,7 @@ import {
   updateOption,
   deleteOption
 } from '../redux/index'
-import { Row, Col, Button, Form } from 'react-bootstrap'
+import { Row, Col, Button, ButtonGroup, Form } from 'react-bootstrap'
 //@ts-ignore
 import Octicon from 'react-octicon'
 import { AppState, Session, TableFormat, SimulateRequest, SimulationOption, availableSimulationOptions, simulationValuesFor } from '../models/index'
@@ -21,6 +21,7 @@ interface Props {
   addOption(o:Option):void
   updateOption(idx:number, o:Option):void
   deleteOption(idx:number):void
+  simulateClicked():void
 }
 interface State {
 }
@@ -48,7 +49,7 @@ class SimulationOptionsCon extends React.Component<Props, State> {
         const values = simulationValuesFor(opt.name)
         return (
         <Form.Row key={idx}>
-          <Col sm={4}>
+          <Col sm={5}>
             <Form.Control as="select" placeholder="name" value={opt.name} onChange={(ev:any) => this.updateName(idx, ev.target.value)}>
               {availableSimulationOptions.map(o => (<option key={o.key}>{o.key}</option>))}
             </Form.Control>
@@ -64,12 +65,17 @@ class SimulationOptionsCon extends React.Component<Props, State> {
             R.isEmpty(values) && (<Form.Control placeholder="value" value={opt.value.toString()} onChange={(ev:any) => this.updateValue(idx, ev.target.value)}/>)
           }
           </Col>
-          <Col sm={2}><Button variant="outline-danger" onClick={() => this.deleteOptionField(idx)}><Octicon name="x" /></Button></Col>
+          <Col sm={1}><Button variant="outline-danger" onClick={() => this.deleteOptionField(idx)}><Octicon name="x" /></Button></Col>
         </Form.Row>
         )
         })
       }
-      <Button onClick={this.addOptionField.bind(this)}><Octicon name="plus" /></Button>
+      <Row className="justify-content-center">
+        <ButtonGroup className="col-sm-6">
+          <Button onClick={this.addOptionField.bind(this)}><Octicon name="plus" /></Button>
+          <Button variant="outline-success" onClick={this.props.simulateClicked}><Octicon name="rocket" /> Simulate</Button>
+        </ButtonGroup>
+      </Row>
       </>
     )
   }
