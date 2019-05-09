@@ -116,7 +116,7 @@ class SessionPaneCon extends React.Component<Props, State> {
       </div>)
     return (
       <WmContainer title={"Session: " + this.props.session.project.name} active="session" sessionId={this.props.session.id}>
-        <Row>
+        <Row className="editor-row">
           <Col sm="2">
             <FileView
               onSaveClicked={this.handleSaveClicked.bind(this)}

@@ -14,8 +14,11 @@ code {
 }
 
 div.editor {
-  height:80vh;
+  height: 80vh;
   border:1px solid grey;
+}
+.editor-row {
+  align-items: stretch;
 }
 
 .errorGlyph {

@@ -54,7 +54,6 @@ class WmContainerCon extends React.Component<any, any> {
       <div className="container-fluid">
         {this.props.children}
       </div>
-      <Footer />
     </>)
   }
 }
