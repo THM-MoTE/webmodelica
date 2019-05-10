@@ -93,6 +93,7 @@ class ProjectController@Inject()(
 
       put("/projects/:projectId/visibility") { visibilityReq: VisibilityRequest =>
         store.setVisiblity(visibilityReq.projectId, visibilityReq.visibility)
+        .map(JSProject.apply)
           .handle {
             case e:IllegalArgumentException =>
               response.badRequest(e.getMessage)

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { AppState, Project, projectIsPrivate, projectIsPublic} from '../models/index'
-import { Action, setProjects, addProject, setSession, setProjectPreview } from '../redux/index'
+import { AppState, Project, projectIsPrivate, projectIsPublic, privateVisibility, publicVisibility} from '../models/index'
+import { Action, setProjects, setProject, addProject, setSession, setProjectPreview } from '../redux/index'
 import { WmContainer } from '../partials/container'
 import { ApiClient } from '../services/api-client'
 // import * as alerts from './partials/alerts'
@@ -59,6 +59,12 @@ class ProjectViewCon extends Component<any, any> {
       .catch(er => this.setState({ errors: [er] }))
   }
 
+  private updateVisibility(p:Project): void {
+    const newVisibility = (projectIsPublic(p)) ? privateVisibility : publicVisibility
+    this.props.api.updateVisibility(p.id, newVisibility)
+      .then(this.props.setProject)
+  }
+
   private renderProjectLine(p: Project) {
     //if the current user is project owner: create a session, open preview otherwise
     const currentUserIsOwner = p.owner === this.props.username
@@ -99,6 +105,7 @@ class ProjectViewCon extends Component<any, any> {
                   <Col>
                     <ButtonGroup className="float-right">
                       <Button variant="outline-info" href={`#${p.id}/preview`} onClick={(ev:any) => this.previewProject(ev, p)}><Octicon name="device-desktop"/></Button>
+                      <Button variant="outline-primary" onClick={() => this.updateVisibility(p)}><Octicon name="key"/></Button>
                     </ButtonGroup>
                   </Col>
                 </Row>
@@ -114,7 +121,7 @@ function mapToProps(state: AppState) {
   return { projects: state.projects, username: state.authentication!.username }
 }
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({ setProjects, addProject, setSession, setProjectPreview }, dispatch)
+  return bindActionCreators({ setProjects, setProject, addProject, setSession, setProjectPreview }, dispatch)
 }
 const ProjectView = connect(mapToProps, dispatchToProps)(ProjectViewCon)
 export default ProjectView;

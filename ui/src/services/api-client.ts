@@ -168,6 +168,21 @@ export class ApiClient {
     .then(res => res.json())
   }
 
+  public updateVisibility(pId:string, visibility:string): Promise<Project> {
+    return fetch(this.projectUri()+`/${pId}/visibility`, {
+      method: 'PUT',
+      headers: {
+        [authHeader]: this.token(),
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({visibility})
+    })
+    .then(rejectError)
+    .then(this.updateWSToken.bind(this))
+    .then(res => res.json())
+  }
+
   public compile(file: File): Promise<CompilerError[]> {
     const session = this.store.getState().session
     if (session) {
