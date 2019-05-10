@@ -39,6 +39,10 @@ case class CopyProjectRequest(
   }
 }
 
+case class VisibilityRequest(
+  @RouteParam() projectId: String,
+  @JsonProperty() visibility: String)
+
 class ProjectController@Inject()(
   store:ProjectStore,
   prefix:webmodelica.ApiPrefix,
@@ -54,7 +58,6 @@ class ProjectController@Inject()(
   filter[JwtFilter]
     .prefix(prefix.p) {
       post("/projects") { project: ProjectRequest =>
-        logger.debug(s"got project $project")
         extractToken(project.request).flatMap {
           case token if token.username == project.owner =>
             val newProj = Project(project)
@@ -85,6 +88,14 @@ class ProjectController@Inject()(
         } yield JSProject(newProject))
           .handle {
             case e:errors.AlreadyInUse => response.conflict(e.getMessage)
+          }
+      }
+
+      put("/projects/:projectId/visibility") { visibilityReq: VisibilityRequest =>
+        store.setVisiblity(visibilityReq.projectId, visibilityReq.visibility)
+          .handle {
+            case e:IllegalArgumentException =>
+              response.badRequest(e.getMessage)
           }
       }
 
