@@ -46,7 +46,7 @@ class ProjectStore @Inject()(db:MongoDatabase)
         .flatMap(_ => find(pId))
         .flatMap(errors.notFoundExc(s"there is no project with id: $pId"))
     } else {
-      TFuture.exception(new IllegalArgumentException(s"$visibility is no available visibility!"))
+      TFuture.exception(new IllegalArgumentException(s"$visibility is no available visibility! visibilities are: ${Project.visibilities.mkString(",")}"))
     }
   }
 
