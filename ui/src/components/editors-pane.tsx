@@ -2,7 +2,7 @@ import React from 'react'
 import { Col, Nav } from 'react-bootstrap'
 import * as monaco from 'monaco-editor';
 import { ApiClient } from '../services/api-client';
-import { File, toVSCodeComplete } from '../models/index'
+import { File, toVSCodeComplete, Shortcut, asKeyBinding } from '../models/index'
 import * as R from 'ramda'
 
 const language = "modelica"
@@ -10,6 +10,7 @@ interface Props {
   api: ApiClient
   file?: File
   interactive?:boolean
+  shortcuts?: Shortcut[]
 }
 
 function extractWord(model: monaco.editor.ITextModel, position: monaco.Position): string | undefined {
@@ -21,7 +22,7 @@ function extractWord(model: monaco.editor.ITextModel, position: monaco.Position)
 export class EditorsPane extends React.Component<Props, any> {
 
   static editorName: string = "monaco-editor"
-  static monacoEditor?: monaco.editor.ICodeEditor = undefined
+  static monacoEditor?: monaco.editor.IStandaloneCodeEditor = undefined
 
   componentDidMount() {
     if (!EditorsPane.monacoEditor) {
@@ -32,7 +33,18 @@ export class EditorsPane extends React.Component<Props, any> {
       })
       if(this.props.interactive) {
         this.setupAutoComplete()
+        this.setupShortcuts()
       }
+    }
+  }
+
+  private setupShortcuts() {
+    if(EditorsPane.monacoEditor) {
+      for(let s of (this.props.shortcuts || [])) {
+        EditorsPane.monacoEditor.addCommand(asKeyBinding(s), s.callback, "")
+      }
+    } else {
+      console.warn("can't setup shortcuts because there is not monaco-editor defined!")
     }
   }
 
