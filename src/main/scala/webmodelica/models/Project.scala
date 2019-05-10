@@ -34,6 +34,9 @@ object Project {
 
   val publicVisibility = "public"
   val privateVisibility = "private"
+  val visibilities = Set(publicVisibility, privateVisibility)
+
+  def isAvailableVisibility(s:String):Boolean = visibilities contains s
 
   def apply(request: ProjectRequest): Project =
     request.into[Project]
