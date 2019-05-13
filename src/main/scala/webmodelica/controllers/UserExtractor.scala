@@ -23,4 +23,7 @@ trait UserExtractor {
       userOpt <- userStore.findBy(token.username)
       user <- errors.notFoundExc("web-token contains invalid user informations!")(userOpt)
   } yield user
+
+  def extractUsername(req:Request): Future[String] =
+    extractToken(req).map(_.username)
 }

@@ -44,13 +44,14 @@ case class VisibilityRequest(
   @JsonProperty() visibility: String)
 
 class ProjectController@Inject()(
-  store:ProjectStore,
-  prefix:webmodelica.ApiPrefix,
-  mopeConf:MopeClientConfig,
-  override val userStore: UserStore,
-  override val gen: TokenGenerator)
+    override val projectStore:ProjectStore,
+    prefix:webmodelica.ApiPrefix,
+    mopeConf:MopeClientConfig,
+    override val userStore: UserStore,
+    override val gen: TokenGenerator)
     extends Controller
-    with UserExtractor {
+    with UserExtractor
+    with ProjectExtractor {
 
   val fileStore: Project => FileStore = FileStore.fromProject(mopeConf.data.hostDirectory, _)
   val projectFiles: Project => Future[List[ModelicaFile]] = fileStore(_).files
@@ -58,10 +59,10 @@ class ProjectController@Inject()(
   filter[JwtFilter]
     .prefix(prefix.p) {
       post("/projects") { project: ProjectRequest =>
-        extractToken(project.request).flatMap {
-          case token if token.username == project.owner =>
+        extractUsername(project.request).flatMap {
+          case username if username == project.owner =>
             val newProj = Project(project)
-            store.add(newProj).map(_ => JSProject(newProj))
+            projectStore.add(newProj).map(_ => JSProject(newProj))
           case _ => Future.value(response.forbidden.body(errors.ResourceUsernameError("project").getMessage))
         }.handle {
           case e:errors.AlreadyInUse => response.conflict(e.getMessage)
@@ -70,20 +71,18 @@ class ProjectController@Inject()(
 
       get("/projects/:id") { requ: Request =>
         val id = requ.getParam("id")
-          extractToken(requ).flatMap { case UserToken(username,_,_) =>
-            store.findBy(id, username)
-              .flatMap(errors.notFoundExc(s"project with $id not found!"))
-              .map(JSProject.apply)
+          extractUsername(requ).flatMap { username =>
+            extractProject(id, username).map(JSProject.apply)
           }
       }
 
       post("/projects/:projectId/copy") { copyReq: CopyProjectRequest =>
         val id = copyReq.projectId
         (for {
-          UserToken(username,_,_) <- extractToken(copyReq.request)
-          project <- store.findBy(id, username).flatMap(errors.notFoundExc(s"project with $id not found!"))
+          username <- extractUsername(copyReq.request)
+          project <- extractProject(id, username)
           newProject = copyReq.newProject(project, username)
-          _ <- store add newProject
+          _ <- projectStore add newProject
           _ <- fileStore(project) copyTo fileStore(newProject).rootDir
         } yield JSProject(newProject))
           .handle {
@@ -92,8 +91,8 @@ class ProjectController@Inject()(
       }
 
       put("/projects/:projectId/visibility") { visibilityReq: VisibilityRequest =>
-        store.setVisiblity(visibilityReq.projectId, visibilityReq.visibility)
-        .map(JSProject.apply)
+        projectStore.setVisiblity(visibilityReq.projectId, visibilityReq.visibility)
+          .map(JSProject.apply)
           .handle {
             case e:IllegalArgumentException =>
               response.badRequest(e.getMessage)
@@ -103,24 +102,24 @@ class ProjectController@Inject()(
       get("/projects/:id/files") { requ: Request =>
         val id = requ.getParam("id")
         for {
-          UserToken(username,_,_) <- extractToken(requ)
-          project <- store.findBy(id, username).flatMap(errors.notFoundExc(s"project with $id not found!"))
+          username <- extractUsername(requ)
+          project <- extractProject(id, username)
           files <- projectFiles(project)
         } yield files
       }
       get("/projects/:id/files/download") { requ: Request =>
         val id = requ.getParam("id")
         for {
-          UserToken(username,_,_) <- extractToken(requ)
-          project <- store.findBy(id, username).flatMap(errors.notFoundExc(s"project with $id not found!"))
+          username <- extractUsername(requ)
+          project <- extractProject(id, username)
           file <- fileStore(project).packageProjectArchive(project.name)
         } yield sendFile(response)("application/zip", file)
       }
 
       get("/projects") { requ: Request =>
-        extractToken(requ).flatMap { case UserToken(username,_,_) =>
-          store.byUsername(username).map(_.map(JSProject.apply))
-        }
+        extractUsername(requ)
+          .flatMap(projectStore.byUsername)
+          .map(_.map(JSProject.apply))
       }
    }
 }
