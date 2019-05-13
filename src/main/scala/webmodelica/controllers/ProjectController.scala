@@ -76,6 +76,11 @@ class ProjectController@Inject()(
           }
       }
 
+      delete("/projects/:id") { requ:Request =>
+        projectStore.delete(requ.getParam("id"))
+          .map(_ => response.gone)
+      }
+
       post("/projects/:projectId/copy") { copyReq: CopyProjectRequest =>
         val id = copyReq.projectId
         (for {
