@@ -78,7 +78,7 @@ class ProjectController@Inject()(
 
       delete("/projects/:id") { requ:Request =>
         projectStore.delete(requ.getParam("id"))
-          .map(_ => response.gone)
+          .map(_ => response.noContent)
       }
 
       post("/projects/:projectId/copy") { copyReq: CopyProjectRequest =>
