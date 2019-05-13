@@ -31,36 +31,27 @@ services:
       - ./mope.conf:/home/openmodelica/.config/mope/mope.conf
 #      - ../moie-server/target/scala-2.12/mope-server-0.6.5.jar:/opt/mope-server.jar
   user-svc:
-    image: thmmote/webmodelica-user-svc:0.1.1
+    image: thmmote/webmodelica-user-svc:0.1.2
     restart: on-failure
     ports:
       - 9012:3000
     environment:
-      - RAILS_ENV=webmodelica
       - RAILS_MASTER_KEY=ee58f8f3dfb3b3fd40391087bfd38c4e
       - MONGO_HOST=mongo
       - MONGO_PORT=27017
-  auth-db:
-    image: postgres:11-alpine
-    restart: on-failure
-    environment:
-      - POSTGRES_USER=webmodelica
-      - POSTGRES_PASSWORD=au6ureeZi8uang3Oonah8zu
-    volumes:
-      - auth_db:/var/lib/postgresql/data
   auth-svc:
-    image: thmmsgroup3/service.auth:latest
+    image: thmmote/webmodelica-auth-svc:0.0.1
     restart: on-failure
     ports:
       - 9013:3000
     environment:
-      - RAILS_MASTER_KEY=f84a1e93cf144b98ded39b233d03b60f
+      - RAILS_MASTER_KEY=ee58f8f3dfb3b3fd40391087bfd38c4e
+      - MONGO_HOST=mongo
+      - MONGO_PORT=27017
       - USER_SERVICE_HOST=user-svc
       - USER_SERVICE_PORT=3000
-      - POSTGRESQL_HOST=auth-db
-      - POSTGRESQL_PORT=5432
-      - POSTGRESQL_USER=webmodelica
-      - POSTGRESQL_PASSWORD=au6ureeZi8uang3Oonah8zu
+    volumes:
+      - ./auth-svc.settings.yml:/application/config/settings.yml
 
 volumes:
   webmodelica_data:

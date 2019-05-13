@@ -21,3 +21,4 @@ target
 data
 project/target
 private
+deployment/auth-svc.settings.yml
