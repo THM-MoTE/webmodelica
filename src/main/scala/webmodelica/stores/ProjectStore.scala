@@ -81,4 +81,11 @@ class ProjectStore @Inject()(db:MongoDatabase)
       .sort(Sorts.ascending("name"))
       .toFuture()
       .asTwitter
+
+  def delete(id:String): TFuture[Unit] = {
+    collection.deleteOne(Filters.equal("_id", id))
+      .head()
+      .map(_ => ())
+      .asTwitter
+  }
 }

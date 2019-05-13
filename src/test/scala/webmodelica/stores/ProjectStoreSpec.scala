@@ -40,4 +40,8 @@ class ProjectStoreSpec extends DBSpec(Some(constants.projectCollection)) {
   it should "reject arbitrary visiblities" in {
     an [IllegalArgumentException] should be thrownBy Await.result(store.setVisiblity(project._id, "testi1"))
   }
+  it should "delete a project" in {
+    Await.result(store.delete(project._id))
+    succeed
+  }
 }
