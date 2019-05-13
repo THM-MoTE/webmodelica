@@ -8,11 +8,10 @@ import { ApiClient } from '../services/api-client'
 import { Row, Col, Button, ButtonGroup, Container as RContainer, Card } from 'react-bootstrap'
 //@ts-ignore
 import Octicon from 'react-octicon'
-import { File, AppState, CompilerError, Session } from '../models/index'
+import { File, AppState, CompilerError, Session, Shortcut, cmdShiftAnd, cmdAnd } from '../models/index'
 import { Action, updateSessionFiles, setCompilerErrors } from '../redux/actions'
 import * as monaco from 'monaco-editor';
 import { renderErrors } from '../partials/errors';
-import * as R from 'ramda';
 import { LoadingSpinner } from '../partials/loading-spinner';
 
 interface State {
@@ -59,6 +58,13 @@ class SessionPaneCon extends React.Component<Props, State> {
   }
 
   public componentDidMount() {
+  }
+
+  private setupShortcuts(): Shortcut[] {
+    return [
+      cmdShiftAnd(monaco.KeyCode.KEY_S, this.handleSaveClicked.bind(this)),
+      cmdShiftAnd(monaco.KeyCode.KEY_B, this.handleCompileClicked.bind(this))
+    ]
   }
 
   private handleFileClicked(f: File): void {
@@ -129,7 +135,8 @@ class SessionPaneCon extends React.Component<Props, State> {
           <EditorsPane
             file={(this.state.editingFiles.length>0) ? this.state.editingFiles[0] : undefined}
             api={this.props.api}
-            interactive />
+            interactive
+            shortcuts={this.setupShortcuts()}/>
           </Col>
         </Row>
         <Row>
