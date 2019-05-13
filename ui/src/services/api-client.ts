@@ -168,6 +168,19 @@ export class ApiClient {
     .then(res => res.json())
   }
 
+  public deleteProject(p:Project | string): Promise<void> {
+    const id = (typeof p == "string") ? p : p.id
+    return fetch(this.projectUri() + `/${id}`, {
+      method: 'DELETE',
+      headers: {
+        [authHeader]: this.token(),
+      }
+    })
+    .then(rejectError)
+    .then(this.updateWSToken.bind(this))
+    .then(_ => undefined)
+  }
+
   public updateVisibility(pId:string, visibility:string): Promise<Project> {
     return fetch(this.projectUri()+`/${pId}/visibility`, {
       method: 'PUT',

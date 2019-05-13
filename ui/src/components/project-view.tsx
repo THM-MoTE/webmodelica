@@ -65,6 +65,12 @@ class ProjectViewCon extends Component<any, any> {
       .then(this.props.setProject)
   }
 
+  private deleteProject(p:Project): void {
+    const newProjects = this.props.projects.filter((other:Project) => other.id!==p.id)
+    this.props.api.deleteProject(p)
+      .then(() => this.props.setProjects(newProjects))
+  }
+
   private renderProjectLine(p: Project) {
     //if the current user is project owner: create a session, open preview otherwise
     const currentUserIsOwner = p.owner === this.props.username
@@ -106,6 +112,7 @@ class ProjectViewCon extends Component<any, any> {
                     <ButtonGroup className="float-right">
                       <Button variant="outline-info" href={`#${p.id}/preview`} onClick={(ev:any) => this.previewProject(ev, p)}><Octicon name="device-desktop"/></Button>
                       <Button variant="outline-primary" onClick={() => this.updateVisibility(p)}><Octicon name="key"/></Button>
+                      <Button variant="outline-danger" onClick={() => this.deleteProject(p)}><Octicon name="flame"/></Button>
                     </ButtonGroup>
                   </Col>
                 </Row>
