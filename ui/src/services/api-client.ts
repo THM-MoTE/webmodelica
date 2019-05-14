@@ -37,6 +37,7 @@ export class ApiClient {
   constructor(store: Store<AppState>) {
     this.store = store
     this.base = backendUri()
+    window.addEventListener('beforeunload', (e: BeforeUnloadEvent) => this.deleteCurrentSession())
   }
 
   private userUri(): string {
