@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { Navbar, Nav, Row, Col, Container, NavDropdown } from 'react-bootstrap'
 import {Footer} from './footer'
+import NotificationComponent from './notification'
 //@ts-ignore
 import Octicon from 'react-octicon'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { AppState } from '../models/index'
+import { AppState, Notification } from '../models/index'
 import * as R from 'ramda';
 import { oc } from 'ts-optchain';
 
@@ -14,6 +15,7 @@ interface Props {
   username?:string
   active?:string
   children: any
+  notifications: Notification[]
 }
 
 class WmContainerCon extends React.Component<any, any> {
@@ -52,14 +54,19 @@ class WmContainerCon extends React.Component<any, any> {
         )}
       </Navbar>
       <div className="container-fluid">
+        <Row><Col xs='12'>
+        {this.props.notifications.map((n: Notification, idx: number) => (<NotificationComponent key={idx} notification={n} />))}
+        </Col></Row>
+        <Row><Col xs='12'>
         {this.props.children}
+        </Col></Row>
       </div>
     </>)
   }
 }
 
 function mapProps(state: AppState) {
-  return { username: oc(state).authentication.username() }
+  return { username: oc(state).authentication.username(), notifications: state.notifications }
 }
 
 export const WmContainer = connect(mapProps, null)(WmContainerCon)

@@ -43,18 +43,31 @@ export interface ProjectPreviewState {
   files: File[]
 }
 
+export enum NotificationType {
+  Info,
+  Warning,
+  Error
+}
+
+export interface Notification {
+  type: NotificationType
+  message: string
+}
+
 export interface AppState {
   authentication?: UserAuth
   projects: Project[]
   projectPreview?: ProjectPreviewState
   session?: Session
+  notifications: Notification[]
 }
 
 export function initialState(): AppState {
   return {
     authentication: undefined,
     projects: [],
-    session: undefined
+    session: undefined,
+    notifications: []
   }
 }
 export function userIsAuthenticated(auth?:UserAuth):boolean {

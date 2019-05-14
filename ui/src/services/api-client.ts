@@ -37,6 +37,7 @@ export class ApiClient {
   constructor(store: Store<AppState>) {
     this.store = store
     this.base = backendUri()
+    window.addEventListener('beforeunload', (e: BeforeUnloadEvent) => this.deleteCurrentSession())
   }
 
   private userUri(): string {
@@ -131,6 +132,7 @@ export class ApiClient {
   }
 
   public newSession(project: Project): Promise<Session> {
+    this.deleteCurrentSession()
     return fetch(this.projectUri() + `/${project.id}/sessions/new`, {
       method: 'POST',
       headers: {
@@ -150,6 +152,24 @@ export class ApiClient {
         data: []
         }
       }))
+  }
+
+  public deleteSession(sid:string): Promise<void> {
+    console.log("deleting session:", sid)
+    return fetch(this.sessionUri()+`/${sid}`, {
+      method: 'DELETE',
+      headers: {
+        [authHeader]: this.token(),
+      }
+    })
+    .then(rejectError)
+    .then(_ => undefined)
+  }
+
+  public deleteCurrentSession(): Promise<void> {
+    const session = this.store.getState().session
+    if(session) return this.deleteSession(session.id)
+    else return Promise.resolve(undefined)
   }
 
   public copyProject(p:Project, newName?:string): Promise<Project> {

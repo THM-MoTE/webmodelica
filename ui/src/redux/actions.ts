@@ -1,4 +1,4 @@
-import { UserAuth, Project, File, Session, CompilerError, SimulationOption, SimulationData } from '../models/index'
+import { UserAuth, Project, File, Session, CompilerError, SimulationOption, SimulationData, Notification, NotificationType } from '../models/index'
 
 export enum ActionTypes {
   Logout,
@@ -16,7 +16,9 @@ export enum ActionTypes {
   DeleteSimulationOption,
   ParseSimulationOptions,
   AddSimulationData,
-  SetProjectPreview
+  SetProjectPreview,
+  NewNotification,
+  RemoveNotifications
 }
 
 export interface Action {
@@ -39,3 +41,8 @@ export const setSessionFiles = (files:File[]) => ({type: ActionTypes.SetSessionF
 export const addSimulationData = (data: SimulationData) => ({type: ActionTypes.AddSimulationData, payload: data})
 export const parseSimulationOptions = (pl: SimulationOption[]) => ({type: ActionTypes.ParseSimulationOptions, payload: pl})
 export const setProjectPreview = (p: Project, files: []) => ({ type: ActionTypes.SetProjectPreview, payload: {project:p, files:files}})
+export const addNotification = (n:Notification) => ({type: ActionTypes.NewNotification, payload: n})
+export const notifyInfo = (msg:string) => addNotification({type: NotificationType.Info, message: msg})
+export const notifyError = (msg:string) => addNotification({type: NotificationType.Error, message: msg})
+export const notifyWarning = (msg:string) => addNotification({type: NotificationType.Warning, message: msg})
+export const removeNotifications = (n: Notification[]) => ({ type: ActionTypes.RemoveNotifications, payload: n })

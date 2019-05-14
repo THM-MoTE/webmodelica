@@ -40,6 +40,7 @@ class SessionRegistry @Inject()(conf:WMConfig,
   def killSession(id:UUIDStr): Future[Unit] = {
     sync { registry.remove(id) } match {
       case Some(service) =>
+        info(s"killing session $id")
         service.close(Time.fromSeconds(60))
       case None =>
         warn(s"session $id not found, we aren't killing it.")

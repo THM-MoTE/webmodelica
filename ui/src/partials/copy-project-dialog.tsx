@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Form, Button, Modal, Col, Row } from 'react-bootstrap'
 import { AppState, Project, projectIsPrivate, projectIsPublic, File, ProjectPreviewState } from '../models/index'
-import { Action, setProjectPreview } from '../redux/index'
+import { Action, notifyInfo } from '../redux/index'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { ApiClient } from '../services/api-client';
@@ -10,6 +10,7 @@ interface Props {
   project?:Project
   onClose(): void
   api: ApiClient
+  notifyInfo(msg: string): void
 }
 type State = any
 
@@ -25,7 +26,7 @@ class CopyProjectDialogCon extends React.Component<Props,State> {
     this.props.api
       .copyProject(this.props.project!, this.newProjectName)
       .then(p => {
-        console.log("copied to ", p)
+        this.props.notifyInfo(`project ${this.props.project!.name} copied to ${this.newProjectName}`)
         this.props.onClose()
       })
   }
@@ -61,7 +62,7 @@ function mapToProps(state: AppState) {
   return { projectPreview: state.projectPreview! }
 }
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({}, dispatch)
+  return bindActionCreators({notifyInfo}, dispatch)
 }
 
 export const CopyProjectDialog = connect(mapToProps,dispatchToProps)(CopyProjectDialogCon)
