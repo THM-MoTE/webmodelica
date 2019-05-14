@@ -108,7 +108,7 @@ class SessionController@Inject()(
         }
       }
       delete("/sessions/:sessionId") { req: Request =>
-        sessionRegistry.killSession(req.getParam("sessionId")).map(_ => response.gone)
+        sessionRegistry.killSession(req.getParam("sessionId")).map(_ => response.noContent)
       }
       post("/sessions/:sessionId/files/update") { req: NewFileRequest =>
         withSession(req.sessionId) { service =>
