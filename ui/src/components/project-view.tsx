@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { AppState, Project, projectIsPrivate, projectIsPublic} from '../models/index'
-import { Action, setProjects, addProject, setSession, setProjectPreview } from '../redux/index'
+import { AppState, Project, projectIsPrivate, projectIsPublic, privateVisibility, publicVisibility} from '../models/index'
+import { Action, setProjects, setProject, addProject, setSession, setProjectPreview } from '../redux/index'
 import { WmContainer } from '../partials/container'
 import { ApiClient } from '../services/api-client'
 // import * as alerts from './partials/alerts'
@@ -51,11 +51,24 @@ class ProjectViewCon extends Component<any, any> {
       })
   }
 
-  private newProject() {
+  private newProject(ev:any) {
+    ev.preventDefault()
     this.api.newProject(this.props.username, this.newProjectName)
       .then(this.props.addProject)
       .then(this.clearErrors.bind(this))
       .catch(er => this.setState({ errors: [er] }))
+  }
+
+  private updateVisibility(p:Project): void {
+    const newVisibility = (projectIsPublic(p)) ? privateVisibility : publicVisibility
+    this.props.api.updateVisibility(p.id, newVisibility)
+      .then(this.props.setProject)
+  }
+
+  private deleteProject(p:Project): void {
+    const newProjects = this.props.projects.filter((other:Project) => other.id!==p.id)
+    this.props.api.deleteProject(p)
+      .then(() => this.props.setProjects(newProjects))
   }
 
   private renderProjectLine(p: Project) {
@@ -81,23 +94,25 @@ class ProjectViewCon extends Component<any, any> {
         <Card.Header>Your Projects</Card.Header>
         <ListGroup variant="flush">
           <ListGroup.Item>
+            <Form onSubmit={this.newProject.bind(this)}>
             <Form.Row className="justify-content-md-center">
               <Col sm={10}><Form.Control placeholder="Enter project name" onChange={newProjectNameChanged} /></Col>
-              <Col sm={1}><Button variant="outline-primary" onClick={this.newProject.bind(this)}>
-                <Octicon name="plus" />New Project
-            </Button></Col>
+              <Col sm={1}><Button variant="outline-primary" type="submit"><Octicon name="plus" />New Project</Button></Col>
             </Form.Row>
+            </Form>
           </ListGroup.Item>
           {
             this.props.projects && this.props.projects.map((p: Project) =>
               (<ListGroup.Item key={p.id}>
-                <Row>
+                <Row className="editor-row">
                   <Col>
                     {this.renderProjectLine(p)}
                   </Col>
                   <Col>
                     <ButtonGroup className="float-right">
                       <Button variant="outline-info" href={`#${p.id}/preview`} onClick={(ev:any) => this.previewProject(ev, p)}><Octicon name="device-desktop"/></Button>
+                      <Button variant="outline-primary" onClick={() => this.updateVisibility(p)}><Octicon name="key"/></Button>
+                      <Button variant="outline-danger" onClick={() => this.deleteProject(p)}><Octicon name="flame"/></Button>
                     </ButtonGroup>
                   </Col>
                 </Row>
@@ -113,7 +128,7 @@ function mapToProps(state: AppState) {
   return { projects: state.projects, username: state.authentication!.username }
 }
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({ setProjects, addProject, setSession, setProjectPreview }, dispatch)
+  return bindActionCreators({ setProjects, setProject, addProject, setSession, setProjectPreview }, dispatch)
 }
 const ProjectView = connect(mapToProps, dispatchToProps)(ProjectViewCon)
 export default ProjectView;

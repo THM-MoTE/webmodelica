@@ -16,6 +16,7 @@ import com.twitter.io.Buf
 import featherbed._
 
 import scala.reflect.Manifest
+import webmodelica.models.errors.MopeServiceError
 import webmodelica.models.mope._
 import webmodelica.models.mope.requests._
 import webmodelica.models.mope.responses._
@@ -59,7 +60,7 @@ trait MopeService {
         .handle {
           case request.ErrorResponse(req,resp) =>
             val str = s"Error response $resp to request $req"
-            throw new Exception(str)
+            throw MopeServiceError(str)
           case e:Exception =>
             error(s"error while connecting ${e.getMessage}")
             throw e
@@ -83,7 +84,7 @@ trait MopeService {
           .handle {
             case request.ErrorResponse(req, resp) =>
               val str = s"Error response $resp to request $req"
-              throw new Exception(str)
+              throw MopeServiceError(str)
           }
       }
     }
@@ -101,7 +102,7 @@ trait MopeService {
           .handle {
             case request.ErrorResponse(req, resp) =>
               val str = s"Error response $resp to request $req"
-              throw new Exception(str)
+              throw MopeServiceError(str)
           }
       }
     }
@@ -122,12 +123,12 @@ trait MopeService {
               case Some(l) => Future.value(new URI(l))
               case None =>
                 error(s"/simulate $req didn't return a Location header!")
-                Future.exception(new RuntimeException(s"POST /simulate didn't return a Location header!"))
+                Future.exception(MopeServiceError(s"POST /simulate didn't return a Location header!"))
             }
             .handle {
               case request.ErrorResponse(req, resp) =>
                 val str = s"Error response $resp to request $req"
-                throw new Exception(str)
+                throw MopeServiceError(str)
             }
         }
       }
@@ -143,7 +144,7 @@ trait MopeService {
           .handle {
             case request.ErrorResponse(req, resp) =>
               val str = s"Error response $resp to request $req"
-              throw new Exception(str)
+              throw MopeServiceError(str)
           }
       }
     }
@@ -151,17 +152,16 @@ trait MopeService {
 
   def disconnect(): Future[Unit] = {
     //POST /mope/project/:id/disconnect
-    //TODO: don't know if this really works though.. accepting nothing as json is awkward ?!
     projectId.flatMap { id =>
       withClient{ client =>
-        val req = client.post(s"/project/$id/disconnect")
+        val req = client.post(s"project/$id/disconnect")
           .withContent((), "application/json")
-          .accept("application/json")
-        req.send[Unit]()
+        req.send[Response]()
+          .map(_ => ())
           .handle {
             case request.ErrorResponse(req, resp) =>
               val str = s"Error response $resp to request $req"
-              throw new Exception(str)
+              throw MopeServiceError(str)
           }
       }
     }

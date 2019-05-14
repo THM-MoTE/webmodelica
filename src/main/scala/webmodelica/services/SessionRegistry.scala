@@ -13,7 +13,7 @@ import scala.collection.concurrent
 class SessionRegistry @Inject()(conf:WMConfig,
   statsReceiver:StatsReceiver)
   extends com.twitter.inject.Logging
-  with com.twitter.util.Closable {
+    with com.twitter.util.Closable {
 
   private val lock:java.util.concurrent.locks.Lock = new java.util.concurrent.locks.ReentrantLock()
   private val registry = concurrent.TrieMap[UUIDStr, SessionService]()
@@ -37,5 +37,17 @@ class SessionRegistry @Inject()(conf:WMConfig,
 
   def get(id:UUIDStr): Option[SessionService] = sync{ registry.get(id) }
 
-  override def close(deadline:Time):Future[Unit] = Future.collect(this.registry.values.map(_.close(deadline)).toList).map(_ => ())
+  def killSession(id:UUIDStr): Future[Unit] = {
+    sync { registry.remove(id) } match {
+      case Some(service) =>
+        info(s"killing session $id")
+        service.close(Time.fromSeconds(60))
+      case None =>
+        warn(s"session $id not found, we aren't killing it.")
+        Future.value(())
+    }
+  }
+
+  override def close(deadline:Time):Future[Unit] =
+    Future.collect(this.registry.values.map(_.close(deadline)).toList).map(_ => ())
 }

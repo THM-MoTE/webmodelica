@@ -107,6 +107,9 @@ class SessionController@Inject()(
           JSSession(session, files)
         }
       }
+      delete("/sessions/:sessionId") { req: Request =>
+        sessionRegistry.killSession(req.getParam("sessionId")).map(_ => response.noContent)
+      }
       post("/sessions/:sessionId/files/update") { req: NewFileRequest =>
         withSession(req.sessionId) { service =>
           service.update(ModelicaFile(req.relativePath, req.content))

@@ -7,6 +7,9 @@ import { CompilerError } from '../models';
 
 const reducerMap = {
   [ActionTypes.SetProjects.toString()]: (state: AppState, data: Project[]) => { return { ...state, projects: data } },
+  [ActionTypes.SetProject.toString()]: (state: AppState, project: Project) => ({ ...state,
+    projects: R.reduce((acc:Project[], p) => R.append((p.id===project.id) ? project : p, acc), [], state.projects)
+  }),
   [ActionTypes.UpdateSessionFiles.toString()]: function(state: AppState, data: File[]): AppState {
     if (state.session) {
       let pathNames = data.map(f => f.relativePath)

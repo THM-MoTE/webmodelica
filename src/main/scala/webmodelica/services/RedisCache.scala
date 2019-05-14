@@ -45,7 +45,7 @@ class RedisCacheImpl[A:Encoder:Decoder](
       a <- OptionT.liftF(eitherToFuture(implicitly[Decoder[A]].decodeJson(json)))
     } yield a).value.flatMap {
       case Some(a) =>
-        info(s"cache hit for $key")
+        debug(s"cache hit for $key")
         hitCounter.incr()
         Future.value(Some(a))
       case None =>

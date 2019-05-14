@@ -36,10 +36,11 @@ class SimulationSetupCon extends React.Component<Props, State> {
     const modelNameChanged = (ev:any) => this.modelName = ev.target.value
     return (<>
       <Form.Row>
-        <Col sm={10}><Form.Control placeholder="model to simulate" onChange={modelNameChanged}/></Col>
-        <Col sm={2}><Button variant="outline-success" onClick={this.simulateClicked.bind(this)}><Octicon name="rocket" /> Simulate</Button></Col>
+        <Col sm={11}><Form.Control placeholder="model to simulate" onChange={modelNameChanged}/></Col>
+        <Col sm={1}></Col>
       </Form.Row>
-      <SimulationOptions/>
+      <SimulationOptions simulateClicked={this.simulateClicked.bind(this)}/>
+
       </>
     )
   }

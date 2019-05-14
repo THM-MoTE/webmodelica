@@ -57,7 +57,6 @@ class WmContainerCon extends React.Component<any, any> {
         {this.props.children}
         {this.props.notifications.map((n: Notification, idx: number) => (<NotificationComponent key={idx} notification={n} />))}
       </div>
-      <Footer />
     </>)
   }
 }

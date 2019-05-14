@@ -37,6 +37,7 @@ export class ApiClient {
   constructor(store: Store<AppState>) {
     this.store = store
     this.base = backendUri()
+    window.addEventListener('beforeunload', (e: BeforeUnloadEvent) => this.deleteCurrentSession())
   }
 
   private userUri(): string {
@@ -131,6 +132,7 @@ export class ApiClient {
   }
 
   public newSession(project: Project): Promise<Session> {
+    this.deleteCurrentSession()
     return fetch(this.projectUri() + `/${project.id}/sessions/new`, {
       method: 'POST',
       headers: {
@@ -152,6 +154,24 @@ export class ApiClient {
       }))
   }
 
+  public deleteSession(sid:string): Promise<void> {
+    console.log("deleting session:", sid)
+    return fetch(this.sessionUri()+`/${sid}`, {
+      method: 'DELETE',
+      headers: {
+        [authHeader]: this.token(),
+      }
+    })
+    .then(rejectError)
+    .then(_ => undefined)
+  }
+
+  public deleteCurrentSession(): Promise<void> {
+    const session = this.store.getState().session
+    if(session) return this.deleteSession(session.id)
+    else return Promise.resolve(undefined)
+  }
+
   public copyProject(p:Project, newName?:string): Promise<Project> {
     //POST / api / v1 / projects /: projectId / copy
     return fetch(this.projectUri()+`/${p.id}/copy`, {
@@ -162,6 +182,34 @@ export class ApiClient {
         'Accept': 'application/json'
       },
       body: (newName) ? JSON.stringify({ name: newName }) : undefined
+    })
+    .then(rejectError)
+    .then(this.updateWSToken.bind(this))
+    .then(res => res.json())
+  }
+
+  public deleteProject(p:Project | string): Promise<void> {
+    const id = (typeof p == "string") ? p : p.id
+    return fetch(this.projectUri() + `/${id}`, {
+      method: 'DELETE',
+      headers: {
+        [authHeader]: this.token(),
+      }
+    })
+    .then(rejectError)
+    .then(this.updateWSToken.bind(this))
+    .then(_ => undefined)
+  }
+
+  public updateVisibility(pId:string, visibility:string): Promise<Project> {
+    return fetch(this.projectUri()+`/${pId}/visibility`, {
+      method: 'PUT',
+      headers: {
+        [authHeader]: this.token(),
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({visibility})
     })
     .then(rejectError)
     .then(this.updateWSToken.bind(this))

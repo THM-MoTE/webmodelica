@@ -7,8 +7,8 @@ export interface Project {
   visibility: string
 }
 
-const publicVisibility = "public"
-const privateVisibility = "private"
+export const publicVisibility = "public"
+export const privateVisibility = "private"
 
 export function projectIsPrivate(p:Project): boolean {
   return p.visibility === privateVisibility
