@@ -9,6 +9,7 @@ package config {
     mope: MopeClientConfig,
     mongodb: MongoDBConfig,
     redis: RedisConfig,
+    userService:UserServiceConf,
     secret: String,
     tokenExpiration: Duration,
     cacheUsers: Boolean
@@ -31,6 +32,10 @@ package config {
     address: String,
     defaultTtl: Duration
   )
+
+  case class UserServiceConf(
+    address: String,
+    resource: String)
 
   object configReaders {
     implicit val pathReader:ConfigReader[Path] = ConfigReader[String].map(s => Paths.get(s).toAbsolutePath)

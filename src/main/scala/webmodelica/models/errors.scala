@@ -31,6 +31,6 @@ object errors {
   }
   case class ArchiveError(reason:String) extends RuntimeException(reason)
   case class StepSizeCalculationError(reason:String) extends RuntimeException(reason)
-
   case class MopeServiceError(reason:String) extends RuntimeException(reason)
+  case class UserServiceError(reason:String) extends RuntimeException(reason)
 }
