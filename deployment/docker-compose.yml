@@ -64,6 +64,7 @@ services:
       - MONGO_PORT=27017
       - USER_SERVICE_HOST=user-svc
       - USER_SERVICE_PORT=3000
+      - LOGIN_REDIRECT_URI=http://localhost:3000/
     volumes:
       - ./auth-svc.settings.yml:/application/config/settings.yml
     labels:
