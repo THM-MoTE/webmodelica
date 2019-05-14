@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Navbar, Nav, Row, Col, Container, NavDropdown } from 'react-bootstrap'
 import {Footer} from './footer'
-import { NotificationComponent} from './notification'
+import NotificationComponent from './notification'
 //@ts-ignore
 import Octicon from 'react-octicon'
 import { connect } from 'react-redux'
@@ -54,8 +54,12 @@ class WmContainerCon extends React.Component<any, any> {
         )}
       </Navbar>
       <div className="container-fluid">
-        {this.props.children}
+        <Row><Col xs='12'>
         {this.props.notifications.map((n: Notification, idx: number) => (<NotificationComponent key={idx} notification={n} />))}
+        </Col></Row>
+        <Row><Col xs='12'>
+        {this.props.children}
+        </Col></Row>
       </div>
     </>)
   }
