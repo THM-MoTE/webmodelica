@@ -56,12 +56,14 @@ class ProjectViewCon extends Component<any, any> {
     const newVisibility = (projectIsPublic(p)) ? privateVisibility : publicVisibility
     this.props.api.updateVisibility(p.id, newVisibility)
       .then(this.props.setProject)
+      .then(() => this.props.notifyInfo(`visibility for ${p.name} changed to ${newVisibility}`))
   }
 
   private deleteProject(p:Project): void {
     const newProjects = this.props.projects.filter((other:Project) => other.id!==p.id)
     this.props.api.deleteProject(p)
       .then(() => this.props.setProjects(newProjects))
+      .then(() => this.props.notifyInfo(`Project ${p.name} removed!`))
   }
 
   private renderProjectLine(p: Project) {
