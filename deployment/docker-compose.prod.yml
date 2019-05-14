@@ -1,16 +1,5 @@
 version: '3'
 services:
-  traefik:
-    image: traefik
-    command: --api --docker
-    ports:
-      - "80:80"     # The HTTP port
-      - "8080:8080" # The Web UI (enabled by --api)
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
-    labels:
-      - "de.thm.webmodelica.name=traefik-proxy"
-    restart: unless-stopped
   backend:
     image: "thmmote/webmodelica:0.6.9"
     restart: unless-stopped
@@ -33,6 +22,8 @@ services:
       - "traefik.backend=webmodelica-ui"
       - "traefik.port=3000"
       - "de.thm.webmodelica.name=webmodelica-frontend"
+  traefik:
+    restart: unless-stopped
   mongo:
     restart: unless-stopped
   cache:
