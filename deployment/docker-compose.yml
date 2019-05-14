@@ -43,7 +43,6 @@ services:
 #      - ../moie-server/target/scala-2.12/mope-server-0.6.5.jar:/opt/mope-server.jar
   user-svc:
     image: thmmote/webmodelica-user-svc:0.1.2
-    restart: on-failure
     ports:
       - 9012:3000
     environment:
@@ -57,7 +56,6 @@ services:
       - "de.thm.webmodelica.name=webmodelica-user-svc"
   auth-svc:
     image: thmmote/webmodelica-auth-svc:0.0.1
-    restart: on-failure
     ports:
       - 9013:3000
     environment:
