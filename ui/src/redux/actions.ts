@@ -43,4 +43,4 @@ export const parseSimulationOptions = (pl: SimulationOption[]) => ({type: Action
 export const setProjectPreview = (p: Project, files: []) => ({ type: ActionTypes.SetProjectPreview, payload: {project:p, files:files}})
 export const addNotification = (n:Notification) => ({type: ActionTypes.NewNotification, payload: n})
 export const notifyInfo = (msg:string) => addNotification({type: NotificationType.Info, message: msg})
-export const removeNotifications = (n: Notification[]) => ({ type: ActionTypes.NewNotification, payload: n })
+export const removeNotifications = (n: Notification[]) => ({ type: ActionTypes.RemoveNotifications, payload: n })
