@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { AppState, Project, projectIsPrivate, projectIsPublic, privateVisibility, publicVisibility} from '../models/index'
-import { Action, setProjects, setProject, addProject, setSession, setProjectPreview } from '../redux/index'
+import { Action, setProjects, setProject, addProject, setSession, setProjectPreview, notifyInfo, notifyError } from '../redux/index'
 import { WmContainer } from '../partials/container'
 import { ApiClient } from '../services/api-client'
 // import * as alerts from './partials/alerts'
@@ -10,7 +10,6 @@ import Octicon from 'react-octicon'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as R from 'ramda'
-import { renderErrors } from '../partials/errors';
 
 class ProjectViewCon extends Component<any, any> {
   private api: ApiClient
@@ -20,16 +19,11 @@ class ProjectViewCon extends Component<any, any> {
     super(props)
     this.api = this.props.api
     this.newProjectName = ''
-    this.state = { errors: [] }
   }
 
   public componentDidMount() {
     this.api.projects()
       .then(this.props.setProjects)
-  }
-
-  private clearErrors(): void {
-    this.setState({ errors: [] })
   }
 
   private newSession(ev: any, p: Project): void {
@@ -55,8 +49,7 @@ class ProjectViewCon extends Component<any, any> {
     ev.preventDefault()
     this.api.newProject(this.props.username, this.newProjectName)
       .then(this.props.addProject)
-      .then(this.clearErrors.bind(this))
-      .catch(er => this.setState({ errors: [er] }))
+      .catch(er => this.props.notifyError(er))
   }
 
   private updateVisibility(p:Project): void {
@@ -89,7 +82,6 @@ class ProjectViewCon extends Component<any, any> {
     const newProjectNameChanged = (ev: any) => this.newProjectName = ev.target.value
 
     return (<WmContainer title="Projects">
-      {renderErrors(this.state.errors)}
       <Card>
         <Card.Header>Your Projects</Card.Header>
         <ListGroup variant="flush">
@@ -128,7 +120,7 @@ function mapToProps(state: AppState) {
   return { projects: state.projects, username: state.authentication!.username }
 }
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({ setProjects, setProject, addProject, setSession, setProjectPreview }, dispatch)
+  return bindActionCreators({ setProjects, setProject, addProject, setSession, setProjectPreview, notifyInfo, notifyError }, dispatch)
 }
 const ProjectView = connect(mapToProps, dispatchToProps)(ProjectViewCon)
 export default ProjectView;
