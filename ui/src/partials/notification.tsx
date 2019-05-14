@@ -13,6 +13,15 @@ interface Props {
 
 export class NotificationComponentCon extends React.Component<Props, any> {
 
+  constructor(p:Props) {
+    super(p)
+
+    //if it's an info alert; automatically remove it after 5 seconds
+    if(p.notification.type === NotificationType.Info) {
+      window.setTimeout(this.removeNotification.bind(this), 5000)
+    }
+  }
+
   private variant(): 'info'|'warning'|'danger' {
     switch(this.props.notification.type) {
       case NotificationType.Info: return 'info'
