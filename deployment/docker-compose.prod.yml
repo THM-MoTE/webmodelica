@@ -12,7 +12,7 @@ services:
       - "de.thm.webmodelica.name=traefik-proxy"
     restart: unless-stopped
   backend:
-    image: "thmmote/webmodelica:0.6.9"
+    image: "thmmote/webmodelica:0.7.0"
     restart: unless-stopped
     ports:
       - 9002:3000
@@ -24,7 +24,7 @@ services:
     volumes:
       - webmodelica_data:/data
   ui:
-    image: "thmmote/webmodelica-ui:0.6.9"
+    image: "thmmote/webmodelica-ui:0.7.0"
     restart: unless-stopped
     ports:
       - 9003:3000

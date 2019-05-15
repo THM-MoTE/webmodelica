@@ -32,3 +32,7 @@ git push origin master
 git push origin --tags
 docker push $backendImage:$version
 docker push $frontendImage:$version
+
+echo "==> updating compose file.."
+sed -iE "s/thmmote\/webmodelica:[0-9].[0-9].[0-9]/thmmote\/webmodelica:$version/" docker-compose.prod.yml
+sed -iE "s/thmmote\/webmodelica-ui:[0-9].[0-9].[0-9]/thmmote\/webmodelica-ui:$version/" docker-compose.prod.yml
