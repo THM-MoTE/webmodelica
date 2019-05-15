@@ -15,7 +15,7 @@ services:
     volumes:
       - ../conf/auth-svc-key.pub:/opt/auth-key.pub
       - webmodelica_data:/data
-    ui:
+  ui:
     image: "thmmote/webmodelica-ui:0.7.0"
     restart: unless-stopped
     ports:
