@@ -70,7 +70,8 @@ class LoginComponentCon extends React.Component<Props, any> {
               <Form.Control required type="password" placeholder="Password" onChange={passwordChanged} />
             </Form.Group>
             {renderErrors(this.state.errors)}
-            <Button variant="secondary" href="http://localhost:9000/api/v1/auths/developer">Dev Login</Button>
+            <Button variant="secondary" href="http://localhost:9000/api/v1/auths/developer">Developer</Button>
+            <Button variant="secondary" href="http://localhost:9000/api/v1/auths/github">GitHub</Button>
             <Button variant="primary" type="submit">
               <Octicon name="sign-in" /> Submit
               </Button>
