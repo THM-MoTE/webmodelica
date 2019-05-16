@@ -36,4 +36,6 @@ class TokenGenerator(secret:String, exp:Duration=(15 minutes)) extends TokenVali
   }
   override def isValid(token:String): Boolean = Jwt.isValid(token, secret, Seq(algorithm))
   def validate(token:String): Unit = Jwt.validate(token, secret, Seq(algorithm))
+
+  override def toString: String = s"TokenGenerator($exp)"
 }

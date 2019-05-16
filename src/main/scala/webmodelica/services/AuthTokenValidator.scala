@@ -43,6 +43,8 @@ trait AuthTokenValidator extends TokenValidator {
 
     futures.eitherToFuture(tokenTry)
   }
+
+  override def toString: String = s"AuthTokenValidator($publicKey)"
 }
 object AuthTokenValidator {
   def apply(key:PublicKey): AuthTokenValidator = new AuthTokenValidator {
