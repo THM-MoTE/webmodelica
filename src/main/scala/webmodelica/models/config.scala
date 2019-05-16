@@ -38,7 +38,7 @@ package config {
 
   case class JwtConf(secret: String,
                     tokenExpiration: Duration,
-                     authSvcPublicKey:String)
+                     authSvcPublicKey:Path)
 
   object configReaders {
     implicit val pathReader:ConfigReader[Path] = ConfigReader[String].map(s => Paths.get(s).toAbsolutePath)
