@@ -6,16 +6,20 @@ import Octicon from 'react-octicon'
 import { ApiClient } from '../services/api-client'
 import { Redirect } from 'react-router'
 import { defaultMapDispatchToProps, mapAuthenticationToProps } from '../redux'
-import { Action } from '../redux/index'
+import { Action, updateToken } from '../redux/index'
 import { renderErrors } from '../partials/errors'
 import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import * as R from 'ramda'
 import { userIsAuthenticated, UserAuth } from '../models/index';
+//@ts-ignore
+import {cookies, local, db, session, subscribe} from 'brownies';
 
 interface Props {
   api: ApiClient
   history: any
   authentication?: UserAuth
+  updateToken(token:string): void
 }
 
 class LoginComponentCon extends React.Component<Props, any> {
@@ -40,6 +44,11 @@ class LoginComponentCon extends React.Component<Props, any> {
   }
 
   componentDidMount() {
+    //check if auth-service redireted us here and gave us a cookie
+    if(cookies.Authentication) {
+      console.log("updating token using authentication cookie !")
+      this.props.updateToken(cookies.Authentication)
+    }
     if (userIsAuthenticated(this.props.authentication))
       this.props.history.push("/projects")
   }
@@ -72,5 +81,9 @@ class LoginComponentCon extends React.Component<Props, any> {
   }
 }
 
-const LoginComponent = connect(mapAuthenticationToProps, defaultMapDispatchToProps)(LoginComponentCon)
+function dispatchToProps(dispatch: (a: Action) => any) {
+  return bindActionCreators({ updateToken }, dispatch)
+}
+
+const LoginComponent = connect(mapAuthenticationToProps, dispatchToProps)(LoginComponentCon)
 export default LoginComponent

@@ -3,7 +3,7 @@ import { Project } from '../models/project'
 import { File } from '../models/file'
 import { Action, ActionTypes } from './actions'
 import * as R from 'ramda'
-import { CompilerError } from '../models';
+import { CompilerError, AuthServiceToken, WebmodelicaToken } from '../models';
 
 const reducerMap = {
   [ActionTypes.SetProjects.toString()]: (state: AppState, data: Project[]) => { return { ...state, projects: data } },
@@ -27,20 +27,31 @@ const reducerMap = {
   [ActionTypes.SetProjectPreview.toString()]: (state:AppState, data:ProjectPreviewState) => ({...state, projectPreview: data }),
   [ActionTypes.SetSession.toString()]: (state: AppState, session: Session) => ({ ...state, session: session }),
   [ActionTypes.UpdateWsToken.toString()]: (state: AppState, token: string) => {
-    let payload = JSON.parse(atob(token.split('.')[1]))
-    return {
-      ...state,
-      authentication: {
-        username: payload.username,
+    //if the token came from auth-service it has a different structure than our token
+    let payload: AuthServiceToken | WebmodelicaToken = JSON.parse(atob(token.split('.')[1]))
+    let obj = {...state}
+    if('user' in payload) { //payload is a AuthServiceToken
+      obj.authentication = {
+        username: payload.user.username,
         token: {
-          username: payload.username,
-          //iat & exp are in seconds, JS-Dates take miliseconds => *1000
-          issued: new Date(payload.iat * 1000),
-          expires: new Date(payload.exp * 1000),
+          username: payload.user.username,
+          //exp are in seconds, JS-Dates take miliseconds => *1000
+          expires: new Date(payload.exp*1000),
           raw: token
         }
       }
+    } else {
+      obj.authentication = { //payload is WebmodelicaToken
+          username: payload.username,
+          token: {
+            username: payload.username,
+            //exp are in seconds, JS-Dates take miliseconds => *1000
+            expires: new Date(payload.exp * 1000),
+            raw: token
+          }
+      }
     }
+    return obj
   },
   [ActionTypes.CreateNewFile.toString()]: (state: AppState, f: File) => ({ ...state, session: { ...state.session!, files: R.append(f, state.session!.files) } }),
   [ActionTypes.SetCompilerErrors.toString()]: (state: AppState, errors: CompilerError[]) => ({ ...state, session: { ...state.session!, compilerErrors: errors}}),

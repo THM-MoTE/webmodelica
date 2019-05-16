@@ -9,7 +9,6 @@ export interface UserAuth {
 
 export interface JwtToken {
   username: string
-  issued: Date
   expires: Date
   raw: string
 }
