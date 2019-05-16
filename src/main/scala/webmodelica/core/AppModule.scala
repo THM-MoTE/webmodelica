@@ -10,6 +10,7 @@ import com.google.inject.{Provides, Singleton}
 import com.twitter.finagle.stats.StatsReceiver
 import org.mongodb.scala._
 import webmodelica.ApiPrefix
+import webmodelica.controllers.JwtFilter
 import webmodelica.models._
 import webmodelica.services._
 import webmodelica.stores._
@@ -59,6 +60,8 @@ object AppModule
   def dbConfigProvider(wm:WMConfig): MongoDBConfig = wm.mongodb
   @Provides
   def mopeConfigProvider(wm:WMConfig): MopeClientConfig = wm.mope
+  @Provides
+  def jwtConfProvider(wm:WMConfig): JwtConf = wm.jwtConf
   @Singleton
   @Provides
   def mongoClientProvider(dbConf:MongoDBConfig): MongoClient = MongoClient(dbConf.address)
@@ -84,15 +87,14 @@ object AppModule
 
   @Singleton
   @Provides
-  def sessionRegistry(conf:WMConfig, statsReceiver:StatsReceiver):SessionRegistry = new SessionRegistry(conf, statsReceiver)
-
+  def sessionRegistry(conf:WMConfig, statsReceiver:StatsReceiver):SessionRegistry =
+    new SessionRegistry(conf, statsReceiver)
   @Provides
-  def tokenGenerator(conf:WMConfig): TokenGenerator = {
-    //combine our JWT authentication with auth-service authentication through mixin
-    new TokenGenerator(conf.jwtConf.secret, conf.jwtConf.tokenExpiration) with AuthTokenValidator {
-      override def publicKey: PublicKey = KeyFile(Paths.get(conf.jwtConf.authSvcPublicKey))
-    }
-  }
+  def tokenGenerator(conf:JwtConf): TokenGenerator =
+    new TokenGenerator(conf.secret, conf.tokenExpiration)
+  @Provides
+  def tokenValidator(conf:JwtConf): TokenValidator =
+    TokenValidator.combine(tokenGenerator(conf), AuthTokenValidator(KeyFile(conf.authSvcPublicKey)))
 
   @Provides
   @Singleton

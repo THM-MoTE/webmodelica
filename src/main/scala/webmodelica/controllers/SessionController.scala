@@ -7,18 +7,16 @@ import com.twitter.finatra.http.Controller
 import com.twitter.finatra.http.fileupload._
 import org.mongodb.scala.bson.BsonObjectId
 import webmodelica.models._
-import webmodelica.models.mope.{FilePosition, FilePath}
+import webmodelica.models.mope.{FilePath, FilePosition}
 import webmodelica.models.mope.requests.{Complete, SimulateRequest}
 import webmodelica.models.mope.responses.{SimulationResult, Suggestion}
-import webmodelica.services.{TokenGenerator, SessionRegistry, SessionService}
-import webmodelica.stores.{
-  UserStore,
-  ProjectStore
-}
+import webmodelica.services.{SessionRegistry, SessionService, TokenGenerator, TokenValidator}
+import webmodelica.stores.{ProjectStore, UserStore}
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.twitter.finatra.request._
 import io.scalaland.chimney.dsl._
-import java.nio.file.{Path, Paths, Files}
+import java.nio.file.{Files, Path, Paths}
+
 import better.files._
 
 case class NewFileRequest(
@@ -83,7 +81,7 @@ class SessionController@Inject()(
   sessionRegistry: SessionRegistry,
   prefix:webmodelica.ApiPrefix,
   override val userStore: UserStore,
-  override val gen: TokenGenerator)
+  override val gen: TokenValidator)
     extends Controller
     with UserExtractor {
 

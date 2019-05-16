@@ -10,18 +10,13 @@ import cats.implicits._
 import io.scalaland.chimney.dsl._
 import org.mongodb.scala.bson.BsonObjectId
 import java.nio.file.{Path, Paths}
+
 import webmodelica.models._
 import webmodelica.models.config.MopeClientConfig
 import webmodelica.stores.FileStore
 import webmodelica.conversions.futures._
-import webmodelica.services.{
-  TokenGenerator,
-  UserToken
-}
-import webmodelica.stores.{
-  ProjectStore,
-  UserStore
-}
+import webmodelica.services.{TokenGenerator, TokenValidator, UserToken}
+import webmodelica.stores.{ProjectStore, UserStore}
 
 case class CopyProjectRequest(
   @RouteParam() projectId: String,
@@ -48,7 +43,7 @@ class ProjectController@Inject()(
     prefix:webmodelica.ApiPrefix,
     mopeConf:MopeClientConfig,
     override val userStore: UserStore,
-    override val gen: TokenGenerator)
+    override val gen: TokenValidator)
     extends Controller
     with UserExtractor
     with ProjectExtractor {

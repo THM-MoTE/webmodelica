@@ -6,19 +6,21 @@ import com.twitter.finagle.http.{Request, Response, Status}
 import com.twitter.finatra.http.response.ResponseBuilder
 import com.twitter.util.Future
 import webmodelica.constants
-import webmodelica.services.TokenGenerator
+import webmodelica.services.{CombinedTokenValidator, TokenGenerator, TokenValidator}
 import webmodelica.stores.UserStore
 import webmodelica.models.{User, errors}
 
 
-class JwtFilter@Inject()(gen:TokenGenerator, store:UserStore) extends SimpleFilter[http.Request, http.Response]
+class JwtFilter@Inject()(gen:TokenGenerator, store:UserStore)(validator:TokenValidator=gen) extends SimpleFilter[http.Request, http.Response]
   with com.twitter.inject.Logging {
+
+  info(s"jwt filter init with generator: $gen, validator: $validator")
 
   override def apply(request: Request, service: Service[Request, Response]): Future[Response] = {
     val headerField = request.headerMap.get(constants.authenticationHeader).orElse(request.headerMap.get(constants.authorizationHeader))
     lazy val cookie = request.cookies.get(constants.authenticationHeader).orElse(request.cookies.get(constants.authorizationHeader)).map(_.value)
-    val resultOpt = headerField.orElse(cookie).filter(gen.isValid).map { token =>
-      val userF = gen.decode(token).flatMap(t => store.findBy(t.username))
+    val resultOpt = headerField.orElse(cookie).filter(validator.isValid).map { token =>
+      val userF = validator.decode(token).flatMap(t => store.findBy(t.username))
       //explictly set the Authorization header because it could be inside of a cookie
       //which isn't used when extracting user informations
       request.authorization = token
