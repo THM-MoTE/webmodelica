@@ -28,18 +28,24 @@ case class AuthTokenPayload(user: AuthUser, exp:Long) {
       .transform
 }
 
-class AuthTokenValidator(publicKey:PublicKey) {
+trait AuthTokenValidator extends TokenValidator {
   import io.circe.parser
+  def publicKey:PublicKey
   private val secret = publicKey.key
   private val algorithm = Seq(JwtAlgorithm.RS256)
 
-  def isValid(token:String): Boolean = Jwt.isValid(token, secret, algorithm)
-  def decode(token:String): Future[UserToken] = {
+  override def isValid(token:String): Boolean = Jwt.isValid(token, secret, algorithm)
+  override def decode(token:String): Future[UserToken] = {
     val tokenTry = Jwt.decodeAll(token,secret, algorithm).toEither
       .flatMap { case (_, payload, _) => parser.parse(payload) }
       .flatMap(_.as[AuthTokenPayload])
       .map(_.toUserToken)
 
     futures.eitherToFuture(tokenTry)
+  }
+}
+object AuthTokenValidator {
+  def apply(key:PublicKey): AuthTokenValidator = new AuthTokenValidator {
+    override def publicKey: PublicKey = key
   }
 }

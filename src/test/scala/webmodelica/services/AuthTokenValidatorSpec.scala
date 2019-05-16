@@ -21,7 +21,7 @@ class AuthTokenValidatorSpec extends WMSpec  {
   require(privateKey.nonEmpty, "private key can't be empty")
   require(publicKey.nonEmpty, "public key can't be empty")
 
-  val validator = new AuthTokenValidator(KeyString(publicKey))
+  val validator = AuthTokenValidator(KeyString(publicKey))
 
   val expSeconds = Instant.now().plusSeconds((1 hour).toSeconds).toEpochMilli
 
