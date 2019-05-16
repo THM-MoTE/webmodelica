@@ -4,7 +4,6 @@ import pdi.jwt.{Jwt, JwtAlgorithm, JwtClaim, JwtHeader, JwtOptions}
 import scala.util.{Failure, Success, Try}
 import com.twitter.util.Future
 import java.nio.file.{Files, Path}
-
 import io.circe.generic.JsonCodec
 import webmodelica.constants
 import webmodelica.conversions.futures
@@ -15,7 +14,7 @@ sealed trait PublicKey {
   def key:String
 }
 case class KeyFile(file:Path) extends PublicKey {
-  def key:String = Files.readString(file, constants.encoding)
+  def key:String = new String(Files.readAllBytes(file), constants.encoding)
 }
 case class KeyString(override val key:String) extends PublicKey
 
