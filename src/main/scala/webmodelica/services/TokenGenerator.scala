@@ -8,9 +8,12 @@ import scala.util.{Failure, Success, Try}
 import java.time.Instant
 
 import com.twitter.util.Future
+import io.circe.generic.JsonCodec
+import webmodelica.conversions.futures
 
 case class UserTokenPayload(username: String)
-case class UserToken(username:String, iat: Long, exp: Long)
+@JsonCodec
+case class UserToken(username:String, iat: Option[Long], exp: Long)
 
 class TokenGenerator(secret:String, exp:Duration=(15 minutes)) {
   import io.circe.generic.auto._
@@ -26,13 +29,10 @@ class TokenGenerator(secret:String, exp:Duration=(15 minutes)) {
     Jwt.encode(claim, secret, algorithm)
   }
   def decode(token:String): Future[UserToken] = {
-    val decodedTry = Jwt.decodeAll(token, secret, Seq(algorithm)).flatMap {
-      case (_, payload,_) => parser.decode[UserToken](payload).toTry
+    val decodedEither = Jwt.decodeAll(token, secret, Seq(algorithm)).toEither.flatMap {
+      case (_, payload,_) => parser.decode[UserToken](payload)
     }
-    decodedTry match {
-      case Success(ut) => Future.value(ut)
-      case Failure(ex) => Future.exception(ex)
-    }
+    futures.eitherToFuture(decodedEither)
   }
   def isValid(token:String): Boolean = Jwt.isValid(token, secret, Seq(algorithm))
   def validate(token:String): Unit = Jwt.validate(token, secret, Seq(algorithm))
