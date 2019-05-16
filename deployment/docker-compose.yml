@@ -55,7 +55,7 @@ services:
       - "traefik.port=3000"
       - "de.thm.webmodelica.name=webmodelica-user-svc"
   auth-svc:
-    image: thmmote/webmodelica-auth-svc:0.0.1
+    image: thmmote/webmodelica-auth-svc:0.0.2
     ports:
       - 9013:3000
     environment:
