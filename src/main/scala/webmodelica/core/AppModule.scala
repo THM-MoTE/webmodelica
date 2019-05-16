@@ -1,5 +1,6 @@
 package webmodelica.core
 
+import java.nio.file.Paths
 import java.security.MessageDigest
 
 import webmodelica.models.config._
@@ -86,7 +87,12 @@ object AppModule
   def sessionRegistry(conf:WMConfig, statsReceiver:StatsReceiver):SessionRegistry = new SessionRegistry(conf, statsReceiver)
 
   @Provides
-  def tokenGenerator(conf:WMConfig): TokenGenerator = new TokenGenerator(conf.secret, conf.tokenExpiration)
+  def tokenGenerator(conf:WMConfig): TokenGenerator = {
+    //combine our JWT authentication with auth-service authentication through mixin
+    new TokenGenerator(conf.jwtConf.secret, conf.jwtConf.tokenExpiration) with AuthTokenValidator {
+      override def publicKey: PublicKey = KeyFile(Paths.get(conf.jwtConf.authSvcPublicKey))
+    }
+  }
 
   @Provides
   @Singleton
