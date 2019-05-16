@@ -11,8 +11,8 @@ case class User(username:String, email: String, first_name: Option[String], last
 case class UserDocument(_id: String, email: String, first_name: Option[String], last_name: Option[String], hashedPassword: String)
 
 @JsonCodec
-case class AuthUser(username:String, email: String, first_name: Option[String], last_name: Option[String]) {
-  def toUser:User = this.into[User].withFieldConst(_.hashedPassword, "").transform
+case class AuthUser(username:String, email: Option[String], first_name: Option[String], last_name: Option[String]) {
+  def toUser:User = this.into[User].withFieldComputed(_.email, au => au.email.getOrElse(au.username+"@webmodelica.me")).withFieldConst(_.hashedPassword, "").transform
 }
 
 object User {
