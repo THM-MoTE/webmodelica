@@ -10,8 +10,7 @@ package config {
     mongodb: MongoDBConfig,
     redis: RedisConfig,
     userService:UserServiceConf,
-    secret: String,
-    tokenExpiration: Duration,
+    jwtConf:JwtConf,
     cacheUsers: Boolean
   )
 
@@ -36,6 +35,10 @@ package config {
   case class UserServiceConf(
     address: String,
     resource: String)
+
+  case class JwtConf(secret: String,
+                    tokenExpiration: Duration,
+                     authSvcPublicKey:String)
 
   object configReaders {
     implicit val pathReader:ConfigReader[Path] = ConfigReader[String].map(s => Paths.get(s).toAbsolutePath)
