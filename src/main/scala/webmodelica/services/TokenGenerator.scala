@@ -15,11 +15,6 @@ case class UserTokenPayload(username: String)
 @JsonCodec
 case class UserToken(username:String, iat: Option[Long], exp: Long)
 
-trait TokenValidator {
-  def decode(token:String): Future[UserToken]
-  def isValid(token:String): Boolean
-}
-
 class TokenGenerator(secret:String, exp:Duration=(15 minutes)) extends TokenValidator {
   import io.circe.generic.auto._
   import io.circe.parser
