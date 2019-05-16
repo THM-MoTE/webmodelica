@@ -4,7 +4,7 @@ import com.twitter.finatra.http.Controller
 import com.twitter.finagle.http.Request
 import com.twitter.util.Future
 import webmodelica.stores.UserStore
-import webmodelica.services.{CombinedTokenValidator, TokenValidator, UserToken}
+import webmodelica.services.{TokenValidator, UserToken}
 import webmodelica.models.{User, errors}
 
 trait UserExtractor {

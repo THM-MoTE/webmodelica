@@ -6,7 +6,7 @@ import com.twitter.finagle.http.{Request, Response, Status}
 import com.twitter.finatra.http.response.ResponseBuilder
 import com.twitter.util.Future
 import webmodelica.constants
-import webmodelica.services.{CombinedTokenValidator, TokenGenerator, TokenValidator}
+import webmodelica.services.{TokenGenerator, TokenValidator}
 import webmodelica.stores.UserStore
 import webmodelica.models.{User, errors}
 
