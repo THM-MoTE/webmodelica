@@ -4,8 +4,8 @@ services:
     image: traefik
     command: --api --docker
     ports:
-      - "80:80"     # The HTTP port
-      - "8080:8080" # The Web UI (enabled by --api)
+      - "9000:80"     # The HTTP port
+      - "9080:8080" # The Web UI (enabled by --api)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
     labels:
@@ -72,6 +72,20 @@ services:
       - "traefik.backend=webmodelica-auth-svc"
       - "traefik.port=3000"
       - "de.thm.webmodelica.name=webmodelica-auth-svc"
+  backend:
+    image: "thmmote/webmodelica:0.7.0-auth"
+    ports:
+      - 9002:3000
+    labels:
+      - "traefik.frontend.rule=PathPrefix:/api"
+      - "traefik.backend=webmodelica-backend"
+      - "traefik.port=3000"
+      - "de.thm.webmodelica.name=webmodelica-backend"
+    environment:
+      - AUTH_PUBLIC_KEY=/opt/auth-key.pub
+    volumes:
+      - ../conf/auth-svc-key.pub:/opt/auth-key.pub
+      - webmodelica_data:/data
 
 volumes:
   webmodelica_data:
