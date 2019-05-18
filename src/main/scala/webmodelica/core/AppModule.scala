@@ -75,7 +75,7 @@ object AppModule
   @Singleton
   @Provides
   def userStore(db:MongoDatabase, config:WMConfig, statsReceiver:StatsReceiver):UserStore = {
-    val store = new UserStoreImpl(db)
+    val store = new UserServiceProxy(config.userService)
     if(config.cacheUsers) {
       info(s"caching users enabled")
       new UserService(config.redis, statsReceiver, store)

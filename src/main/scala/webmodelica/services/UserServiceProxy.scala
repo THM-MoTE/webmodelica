@@ -15,9 +15,11 @@ class UserServiceProxy@Inject()(conf:UserServiceConf)
   import featherbed.circe._
   import io.circe.generic.auto._
 
-  def clientProvider() = new featherbed.Client(new java.net.URL(conf.address+ "/"+ conf.resource+"/"))
+  val url = new java.net.URL(conf.address+ "/"+ conf.resource+"/")
+  def clientProvider() = new featherbed.Client(url)
 
-  info("UserServiceProxy started...")
+  info("UserServiceProxy started.")
+  info(s"user-service at $url")
 
   private def withClient[A](fn: featherbed.Client => Future[A]): Future[A] = {
     debug("Using new client")
