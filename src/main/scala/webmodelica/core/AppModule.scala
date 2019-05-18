@@ -26,7 +26,7 @@ object AppModule
   val configFile = flag(name="configFile", default=confDefault, help="the config file to use")
 
   @Provides
-  def prefixProvider: ApiPrefix = ApiPrefix("/api/v1")
+  def prefixProvider: ApiPrefix = ApiPrefix("/api/v1/webmodelica")
 
   override def singletonStartup(injector: Injector) {
     super.singletonStartup(injector)
