@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { WmContainer } from '../partials/container'
-import { Button, Form, Alert } from 'react-bootstrap'
+import { Button, ButtonGroup, Form, Alert } from 'react-bootstrap'
 //@ts-ignore
 import Octicon from 'react-octicon'
 import { ApiClient } from '../services/api-client'
@@ -11,7 +11,7 @@ import { renderErrors } from '../partials/errors'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as R from 'ramda'
-import { userIsAuthenticated, UserAuth } from '../models/index';
+import { userIsAuthenticated, UserAuth, AuthProvider } from '../models/index';
 //@ts-ignore
 import {cookies, local, db, session, subscribe} from 'brownies';
 
@@ -22,13 +22,18 @@ interface Props {
   updateToken(token:string): void
 }
 
-class LoginComponentCon extends React.Component<Props, any> {
+interface State {
+  providers: AuthProvider[]
+  errors: string[]
+}
+
+class LoginComponentCon extends React.Component<Props, State> {
   private username: string = ''
   private password: string = ''
 
   constructor(p:Props) {
     super(p)
-    this.state = { errors: [] }
+    this.state = { errors: [], providers: [] }
   }
 
   private handleSubmit(ev: any) {
@@ -51,6 +56,8 @@ class LoginComponentCon extends React.Component<Props, any> {
     }
     if (userIsAuthenticated(this.props.authentication))
       this.props.history.push("/projects")
+
+    this.props.api.getAuthenticationProviders().then(providers => this.setState({providers}))
   }
 
   render() {
@@ -63,18 +70,24 @@ class LoginComponentCon extends React.Component<Props, any> {
           <Form onSubmit={this.handleSubmit.bind(this)}>
             <Form.Group controlId="formUsername">
               <Form.Label>Username</Form.Label>
-              <Form.Control required placeholder="Enter username" onChange={usernameChanged} />
+              <Form.Control required placeholder="Enter username" onChange={usernameChanged} disabled/>
             </Form.Group>
             <Form.Group controlId="formPassword">
               <Form.Label>Password</Form.Label>
-              <Form.Control required type="password" placeholder="Password" onChange={passwordChanged} />
+              <Form.Control required type="password" placeholder="Password" onChange={passwordChanged} disabled/>
             </Form.Group>
             {renderErrors(this.state.errors)}
-            <Button variant="secondary" href="http://localhost:9000/api/v1/auths/developer">Developer</Button>
-            <Button variant="secondary" href="http://localhost:9000/api/v1/auths/github">GitHub</Button>
-            <Button variant="primary" type="submit">
-              <Octicon name="sign-in" /> Submit
+            <ButtonGroup>
+              {this.state.providers.map(p =>
+                (<Button variant="secondary" href={p.uri} key={p.name}>
+                  {p.icon && (<Octicon name={p.icon}/>)}
+                  {p.name}
+                </Button>)
+              )}
+              <Button variant="primary" type="submit" disabled>
+                <Octicon name="sign-in" /> Submit
               </Button>
+            </ButtonGroup>
           </Form>
         </div>
       </div>
