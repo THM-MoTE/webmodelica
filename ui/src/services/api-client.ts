@@ -1,5 +1,5 @@
 
-import { File, Project, TokenWrapper, Session, AppState, UserAuth, CompilerError, SimulationResult, TableFormat, SimulateRequest, Complete, Suggestion, AppInfo } from '../models/index'
+import { File, Project, TokenWrapper, Session, AppState, UserAuth, CompilerError, SimulationResult, TableFormat, SimulateRequest, Complete, Suggestion, AppInfo, parseAuthPayload, AuthProvider } from '../models/index'
 import React, { Component } from 'react';
 import { Store } from 'redux';
 import { updateToken } from '../redux/index';
@@ -15,11 +15,12 @@ function rejectError(res: Response): Promise<Response> {
 }
 
 const authHeader = "Authorization"
-const apiPrefix = "/api/v1/webmodelica/"
+const baseApiPrefix = "/api/v1/"
+const apiPrefix = baseApiPrefix+"webmodelica/"
 
-const backendUri: () => string =
-  () => window.location.protocol + "//" + window.location.host + apiPrefix
-
+function backendUri(baseApi:string=apiPrefix): string {
+  return window.location.protocol + "//" + window.location.host + baseApi
+}
 export function fetchAppInfos(): Promise<AppInfo> {
   return fetch(backendUri()+"info", {
     method: 'GET',
@@ -50,6 +51,8 @@ export class ApiClient {
     return this.base + "sessions"
   }
 
+  private authUri(): string { return backendUri(baseApiPrefix)+"auths" }
+
   private updateWSToken(res: Response): Response {
     const headerOpt = res.headers.get(authHeader)
     if (headerOpt) {
@@ -71,6 +74,13 @@ export class ApiClient {
 
   public projectDownloadUrl(id:string): string {
     return this.projectUri() + `/${id}/files/download`
+  }
+
+  public getAuthenticationProviders(): Promise<AuthProvider[]> {
+    return fetch(this.authUri())
+      .then(rejectError)
+      .then(res => res.json())
+      .then(R.curry(parseAuthPayload)(this.authUri()))
   }
 
   public login(user: string, pw: string): Promise<TokenWrapper> {
