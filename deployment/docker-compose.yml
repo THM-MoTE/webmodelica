@@ -39,8 +39,7 @@ services:
       - "de.thm.webmodelica.name=mope-server"
     volumes:
       - ../private/data:/home/openmodelica/data
-      - ./mope.conf:/home/openmodelica/.config/mope/mope.conf
-#      - ../moie-server/target/scala-2.12/mope-server-0.6.5.jar:/opt/mope-server.jar
+      - config/mope.conf:/home/openmodelica/.config/mope/mope.conf
   user-svc:
     image: thmmote/webmodelica-user-svc:0.1.2
     ports:
