@@ -1,19 +1,22 @@
 version: '3'
 services:
   backend:
-    image: "thmmote/webmodelica:0.6.9"
+    image: "thmmote/webmodelica:0.7.0"
     restart: unless-stopped
     ports:
       - 9002:3000
     labels:
-      - "traefik.frontend.rule=PathPrefix:/api"
+      - "traefik.frontend.rule=PathPrefix:/api/v{[0-9]+}/webmodelica"
       - "traefik.backend=webmodelica-backend"
       - "traefik.port=3000"
       - "de.thm.webmodelica.name=webmodelica-backend"
+    environment:
+      - AUTH_PUBLIC_KEY=/opt/auth-key.pub
     volumes:
+      - ../conf/auth-svc-key.pub:/opt/auth-key.pub
       - webmodelica_data:/data
-  ui:
-    image: "thmmote/webmodelica-ui:0.6.9"
+    ui:
+    image: "thmmote/webmodelica-ui:0.7.0"
     restart: unless-stopped
     ports:
       - 9003:3000
@@ -27,6 +30,10 @@ services:
   mongo:
     restart: unless-stopped
   cache:
+    restart: unless-stopped
+  auth-svc:
+    restart: unless-stopped
+  user-svc:
     restart: unless-stopped
   mope:
     restart: unless-stopped

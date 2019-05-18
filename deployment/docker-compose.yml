@@ -68,7 +68,7 @@ services:
       - MONGO_PORT=27017
       - USER_SERVICE_HOST=user-svc
       - USER_SERVICE_PORT=3000
-      - LOGIN_REDIRECT_URI=http://localhost:3000/
+      #- LOGIN_REDIRECT_URI=http://localhost:9000/
     volumes:
       - ./config/auth-svc.settings.yml:/application/config/settings.yml
     labels:
@@ -76,21 +76,6 @@ services:
       - "traefik.backend=webmodelica-auth-svc"
       - "traefik.port=3000"
       - "de.thm.webmodelica.name=webmodelica-auth-svc"
-  backend:
-    image: "thmmote/webmodelica:0.7.0-auth"
-    ports:
-      - 9002:3000
-    labels:
-      # - "traefik.frontend.rule=PathPrefix:/api/v{[0-9]+}/webmodelica"
-      - "traefik.frontend.rule=PathPrefix:/api/v{[0-9]+}"
-      - "traefik.backend=webmodelica-backend"
-      - "traefik.port=3000"
-      - "de.thm.webmodelica.name=webmodelica-backend"
-    environment:
-      - AUTH_PUBLIC_KEY=/opt/auth-key.pub
-    volumes:
-      - ../conf/auth-svc-key.pub:/opt/auth-key.pub
-      - webmodelica_data:/data
 
 volumes:
   webmodelica_data:
