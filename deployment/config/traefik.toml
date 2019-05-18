@@ -1,0 +1,19 @@
+defaultEntryPoints = ["http"]
+logLevel = "INFO"
+
+[file]
+watch = true
+
+[backends]
+  [backends.webmodelica-backend-dev]
+    [backends.webmodelica-backend-dev.servers]
+      [backends.webmodelica-backend-dev.servers.s0]
+        url = "http://172.17.0.1:8888"
+
+[frontends]
+  [frontends.webmodelica-dev]
+    backend = "webmodelica-backend-dev"
+    passHostHeader = true
+  [frontends.webmodelica-dev.routes]
+    [frontends.webmodelica-dev.routes.r0]
+      rule = "PathPrefix:/api/v{version:[0-9]+}/webmodelica"
