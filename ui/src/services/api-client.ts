@@ -15,7 +15,7 @@ function rejectError(res: Response): Promise<Response> {
 }
 
 const authHeader = "Authorization"
-const apiPrefix = "/api/v1/webmodelica"
+const apiPrefix = "/api/v1/webmodelica/"
 
 const backendUri: () => string =
   () => window.location.protocol + "//" + window.location.host + apiPrefix
