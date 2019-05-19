@@ -1,0 +1,25 @@
+@startuml
+actor User
+participant User
+participant Traefik #green
+participant Ui
+participant AuthSvc #red
+participant UserSvc #red
+collections OAuthProvider #grey
+participant Backend
+
+User -> Traefik : open webmodelica HP
+Traefik -> Ui : proxy to frontend
+User <-- Ui : deliver SPA
+User -> Traefik : open /auths/[auth]
+Traefik -> AuthSvc : open /auths/[auth]
+AuthSvc -> OAuthProvider : redirect to provider
+OAuthProvider --> User : deliver login page
+User -> OAuthProvider : log in
+OAuthProvider -> AuthSvc : redirect to /auths/[auth]/callback
+AuthSvc --> UserSvc : find/create user model
+AuthSvc -> User : redirect to logged in page;\nset JWT in cookie 'Authentication'
+User --> Traefik : follow redirect
+Traefik --> Ui : deliver logged in page
+Ui --> Backend : authenticate with JWT from 'Authentication' cookie
+@enduml
