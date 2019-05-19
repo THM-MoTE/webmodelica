@@ -7,13 +7,18 @@ node Webmodelica #Yellow
 node WebmodelicaUi #Yellow
 node MongoDB
 node RedisCache
+node UserSvc #red
+node AuthSvc #red
 
 Browser -- Traefik : HTTP /
-Traefik -- Webmodelica : HTTP /api/*
-Traefik -- WebmodelicaUi : HTTP /*/*
+Traefik -- Webmodelica : HTTP /api/v1/webmodelica/*
+Traefik -- WebmodelicaUi : HTTP /*
+Traefik -- AuthSvc : HTTP /api/v1/auths/*
+Traefik -- UserSvc : HTTP /api/v1/users/*
 
 Webmodelica --> MongoDB
 Webmodelica --> RedisCache
+Webmodelica --> UserSvc : user models
 
 node MopeServer {
   Webmodelica --> [MoPE] : HTTP /mope/*

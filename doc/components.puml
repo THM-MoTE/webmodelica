@@ -2,6 +2,9 @@
 
 [JS-Client] #Green
 
+node UserSvc #red
+node AuthSvc #red
+
 node "webmodelica-ui" {
   [Static File Server] #Green
   [JS-Client] --> [Static File Server]
@@ -10,8 +13,9 @@ node "webmodelica-ui" {
 node "webmodelica" {
   () "HTTP-API" as wm_http
   [JS-Client] --> wm_http
+  [JS-Client] --> AuthSvc
   [ProjectService] #Grey
-  [UserService]
+  [UserService] --> UserSvc
   [DocumentDBStore] #Grey
   wm_http - [Routes] : "api calls"
 
