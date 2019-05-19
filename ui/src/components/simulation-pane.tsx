@@ -6,7 +6,7 @@ import SimulationPlot from '../partials/simulation-plot'
 import SimulationSetup from '../partials/simulation-setup'
 //@ts-ignore
 import Octicon from 'react-octicon'
-import { Row, Col, Button, ButtonGroup, Container as RContainer, Card } from 'react-bootstrap'
+import { Row, Col, Button, ButtonGroup, Container as RContainer, Card, Alert } from 'react-bootstrap'
 import { renderErrors } from '../partials/errors';
 import * as R from 'ramda';
 import { Action, addSimulationData } from '../redux/actions'
@@ -59,7 +59,7 @@ class SimulationPaneCon extends React.Component<Props, State> {
   render() {
     return (
       <WmContainer title={"Session: " + this.props.session.project.name} active="simulation" sessionId={this.props.session.id}>
-
+        <Alert variant="secondary" dismissible>Before simulating, compile your model.</Alert>
         <SimulationSetup api={this.props.api} simulate={this.simulate.bind(this)} />
 
         {this.props.simulationData && this.props.simulationData.data && (<SimulationPlot data={this.props.simulationData.data!} address={this.props.simulationData.address} api={this.props.api} />)}
