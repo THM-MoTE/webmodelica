@@ -8,7 +8,7 @@ object constants {
   val authorizationHeader = "Authorization"
   val authenticationHeader = "Authentication"
 
-  val cacheRootSuffix = "webmodelica:"
+  val cacheRootSuffix = "wm:"
   val userCacheSuffix = cacheRootSuffix+"users"
   val completionCacheSuffix = cacheRootSuffix+"completions"
 }
