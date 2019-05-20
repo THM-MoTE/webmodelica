@@ -9,6 +9,7 @@ import webmodelica.models.config._
 import webmodelica.models.{Project, Session}
 import webmodelica.conversions.futures._
 import scala.concurrent.duration._
+import cats.syntax._
 import cats.data.OptionT
 import cats.implicits._
 
@@ -33,6 +34,7 @@ class RedisSessionRegistry(
   override def create(p:Project): Future[(SessionService, Session)] = {
     //tmp set mopeId to unknown
     val tmpSession = Session(p, mopeId=None)
+    info(s"creating session $tmpSession")
     val service = newService(tmpSession)
     for {
       mopeId <- service.connect()
@@ -42,7 +44,16 @@ class RedisSessionRegistry(
   }
   override def get(id:UUIDStr): Future[Option[SessionService]] =
     OptionT(redis.find(id)).map(newService).value
-  override def killSession(id:UUIDStr): Future[Unit] = Future.value(())
+
+  override def killSession(id:UUIDStr): Future[Unit] = {
+    redis.find(id).flatMap {
+      case Some(session) =>
+        info(s"kill session $id")
+        newService(session).close(Time.fromSeconds(60))
+        redis.remove(id)
+    case None => Future.value(())
+    }
+  }
 
   override def close(deadline:Time):Future[Unit] = Future.value(())
 }
