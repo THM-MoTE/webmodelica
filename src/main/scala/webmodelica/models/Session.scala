@@ -3,12 +3,15 @@ package webmodelica.models
 import webmodelica.stores.FSStore
 import java.util.UUID
 import io.scalaland.chimney.dsl._
-import io.circe.generic.JsonCodec
+import webmodelica.models._
 import webmodelica.UUIDStr
+import io.circe.generic.JsonCodec
 
+@JsonCodec
 case class Session(
   project: Project,
   id: UUID = UUID.randomUUID(),
+  mopeId: Int = Int.MinValue
 ) {
   def idString: String = id.toString
   def owner:String = project.owner

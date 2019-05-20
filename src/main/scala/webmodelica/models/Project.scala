@@ -4,6 +4,7 @@ import org.mongodb.scala.bson.BsonObjectId
 import io.scalaland.chimney.dsl._
 import io.circe.generic.JsonCodec
 
+@JsonCodec
 case class Project(
   _id: String,
   owner: String,
