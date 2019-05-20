@@ -11,7 +11,7 @@ import io.circe.generic.JsonCodec
 case class Session(
   project: Project,
   id: UUID = UUID.randomUUID(),
-  mopeId: Int = Int.MinValue
+  mopeId: Option[Int] = None
 ) {
   def idString: String = id.toString
   def owner:String = project.owner
