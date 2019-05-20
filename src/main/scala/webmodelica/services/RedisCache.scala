@@ -14,12 +14,14 @@ import cats.implicits._
 trait RedisCache[A] {
   def find(key:String): Future[Option[A]]
   def update(key:String, value:A): Future[A]
+  def remove(key:String): Future[Unit]
 }
 
 /** Does no caching, just forwards to the given 'fn' */
 class NoCaching[A](fn: String => Future[Option[A]]) extends RedisCache[A] {
   def find(key:String): Future[Option[A]] = fn(key)
   def update(key:String, value:A): Future[A] = Future.value(value)
+  def remove(key:String): Future[Unit] = Future.value(())
 }
 
 class RedisCacheImpl[A:Encoder:Decoder](
@@ -69,5 +71,10 @@ class RedisCacheImpl[A:Encoder:Decoder](
     val valBuf = StringToBuf(json)
     debug(s"adding $json at $finalKey")
     client.setEx(keyBuf, config.defaultTtl.toSeconds, valBuf).map(_ => value)
+  }
+
+  def remove(key:String): Future[Unit] = {
+    debug(s"removing key $key")
+    client.dels(Seq(StringToBuf(makeKey(key)))).map(_ => ())
   }
 }
