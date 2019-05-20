@@ -87,9 +87,15 @@ object AppModule
 
   @Singleton
   @Provides
-  def sessionRegistry(conf:WMConfig, statsReceiver:StatsReceiver):SessionRegistry =
-    // new SessionRegistry(conf, statsReceiver)
-    new RedisSessionRegistry(conf, statsReceiver)
+  def sessionRegistry(conf:WMConfig, statsReceiver:StatsReceiver):SessionRegistry = {
+    if(conf.redisSessions) {
+      info(s"save sessions into redis")
+      new RedisSessionRegistry(conf, statsReceiver)
+    } else {
+      info(s"save sessions inmemory")
+      new SessionRegistryImpl(conf, statsReceiver)
+    }
+  }
   @Provides
   def tokenGenerator(conf:JwtConf): TokenGenerator =
     new TokenGenerator(conf.secret, conf.tokenExpiration)

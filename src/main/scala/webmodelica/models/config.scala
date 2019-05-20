@@ -11,7 +11,8 @@ package config {
     redis: RedisConfig,
     userService:UserServiceConf,
     jwtConf:JwtConf,
-    cacheUsers: Boolean
+    cacheUsers: Boolean,
+    redisSessions:Boolean
   )
 
   case class MongoDBConfig(
