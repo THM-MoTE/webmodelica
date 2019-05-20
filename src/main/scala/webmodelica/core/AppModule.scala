@@ -88,7 +88,8 @@ object AppModule
   @Singleton
   @Provides
   def sessionRegistry(conf:WMConfig, statsReceiver:StatsReceiver):SessionRegistry =
-    new SessionRegistryImpl(conf, statsReceiver)
+    // new SessionRegistry(conf, statsReceiver)
+    new RedisSessionRegistry(conf, statsReceiver)
   @Provides
   def tokenGenerator(conf:JwtConf): TokenGenerator =
     new TokenGenerator(conf.secret, conf.tokenExpiration)
