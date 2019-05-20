@@ -101,7 +101,10 @@ class SessionController@Inject()(
           (service, session) <- sessionRegistry.create(project)
           files <- service.files
         } yield {
-          service.connect()
+          //only connect if not already done: we did if we have an id
+          if(session.mopeId.isEmpty) {
+            service.connect()
+          }
           JSSession(session, files)
         }
       }
