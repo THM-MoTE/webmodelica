@@ -38,7 +38,7 @@ trait MopeService {
   }
 
   private lazy val projIdPromise: Promise[Int] = new Promise[Int]()
-  private def projectId: Future[Int] = projIdPromise
+  def projectId: Future[Int] = projIdPromise
 
   import featherbed.circe._
   import io.circe.generic.auto._
