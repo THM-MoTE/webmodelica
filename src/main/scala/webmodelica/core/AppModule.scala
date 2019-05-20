@@ -93,7 +93,7 @@ object AppModule
       new RedisSessionRegistry(conf, statsReceiver)
     } else {
       info(s"save sessions inmemory")
-      new SessionRegistryImpl(conf, statsReceiver)
+      new InMemorySessionRegistry(conf, statsReceiver)
     }
   }
   @Provides

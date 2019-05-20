@@ -11,7 +11,7 @@ import webmodelica.models._
 
 class SessionRegistrySpec extends WMSpec {
   "The SessionRegistryImpl" should "assign unique ids" in {
-    val registry = new SessionRegistryImpl(appConf, new NullStatsReceiver())
+    val registry = new InMemorySessionRegistry(appConf, new NullStatsReceiver())
     val sessions = Await.result(Future.collect(Seq(registry.create(Project(ProjectRequest("nico", "awesome project", com.twitter.finagle.http.Request()))),
       registry.create(Project(ProjectRequest("nico", "awesome project", com.twitter.finagle.http.Request()))),
       registry.create(Project(ProjectRequest("nico", "awesome project", com.twitter.finagle.http.Request()))))))
@@ -21,7 +21,7 @@ class SessionRegistrySpec extends WMSpec {
     forAll(sessions) { s => set(s) }
   }
   it should "retrieve sessions" in {
-    val registry = new SessionRegistryImpl(appConf, new NullStatsReceiver())
+    val registry = new InMemorySessionRegistry(appConf, new NullStatsReceiver())
     val (_, session) = Await.result( registry.create(Project(ProjectRequest("nico", "awesome project", com.twitter.finagle.http.Request()))) )
     Await.result(registry.get(session.idString)) should not be empty
   }

@@ -16,7 +16,7 @@ trait SessionRegistry extends com.twitter.util.Closable {
   def killSession(id:UUIDStr): Future[Unit]
 }
 
-class SessionRegistryImpl @Inject()(conf:WMConfig,
+class InMemorySessionRegistry @Inject()(conf:WMConfig,
   statsReceiver:StatsReceiver)
   extends SessionRegistry
     with com.twitter.inject.Logging
