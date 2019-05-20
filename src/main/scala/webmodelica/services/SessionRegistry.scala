@@ -10,9 +10,16 @@ import webmodelica.models.{Project, Session}
 
 import scala.collection.concurrent
 
-class SessionRegistry @Inject()(conf:WMConfig,
+trait SessionRegistry extends com.twitter.util.Closable {
+  def create(p:Project): Future[(SessionService, Session)]
+  def get(id:UUIDStr): Future[Option[SessionService]]
+  def killSession(id:UUIDStr): Future[Unit]
+}
+
+class SessionRegistryImpl @Inject()(conf:WMConfig,
   statsReceiver:StatsReceiver)
-  extends com.twitter.inject.Logging
+  extends SessionRegistry
+    with com.twitter.inject.Logging
     with com.twitter.util.Closable {
 
   private val lock:java.util.concurrent.locks.Lock = new java.util.concurrent.locks.ReentrantLock()
@@ -27,17 +34,17 @@ class SessionRegistry @Inject()(conf:WMConfig,
     }
   }
 
-  def create(p:Project): (SessionService, Session) = sync {
+  override def create(p:Project): Future[(SessionService, Session)] = FuturePool.unboundedPool { sync {
     val s = Session(p)
     info(s"creating session $s")
     val service = new SessionService(conf.mope, s, conf.redis, statsReceiver)
     registry += (s.idString -> service)
     (service, s)
-  }
+  }}
 
-  def get(id:UUIDStr): Option[SessionService] = sync{ registry.get(id) }
+  override def get(id:UUIDStr): Future[Option[SessionService]] = FuturePool.unboundedPool { sync{ registry.get(id) } }
 
-  def killSession(id:UUIDStr): Future[Unit] = {
+  override def killSession(id:UUIDStr): Future[Unit] = {
     sync { registry.remove(id) } match {
       case Some(service) =>
         info(s"killing session $id")

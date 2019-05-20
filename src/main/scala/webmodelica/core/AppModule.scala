@@ -88,7 +88,7 @@ object AppModule
   @Singleton
   @Provides
   def sessionRegistry(conf:WMConfig, statsReceiver:StatsReceiver):SessionRegistry =
-    new SessionRegistry(conf, statsReceiver)
+    new SessionRegistryImpl(conf, statsReceiver)
   @Provides
   def tokenGenerator(conf:JwtConf): TokenGenerator =
     new TokenGenerator(conf.secret, conf.tokenExpiration)

@@ -86,7 +86,7 @@ class SessionController@Inject()(
     with UserExtractor {
 
   def withSession[A](id:webmodelica.UUIDStr)(fn: SessionService => Future[A]): Future[_] =
-    FuturePool.unboundedPool(sessionRegistry.get(id)).flatMap {
+    sessionRegistry.get(id).flatMap {
       case Some(service) => fn(service)
       case None => Future.value(response.notFound.body(s"Can't find a session for: $id"))
     }
@@ -98,7 +98,7 @@ class SessionController@Inject()(
         for {
           t <- extractToken(requ)
           project <- projectStore.findBy(id, t.username).flatMap(errors.notFoundExc(s"project with $id not found!"))
-          (service, session) <- FuturePool.unboundedPool(sessionRegistry.create(project))
+          (service, session) <- sessionRegistry.create(project)
           files <- service.files
         } yield {
           service.connect()
