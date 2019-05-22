@@ -10,6 +10,10 @@ services:
       - "traefik.backend=webmodelica-backend"
       - "traefik.port=3000"
       - "de.thm.webmodelica.name=webmodelica-backend"
+    depends_on:
+      - cache
+      - mongo
+      - auth-svc
     environment:
       - AUTH_PUBLIC_KEY=/opt/auth-key.pub
     volumes:

@@ -48,6 +48,8 @@ services:
     restart: on-failure
     ports:
       - 9012:3000
+    depends_on:
+      - mongo
     environment:
       - RAILS_MASTER_KEY=ee58f8f3dfb3b3fd40391087bfd38c4e
       - MONGO_HOST=mongo
@@ -62,6 +64,9 @@ services:
     restart: on-failure
     ports:
       - 9013:3000
+    depends_on:
+      - mongo
+      - user-svc
     environment:
       - RAILS_MASTER_KEY=f84a1e93cf144b98ded39b233d03b60f
       - MONGO_HOST=mongo
