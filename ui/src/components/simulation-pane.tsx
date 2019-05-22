@@ -9,8 +9,8 @@ import Octicon from 'react-octicon'
 import { Row, Col, Button, ButtonGroup, Container as RContainer, Card, Alert } from 'react-bootstrap'
 import { renderErrors } from '../partials/errors';
 import * as R from 'ramda';
-import { Action, addSimulationData } from '../redux/actions'
-import { AppState, Session, SimulationResult, TableFormat, SimulateRequest, SimulationState } from '../models/index'
+import { Action, addSimulationData, notifyError } from '../redux/actions'
+import { AppState, Session, SimulationResult, TableFormat, SimulateRequest, SimulationState, ApiError } from '../models/index'
 import { ApiClient } from '../services/api-client'
 import { LoadingSpinner } from '../partials/loading-spinner';
 import { SimulationData } from '../models';
@@ -20,6 +20,7 @@ interface Props {
   session: Session
   simulationData?: SimulationData
   addSimulationData(data:SimulationData):void
+  notifyError(msg:string): void
 }
 
 interface State {
@@ -53,7 +54,16 @@ class SimulationPaneCon extends React.Component<Props, State> {
         this.props.addSimulationData({address: location, data:rs as TableFormat})
         this.setState({simulating: false})
       })
-      .catch(er => window.setTimeout(() => this.queryResults(location), 5000))
+      .catch((er: ApiError) => {
+        if(er.isBadRequest()) {
+          this.props.notifyError(er.statusText)
+          this.setState({simulating: false})
+        } else if(er.code === 409) {
+          window.setTimeout(() => this.queryResults(location), 5000)
+        } else {
+          console.error("don't know how to handle error:", er)
+        }
+      })
   }
 
   render() {
@@ -75,7 +85,7 @@ function mapProps(state: AppState) {
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({addSimulationData}, dispatch)
+  return bindActionCreators({addSimulationData, notifyError}, dispatch)
 }
 
 const SimulationPane = connect(mapProps, dispatchToProps)(SimulationPaneCon)
