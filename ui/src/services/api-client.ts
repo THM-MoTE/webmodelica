@@ -1,16 +1,14 @@
 
-import { File, Project, TokenWrapper, Session, AppState, UserAuth, CompilerError, SimulationResult, TableFormat, SimulateRequest, Complete, Suggestion, AppInfo, parseAuthPayload, AuthProvider } from '../models/index'
-import React, { Component } from 'react';
+import { File, Project, TokenWrapper, Session, AppState, CompilerError, SimulationResult, TableFormat, SimulateRequest, Complete, Suggestion, AppInfo, parseAuthPayload, AuthProvider, ApiError } from '../models/index'
 import { Store } from 'redux';
 import { updateToken } from '../redux/index';
 import * as R from 'ramda'
-import { Uri } from 'monaco-editor';
 
 function rejectError(res: Response): Promise<Response> {
   if (res.ok) return Promise.resolve(res)
   else {
     console.error("api error:", res)
-    return res.text().then(txt => Promise.reject(txt || res.statusText))
+    return res.text().then(txt => Promise.reject(new ApiError(res.status, txt || res.statusText)))
   }
 }
 
