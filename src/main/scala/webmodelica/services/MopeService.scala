@@ -18,7 +18,8 @@ import featherbed._
 import scala.reflect.Manifest
 import webmodelica.models.errors.{
   MopeServiceError,
-  SimulationSetupError
+  SimulationSetupError,
+  SimulationNotFinished
 }
 import webmodelica.models.mope._
 import webmodelica.models.mope.requests._
@@ -142,11 +143,13 @@ trait MopeService {
 
   def simulationResults(addr:URI): Future[SimulationResult] = {
     projectId.flatMap {id =>
-      withClient { client => //FIXME: handle not-finished responses !
+      withClient { client =>
         val req = client.get(addr.toString)
           .accept("application/json")
         req.send[SimulationResult]()
           .handle {
+            case request.ErrorResponse(req, resp) if resp.status == Status.Conflict =>
+              throw SimulationNotFinished
             case request.ErrorResponse(req, resp) if resp.status == Status.BadRequest =>
               throw SimulationSetupError(resp.contentString)
             case request.ErrorResponse(req, resp) =>

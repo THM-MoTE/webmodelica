@@ -34,4 +34,7 @@ object errors {
   case class MopeServiceError(reason:String) extends RuntimeException(reason)
   case class UserServiceError(reason:String) extends RuntimeException(reason)
   case class SimulationSetupError(reason:String) extends RuntimeException(reason)
+  case object SimulationNotFinished extends RuntimeException {
+    override def getMessage: String = s"simulation not finished!"
+  }
 }

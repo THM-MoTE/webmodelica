@@ -181,6 +181,7 @@ class SessionController@Inject()(
               case results => Future.value(results)
             }
             .handle {
+              case SimulationNotFinished => response.conflict(SimulationNotFinished.getMessage)
               case e:SimulationSetupError => response.badRequest(e.getMessage)
             }
         }
