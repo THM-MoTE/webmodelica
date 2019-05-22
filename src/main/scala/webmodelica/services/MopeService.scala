@@ -4,7 +4,7 @@ import java.nio.file.{Path, Paths}
 
 import com.twitter.finagle.Service
 import com.twitter.finagle.Http
-import com.twitter.finagle.http.{Method, Request, Response}
+import com.twitter.finagle.http.{Method, Request, Response, Status}
 import com.twitter.finatra.json.FinatraObjectMapper
 import java.net.{URI, URL}
 
@@ -16,7 +16,10 @@ import com.twitter.io.Buf
 import featherbed._
 
 import scala.reflect.Manifest
-import webmodelica.models.errors.MopeServiceError
+import webmodelica.models.errors.{
+  MopeServiceError,
+  SimulationSetupError
+}
 import webmodelica.models.mope._
 import webmodelica.models.mope.requests._
 import webmodelica.models.mope.responses._
@@ -126,6 +129,8 @@ trait MopeService {
                 Future.exception(MopeServiceError(s"POST /simulate didn't return a Location header!"))
             }
             .handle {
+              case request.ErrorResponse(req, resp) if resp.status == Status.BadRequest =>
+                throw SimulationSetupError(resp.contentString)
               case request.ErrorResponse(req, resp) =>
                 val str = s"Error response $resp to request $req"
                 throw MopeServiceError(str)
@@ -142,6 +147,8 @@ trait MopeService {
           .accept("application/json")
         req.send[SimulationResult]()
           .handle {
+            case request.ErrorResponse(req, resp) if resp.status == Status.BadRequest =>
+              throw SimulationSetupError(resp.contentString)
             case request.ErrorResponse(req, resp) =>
               val str = s"Error response $resp to request $req"
               throw MopeServiceError(str)

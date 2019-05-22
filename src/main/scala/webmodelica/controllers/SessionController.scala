@@ -7,6 +7,7 @@ import com.twitter.finatra.http.Controller
 import com.twitter.finatra.http.fileupload._
 import org.mongodb.scala.bson.BsonObjectId
 import webmodelica.models._
+import webmodelica.models.errors._
 import webmodelica.models.mope.{FilePath, FilePosition}
 import webmodelica.models.mope.requests.{Complete, SimulateRequest}
 import webmodelica.models.mope.responses.{SimulationResult, Suggestion}
@@ -158,9 +159,8 @@ class SessionController@Inject()(
               .ok(SimulationResponse(new java.net.URI(location)))
               .location(location)
           }.handle {
-            case e:errors.StepSizeCalculationError =>
-              response.badRequest(e.getMessage)
-            }
+            case e:errors.StepSizeCalculationError => response.badRequest(e.getMessage)
+          }
         }
       }
       get("/sessions/:sessionId/simulate") { req: FSimulateStatusRequest =>
@@ -179,6 +179,9 @@ class SessionController@Inject()(
                 val tableData = (variables("time")+:headers.map(k => variables(k)).toSeq).transpose
                 Future.value(TableFormat(name, tableData, "time"::headers))
               case results => Future.value(results)
+            }
+            .handle {
+              case e:SimulationSetupError => response.badRequest(e.getMessage)
             }
         }
       }

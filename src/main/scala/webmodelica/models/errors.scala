@@ -33,4 +33,5 @@ object errors {
   case class StepSizeCalculationError(reason:String) extends RuntimeException(reason)
   case class MopeServiceError(reason:String) extends RuntimeException(reason)
   case class UserServiceError(reason:String) extends RuntimeException(reason)
+  case class SimulationSetupError(reason:String) extends RuntimeException(reason)
 }
