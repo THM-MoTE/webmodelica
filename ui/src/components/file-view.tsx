@@ -11,7 +11,8 @@ import { ApiClient } from '../services/api-client';
 import { renderErrors } from '../partials/errors'
 import Dropzone from 'react-dropzone'
 //@ts-ignore
-import Tree from 'react-ui-tree'
+import { Treebeard, decorators } from 'react-treebeard';
+import { TreeView } from './tree-view';
 
 interface Props {
   api: ApiClient
@@ -219,51 +220,32 @@ class FileViewCon extends React.Component<Props, State> {
             </SplitButton>
 */
 
-  private renderNode(node:any): JSX.Element {
-    return (
-      <ButtonGroup>
-          { !node.leaf && (<Button size="sm" variant="link">></Button>) }
-        <SplitButton
-          size="sm"
-          title={node.module}
-          variant="link"
-          id={`file-view-splitbutton-${node.module}`}>
-          <Dropdown.Item>Rename</Dropdown.Item>
-          <Dropdown.Item>Delete</Dropdown.Item>
-        </SplitButton>
-      </ButtonGroup>
-    )
-  }
-
   render() {
-    const tree =
-      {
-        "module": "project",
-        "children": [
-          {
-            "module": "a",
-            "children": [
-              {
-                "module": "square.mo",
-                "leaf": true
-              }
-            ]
-          },
-          {
-            "module": "test",
-            "children": [
-              {
-                "module": "fac.mo",
-                "leaf": true
-              }
-            ]
-          },
-          {
-            "module": "BouncingBall.mo",
-            "leaf": true
-          }]
-      }
-    const treeChange = (ev:any) => console.log("tree changed: ", ev)
+
+    const tree = {
+      "name": "project",
+      "toggled": true,
+      "children": [
+        {
+          "name": "a",
+          "children": [
+            {
+              "name": "square.mo",
+            }
+          ]
+        },
+        {
+          "name": "test",
+          "children": [
+            {
+              "name": "fac.mo",
+            }
+          ]
+        },
+        {
+          "name": "BouncingBall.mo",
+        }]
+    }
 
     const files = this.props.files
     const fileClicked = this.props.onFileClicked
@@ -282,12 +264,7 @@ class FileViewCon extends React.Component<Props, State> {
           <Button variant="outline-primary" onClick={this.props.onCompileClicked}><Octicon name="gear" /> Compile</Button>
         </ButtonGroup>
         <h5 className="text-secondary">Files</h5>
-        <Tree
-          paddingLeft={10}
-          tree={tree}
-          onChange={treeChange}
-          renderNode={this.renderNode.bind(this)}
-        />
+        <TreeView tree={tree} />
       {this.newFileDialog()}
       {this.uploadDialog()}
       {this.renameDialog()}
