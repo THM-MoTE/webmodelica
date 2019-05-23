@@ -57,8 +57,8 @@ const treeStyle = {
           margin: '-7px 0 0 -7px',
           height: '14px'
         },
-        height: 14,
-        width: 14,
+        height: 12,
+        width: 12,
         arrow: {
           fill: '#9DA5AB',
           strokeWidth: 0

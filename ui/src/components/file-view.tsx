@@ -5,7 +5,7 @@ import Octicon from 'react-octicon'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as R from 'ramda'
-import { File, AppState, CompilerError, Project } from '../models/index'
+import { File, FileNode, AppState, CompilerError, Project } from '../models/index'
 import { newFile, setSessionFiles, Action } from '../redux/index'
 import { ApiClient } from '../services/api-client';
 import { renderErrors } from '../partials/errors'
@@ -207,30 +207,17 @@ class FileViewCon extends React.Component<Props, State> {
     )
   }
 
-/*
-            <SplitButton
-              title={f.relativePath + "  "}
-              onClick={() => fileClicked(f)}
-              key={f.relativePath}
-              size="sm"
-              id={`file-view-dropdown-${f.relativePath}`}
-              variant={(f === this.props.activeFile) ? "secondary" : "outline-secondary"}>
-              <Dropdown.Item className="text-warning" onSelect={() => renameFileClicked(f)}><Octicon name="pencil" /> Rename</Dropdown.Item>
-              <Dropdown.Item className="text-danger" onSelect={() => this.deleteFile(f)}><Octicon name="x" /> Delete</Dropdown.Item>
-            </SplitButton>
-*/
-
   render() {
-
-    const tree = {
-      "name": "project",
-      "toggled": true,
-      "children": [
+    const tree: FileNode = {
+      name: "project",
+      toggled: true,
+      children: [
         {
           "name": "a",
           "children": [
             {
               "name": "square.mo",
+              file: { relativePath: "a/sqaure.mo", content: "blup" }
             }
           ]
         },
@@ -239,11 +226,13 @@ class FileViewCon extends React.Component<Props, State> {
           "children": [
             {
               "name": "fac.mo",
+              file: {relativePath: "test/fac.mo", content: "blup"}
             }
           ]
         },
         {
           "name": "BouncingBall.mo",
+          file: {relativePath: "BouncingBall.mo", content: "blup"}
         }]
     }
 
