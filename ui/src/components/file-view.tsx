@@ -253,7 +253,11 @@ class FileViewCon extends React.Component<Props, State> {
           <Button variant="outline-primary" onClick={this.props.onCompileClicked}><Octicon name="gear" /> Compile</Button>
         </ButtonGroup>
         <h5 className="text-secondary">Files</h5>
-        <TreeView tree={tree} />
+        <TreeView
+          tree={tree}
+          deleteFile={this.deleteFile.bind(this)}
+          renameFile={renameFileClicked}
+          />
       {this.newFileDialog()}
       {this.uploadDialog()}
       {this.renameDialog()}

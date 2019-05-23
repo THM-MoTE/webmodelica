@@ -4,13 +4,16 @@ import Octicon from 'react-octicon'
 //@ts-ignore
 import { Treebeard, decorators } from 'react-treebeard';
 import { SplitButton, Dropdown, Button } from 'react-bootstrap'
+import {FileNode, File} from '../models/index'
 
 interface Props {
-  tree: any
+  tree: FileNode
+  deleteFile(f:File): void
+  renameFile(f:File): void
 }
 
 interface State {
-  tree: any
+  tree: FileNode
   cursor?: any
   active?: boolean
 }
@@ -126,8 +129,8 @@ export class TreeView extends React.Component<Props,State> {
           size="sm"
           id={`file-view-dropdown-${node.name}`}
           variant="link">
-          <Dropdown.Item className="text-warning" ><Octicon name="pencil" /> Rename</Dropdown.Item>
-          <Dropdown.Item className="text-danger" ><Octicon name="x" /> Delete</Dropdown.Item>
+          <Dropdown.Item className="text-warning" onClick={() => this.props.renameFile(node.file)}><Octicon name="pencil" /> Rename</Dropdown.Item>
+          <Dropdown.Item className="text-danger" onClick={() => this.props.deleteFile(node.file)}><Octicon name="x" /> Delete</Dropdown.Item>
         </SplitButton>
       );
     }
