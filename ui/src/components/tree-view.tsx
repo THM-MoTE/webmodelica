@@ -3,7 +3,7 @@ import React from 'react'
 import Octicon from 'react-octicon'
 //@ts-ignore
 import { Treebeard, decorators } from 'react-treebeard';
-import { SplitButton, Dropdown } from 'react-bootstrap'
+import { SplitButton, Dropdown, Button } from 'react-bootstrap'
 
 interface Props {
   tree: any
@@ -108,21 +108,29 @@ export class TreeView extends React.Component<Props,State> {
 
   Header = (obj: any) => {
     let {style, node} = obj
-    const iconName = node.children ? 'folder' : 'file-text';
+    const iconName = node.children ? 'file-directory' : 'file-text';
     const iconStyle = { marginRight: '5px' };
 
-    return (
-      <SplitButton
-        title={node.name}
-        onClick={() => console.log("node clicked: ", node)}
-        key={node.name}
-        size="sm"
-        id={`file-view-dropdown-${node.name}`}
-        variant="link">
-        <Dropdown.Item className="text-warning" ><Octicon name="pencil" /> Rename</Dropdown.Item>
-        <Dropdown.Item className="text-danger" ><Octicon name="x" /> Delete</Dropdown.Item>
-      </SplitButton>
-    );
+    if(node.children) {
+      return (
+        <Button variant="link">
+          <Octicon name={iconName} /> {node.name}
+        </Button>
+      )
+    } else {
+      return (
+        <SplitButton
+          title={node.name}
+          onClick={() => console.log("node clicked: ", node)}
+          key={node.name}
+          size="sm"
+          id={`file-view-dropdown-${node.name}`}
+          variant="link">
+          <Dropdown.Item className="text-warning" ><Octicon name="pencil" /> Rename</Dropdown.Item>
+          <Dropdown.Item className="text-danger" ><Octicon name="x" /> Delete</Dropdown.Item>
+        </SplitButton>
+      );
+    }
   };
 
   onToggle(node: any, toggled: boolean) {
