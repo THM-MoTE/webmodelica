@@ -10,6 +10,8 @@ import { newFile, setSessionFiles, Action } from '../redux/index'
 import { ApiClient } from '../services/api-client';
 import { renderErrors } from '../partials/errors'
 import Dropzone from 'react-dropzone'
+//@ts-ignore
+import Tree from 'react-ui-tree'
 
 interface Props {
   api: ApiClient
@@ -204,25 +206,7 @@ class FileViewCon extends React.Component<Props, State> {
     )
   }
 
-  render() {
-    const files = this.props.files
-    const fileClicked = this.props.onFileClicked
-    const errorsInFile = (f: File) => this.props.compilerErrors.filter(e => e.file == f.relativePath)
-    const newFileClicked = () => { this.setState({ showNewFileDialog: true }) }
-    const uploadArchiveClicked = () => { this.setState({showUploadDialog: true}) }
-    const renameFileClicked = (f:File) => this.setState({fileToRename: f})
-    return (<>
-        <h5 className="text-secondary">Actions</h5>
-        <ButtonGroup vertical className="full-width">
-          <Button variant="outline-success" onClick={this.props.onSaveClicked}><Octicon name="check" /> Save</Button>
-          <Button variant="outline-primary" onClick={newFileClicked}><Octicon name="plus" /> New File</Button>
-          <Button variant="outline-primary" onClick={uploadArchiveClicked}><Octicon name="cloud-upload" /> Upload Archive</Button>
-          <Button variant="outline-primary" href={this.props.api.projectDownloadUrl(this.props.project.id)}><Octicon name="cloud-download" /> Download Archive</Button>
-          <Button variant="outline-primary" onClick={this.props.onCompileClicked}><Octicon name="gear" /> Compile</Button>
-        </ButtonGroup>
-        <h5 className="text-secondary">Files</h5>
-      <ButtonGroup vertical className="full-width">
-          {this.props.files.map((f: File) =>
+/*
             <SplitButton
               title={f.relativePath + "  "}
               onClick={() => fileClicked(f)}
@@ -233,8 +217,77 @@ class FileViewCon extends React.Component<Props, State> {
               <Dropdown.Item className="text-warning" onSelect={() => renameFileClicked(f)}><Octicon name="pencil" /> Rename</Dropdown.Item>
               <Dropdown.Item className="text-danger" onSelect={() => this.deleteFile(f)}><Octicon name="x" /> Delete</Dropdown.Item>
             </SplitButton>
-          )}
+*/
+
+  private renderNode(node:any): JSX.Element {
+    return (
+      <ButtonGroup>
+          { !node.leaf && (<Button size="sm" variant="link">></Button>) }
+        <SplitButton
+          size="sm"
+          title={node.module}
+          variant="link"
+          id={`file-view-splitbutton-${node.module}`}>
+          <Dropdown.Item>Rename</Dropdown.Item>
+          <Dropdown.Item>Delete</Dropdown.Item>
+        </SplitButton>
+      </ButtonGroup>
+    )
+  }
+
+  render() {
+    const tree =
+      {
+        "module": "project",
+        "children": [
+          {
+            "module": "a",
+            "children": [
+              {
+                "module": "square.mo",
+                "leaf": true
+              }
+            ]
+          },
+          {
+            "module": "test",
+            "children": [
+              {
+                "module": "fac.mo",
+                "leaf": true
+              }
+            ]
+          },
+          {
+            "module": "BouncingBall.mo",
+            "leaf": true
+          }]
+      }
+    const treeChange = (ev:any) => console.log("tree changed: ", ev)
+
+    const files = this.props.files
+    const fileClicked = this.props.onFileClicked
+    const errorsInFile = (f: File) => this.props.compilerErrors.filter(e => e.file == f.relativePath)
+    const newFileClicked = () => { this.setState({ showNewFileDialog: true }) }
+    const uploadArchiveClicked = () => { this.setState({showUploadDialog: true}) }
+    const renameFileClicked = (f:File) => this.setState({fileToRename: f})
+
+    return (<>
+        <h5 className="text-secondary">Actions</h5>
+        <ButtonGroup vertical className="full-width">
+          <Button variant="outline-success" onClick={this.props.onSaveClicked}><Octicon name="check" /> Save</Button>
+          <Button variant="outline-primary" onClick={newFileClicked}><Octicon name="plus" /> New File</Button>
+          <Button variant="outline-primary" onClick={uploadArchiveClicked}><Octicon name="cloud-upload" /> Upload Archive</Button>
+          <Button variant="outline-primary" href={this.props.api.projectDownloadUrl(this.props.project.id)}><Octicon name="cloud-download" /> Download Archive</Button>
+          <Button variant="outline-primary" onClick={this.props.onCompileClicked}><Octicon name="gear" /> Compile</Button>
         </ButtonGroup>
+        <h5 className="text-secondary">Files</h5>
+        <Tree
+          paddingLeft={10}
+          tree={tree}
+          onChange={treeChange}
+          renderNode={this.renderNode.bind(this)}
+        />
       {this.newFileDialog()}
       {this.uploadDialog()}
       {this.renameDialog()}
