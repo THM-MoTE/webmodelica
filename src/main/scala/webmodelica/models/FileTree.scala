@@ -31,11 +31,15 @@ object FileTree {
     ModelicaFile(path, new String(Files.readAllBytes(path), constants.encoding))
 
   def generate(filter: File => Boolean, fn: Path => ModelicaFile = baseMapper)(base:Path): FileTree = {
-    def rec(base: File): FileTree = {
-      val p = base.path
-      if(base.isDirectory) {
-        val childs = base.list(filter).map(rec)
-        Node(p, childs.toList)
+    //include directories to recurse into subdirectories
+    val includeDirFiler = (f:File) => f.isDirectory || filter(f)
+    def rec(current: File): FileTree = {
+      val p = current.path
+      if(current.isDirectory) {
+        //don't know why, but we need to filter on the iterable, not on the File#list(filter) generator
+        //File#list runs into a stackoverflow..
+        val childs = current.list.filter(includeDirFiler).toList.map(rec)
+        Node(p, childs)
       } else {
         Leaf(p, fn(p))
       }
