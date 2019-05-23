@@ -10,7 +10,7 @@ import com.twitter.finatra.json.FinatraObjectMapper
 import com.twitter.util.{Future, Time}
 import com.twitter.finagle.stats.StatsReceiver
 import webmodelica.models.config.{MopeClientConfig, RedisConfig}
-import webmodelica.models.{ModelicaFile, Session}
+import webmodelica.models.{FileTree, ModelicaFile, Session}
 import webmodelica.stores.{FSStore, FileStore}
 import webmodelica.models.errors
 import webmodelica.constants
@@ -49,6 +49,7 @@ class SessionService @Inject()(
   override def close(deadline:Time):Future[Unit] = disconnect()
   override def packageProjectArchive(name:String): Future[java.io.File] = fsStore.packageProjectArchive(name)
   override def copyTo(destination:Path): Future[Unit] = fsStore.copyTo(destination)
+  override def fileTree: Future[FileTree] = fsStore.fileTree
 
   override def complete(c:Complete): Future[Seq[Suggestion]] = {
     suggestionCache.find(c.word).flatMap {

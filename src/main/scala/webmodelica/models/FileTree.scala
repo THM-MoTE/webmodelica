@@ -32,7 +32,7 @@ object FileTree {
 
   def generate(filter: File => Boolean, fn: Path => ModelicaFile = baseMapper)(base:Path): FileTree = {
     def rec(base: File): FileTree = {
-      val p = Paths.get(base.toString)
+      val p = base.path
       if(base.isDirectory) {
         val childs = base.list(filter).map(rec)
         Node(p, childs.toList)
