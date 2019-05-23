@@ -34,6 +34,12 @@ case class CopyProjectRequest(
   }
 }
 
+case class ProjectFilesRequest(
+  @RouteParam() id: String,
+  @QueryParam() format:String="list",
+  request: Request,
+)
+
 case class VisibilityRequest(
   @RouteParam() projectId: String,
   @JsonProperty() visibility: String)
@@ -50,6 +56,7 @@ class ProjectController@Inject()(
 
   val fileStore: Project => FileStore = FileStore.fromProject(mopeConf.data.hostDirectory, _)
   val projectFiles: Project => Future[List[ModelicaFile]] = fileStore(_).files
+  val projectFileTree: Project => Future[FileTree] = fileStore(_).fileTree
 
   filter[JwtFilter]
     .prefix(prefix.p) {
@@ -99,12 +106,11 @@ class ProjectController@Inject()(
           }
       }
 
-      get("/projects/:id/files") { requ: Request =>
-        val id = requ.getParam("id")
+      get("/projects/:id/files") { requ: ProjectFilesRequest =>
         for {
-          username <- extractUsername(requ)
-          project <- extractProject(id, username)
-          files <- projectFiles(project)
+          username <- extractUsername(requ.request)
+          project <- extractProject(requ.id, username)
+          files <- if(requ.format.toLowerCase == "tree") projectFileTree(project) else  projectFiles(project)
         } yield files
       }
       get("/projects/:id/files/download") { requ: Request =>
