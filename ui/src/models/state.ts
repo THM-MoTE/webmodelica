@@ -1,5 +1,5 @@
 
-import { CompilerError, File, Project, TableFormat } from './index'
+import { CompilerError, File, FileNode, Project, TableFormat } from './index'
 import {isFuture} from 'date-fns'
 
 export interface UserAuth {
@@ -16,7 +16,7 @@ export interface JwtToken {
 export interface Session {
   project: Project
   id: string
-  files: File[],
+  files: FileNode,
   openedFiles: File[]
   compilerErrors: CompilerError[]
   simulation: SimulationState

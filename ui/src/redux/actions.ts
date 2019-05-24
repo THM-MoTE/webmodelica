@@ -1,4 +1,4 @@
-import { UserAuth, Project, File, Session, CompilerError, SimulationOption, SimulationData, Notification, NotificationType } from '../models/index'
+import { UserAuth, Project, File, FileNode, Session, CompilerError, SimulationOption, SimulationData, Notification, NotificationType } from '../models/index'
 
 export enum ActionTypes {
   Logout,
@@ -37,7 +37,7 @@ export const newFile = (f: File) => ({ type: ActionTypes.CreateNewFile, payload:
 export const addOption = (o: SimulationOption) => ({ type: ActionTypes.AddSimulationOption, payload: o})
 export const updateOption = (idx: number, o: SimulationOption) => ({ type: ActionTypes.UpdateSimulationOption, payload: {idx: idx, option: o}})
 export const deleteOption = (idx: number) => ({type: ActionTypes.DeleteSimulationOption, payload: idx})
-export const setSessionFiles = (files:File[]) => ({type: ActionTypes.SetSessionFiles, payload: files})
+export const setSessionFiles = (files:FileNode) => ({type: ActionTypes.SetSessionFiles, payload: files})
 export const addSimulationData = (data: SimulationData) => ({type: ActionTypes.AddSimulationData, payload: data})
 export const parseSimulationOptions = (pl: SimulationOption[]) => ({type: ActionTypes.ParseSimulationOptions, payload: pl})
 export const setProjectPreview = (p: Project, files: []) => ({ type: ActionTypes.SetProjectPreview, payload: {project:p, files:files}})

@@ -16,12 +16,12 @@ import { TreeView } from './tree-view';
 
 interface Props {
   api: ApiClient
-  files: File[]
+  files: FileNode
   project: Project
   activeFile?: File
   compilerErrors: CompilerError[]
   newFile(f: File): Action
-  setSessionFiles(f:File[]): Action
+  setSessionFiles(f:FileNode): Action
   onFileClicked(f: File): void
   onSaveClicked(): void
   onCompileClicked(): void
@@ -49,12 +49,19 @@ class FileViewCon extends React.Component<Props, State> {
     this.state = { showNewFileDialog: false, showUploadDialog: false, errors: [] }
   }
 
+  componentDidMount() {
+    this.props.api.projectFileTree(this.props.project.id)
+      .then(this.props.setSessionFiles.bind(this))
+  }
+
   private updateErrors(err: string[]) {
     this.setState({ showNewFileDialog: !R.isEmpty(err), errors: err })
   }
   private fileExists(name: string): Boolean {
-    const paths = this.props.files.map(f => f.relativePath)
-    return R.any(p => p == name, paths)
+      //FIXME: impl this
+    // const paths = this.props.files.map(f => f.relativePath)
+    // return R.any(p => p == name, paths)
+    return true
   }
 
   private createNewFile(ev:any) {
@@ -87,9 +94,10 @@ class FileViewCon extends React.Component<Props, State> {
 
   private deleteFile(f:File) {
     this.props.api.deleteFile(f)
-      .then(() =>
-        this.props.setSessionFiles(this.props.files.filter(oldF => oldF.relativePath != f.relativePath))
-      )
+      //FIXME: impl this
+      // .then(() =>
+      //   //this.props.setSessionFiles(this.props.files.filter(oldF => oldF.relativePath != f.relativePath))
+      // )
   }
 
   private newFileDialog() {
@@ -133,7 +141,7 @@ class FileViewCon extends React.Component<Props, State> {
     //await all uploads and use last-finished to update session files
     Promise.all(promises)
       .then(results => results[results.length-1])
-      .then(files => this.props.setSessionFiles(files))
+      // .then(files => this.props.setSessionFiles(files)) //FIXME: impl this
       .then(() => this.setState({showUploadDialog: false}))
   }
 
@@ -174,9 +182,10 @@ class FileViewCon extends React.Component<Props, State> {
     } else {
       this.props.api.renameFile(f, name)
         .then(newFile => {
-          const otherFiles = this.props.files.filter(other => other.relativePath != f.relativePath)
-          this.props.setSessionFiles(R.append(newFile, otherFiles))
-          this.setState({ fileToRename: undefined })
+          //FIXME: impl this
+          // const otherFiles = this.props.files.filter(other => other.relativePath != f.relativePath)
+          // this.props.setSessionFiles(R.append(newFile, otherFiles))
+          // this.setState({ fileToRename: undefined })
         })
     }
   }
@@ -208,34 +217,6 @@ class FileViewCon extends React.Component<Props, State> {
   }
 
   render() {
-    const tree: FileNode = {
-      name: "project",
-      toggled: true,
-      children: [
-        {
-          "name": "a",
-          "children": [
-            {
-              "name": "square.mo",
-              file: { relativePath: "a/sqaure.mo", content: "blup" }
-            }
-          ]
-        },
-        {
-          "name": "test",
-          "children": [
-            {
-              "name": "fac.mo",
-              file: {relativePath: "test/fac.mo", content: "blup"}
-            }
-          ]
-        },
-        {
-          "name": "BouncingBall.mo",
-          file: {relativePath: "BouncingBall.mo", content: "blup"}
-        }]
-    }
-
     const files = this.props.files
     const fileClicked = this.props.onFileClicked
     const errorsInFile = (f: File) => this.props.compilerErrors.filter(e => e.file == f.relativePath)
@@ -254,7 +235,7 @@ class FileViewCon extends React.Component<Props, State> {
         </ButtonGroup>
         <h5 className="text-secondary">Files</h5>
         <TreeView
-          tree={tree}
+          tree={files}
           deleteFile={this.deleteFile.bind(this)}
           renameFile={renameFileClicked}
           />

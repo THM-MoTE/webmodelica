@@ -1,5 +1,5 @@
 
-import { File, Project, TokenWrapper, Session, AppState, CompilerError, SimulationResult, TableFormat, SimulateRequest, Complete, Suggestion, AppInfo, parseAuthPayload, AuthProvider, ApiError } from '../models/index'
+import { File, FileNode, Project, TokenWrapper, Session, AppState, CompilerError, SimulationResult, TableFormat, SimulateRequest, Complete, Suggestion, AppInfo, parseAuthPayload, AuthProvider, ApiError } from '../models/index'
 import { Store } from 'redux';
 import { updateToken } from '../redux/index';
 import * as R from 'ramda'
@@ -121,6 +121,16 @@ export class ApiClient {
       .then(res => res.json())
   }
 
+  public projectFileTree(pid: string): Promise<FileNode> {
+    return fetch(this.projectUri() + `/${pid}/files?format=tree`, {
+      headers: {
+        [authHeader]: this.token(),
+        'Accept': 'application/json',
+      },
+    })
+      .then(res => res.json())
+  }
+
   public newProject(user: string, title: string): Promise<Project> {
     if (user.length > 0 && title.length > 0) {
       return fetch(this.projectUri(), {
@@ -152,7 +162,7 @@ export class ApiClient {
       .then(this.updateWSToken.bind(this))
       .then(res => res.json())
       .then((obj: any) => ({
-        ...obj, compilerErrors: [], simulation: { options: [
+        ...obj, files: {name: 'project'}, compilerErrors: [], simulation: { options: [
           { name: "startTime", value: 0 },
           { name: "stopTime", value: 5 },
           { name: "numberOfIntervals", value: 500 }
