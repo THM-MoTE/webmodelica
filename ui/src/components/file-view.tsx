@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as R from 'ramda'
 import { File, FileNode, AppState, CompilerError, Project } from '../models/index'
+import * as file from '../models/file'
 import { newFile, setSessionFiles, Action } from '../redux/index'
 import { ApiClient } from '../services/api-client';
 import { renderErrors } from '../partials/errors'
@@ -94,10 +95,9 @@ class FileViewCon extends React.Component<Props, State> {
 
   private deleteFile(f:File) {
     this.props.api.deleteFile(f)
-      //FIXME: impl this
-      // .then(() =>
-      //   //this.props.setSessionFiles(this.props.files.filter(oldF => oldF.relativePath != f.relativePath))
-      // )
+     .then(() =>
+        this.props.setSessionFiles(file.removeFile(this.props.files, f) as FileNode)
+      )
   }
 
   private newFileDialog() {
