@@ -238,6 +238,7 @@ class FileViewCon extends React.Component<Props, State> {
           tree={files}
           deleteFile={this.deleteFile.bind(this)}
           renameFile={renameFileClicked}
+          onFileClicked={this.props.onFileClicked.bind(this)}
           />
       {this.newFileDialog()}
       {this.uploadDialog()}

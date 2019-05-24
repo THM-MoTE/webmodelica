@@ -10,6 +10,7 @@ interface Props {
   tree: FileNode
   deleteFile(f:File): void
   renameFile(f:File): void
+  onFileClicked(f: File): void
 }
 
 interface State {
@@ -124,7 +125,7 @@ export class TreeView extends React.Component<Props,State> {
       return (
         <SplitButton
           title={node.path}
-          onClick={() => console.log("node clicked: ", node)}
+          onClick={() => this.props.onFileClicked(node.file)}
           key={node.path}
           size="sm"
           id={`file-view-dropdown-${node.name}`}
