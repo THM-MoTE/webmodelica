@@ -30,7 +30,10 @@ object FileTree {
   def baseMapper(path:Path): ModelicaFile =
     ModelicaFile(path, new String(Files.readAllBytes(path), constants.encoding))
 
-  def generate(filter: File => Boolean, fn: Path => ModelicaFile = baseMapper)(base:Path): FileTree = {
+  def generate(
+    filter: File => Boolean,
+    fn: Path => ModelicaFile = baseMapper,
+    pathShortener: Path => Path = identity)(base:Path): FileTree = {
     //include directories to recurse into subdirectories
     val includeDirFiler = (f:File) => f.isDirectory || filter(f)
     def rec(current: File): FileTree = {
@@ -39,9 +42,9 @@ object FileTree {
         //don't know why, but we need to filter on the iterable, not on the File#list(filter) generator
         //File#list runs into a stackoverflow..
         val childs = current.list.filter(includeDirFiler).toList.map(rec)
-        Node(p, childs)
+        Node(pathShortener(p), childs)
       } else {
-        Leaf(p, fn(p))
+        Leaf(pathShortener(p), fn(p))
       }
     }
     rec(File(base.toString))

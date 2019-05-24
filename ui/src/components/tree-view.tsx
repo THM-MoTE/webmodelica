@@ -117,15 +117,15 @@ export class TreeView extends React.Component<Props,State> {
     if(node.children) {
       return (
         <Button variant="link">
-          <Octicon name={iconName} /> {node.name || node.path}
+          <Octicon name={iconName} /> {node.path}
         </Button>
       )
     } else {
       return (
         <SplitButton
-          title={node.name || node.path}
+          title={node.path}
           onClick={() => console.log("node clicked: ", node)}
-          key={node.name}
+          key={node.path}
           size="sm"
           id={`file-view-dropdown-${node.name}`}
           variant="link">
