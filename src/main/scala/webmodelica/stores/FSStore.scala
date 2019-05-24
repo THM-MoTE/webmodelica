@@ -62,7 +62,7 @@ class FSStore(root:Path)
   val treeGenerator = {
     val fileFilter = (f:File) => f.name.endsWith(".mo")
     val mapper = (p:Path) => ModelicaFile(root.relativize(p), File(p).contentAsString(charset=encoding))
-    val shortener = (p:Path) => if(root==p) p.getFileName else root.relativize(p)
+    val shortener = (p:Path) => p.getFileName
     FileTree.generate(fileFilter, mapper, shortener)(_)
   }
   override def fileTree: Future[FileTree] = Future { treeGenerator(root) }
