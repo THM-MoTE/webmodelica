@@ -67,5 +67,12 @@ class FSStore(root:Path)
   }
   override def fileTree: Future[FileTree] = Future { treeGenerator(root) }
 
+  override def findByPath(p:Path): Future[Option[ModelicaFile]] = Future {
+    val path = root.resolve(p)
+    val file = File(path)
+    if(file.exists) Some(ModelicaFile(root.relativize(path),file.contentAsString(charset=encoding)))
+    else None
+  }
+
   override def toString:String = s"FSStore($root)"
 }

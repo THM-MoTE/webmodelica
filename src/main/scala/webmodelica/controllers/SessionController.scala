@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.twitter.finatra.request._
 import io.scalaland.chimney.dsl._
 import java.nio.file.{Files, Path, Paths}
+import java.net.URI
 
 import better.files._
 
@@ -27,8 +28,14 @@ case class NewFileRequest(
 )
 case class DeleteRequest(
   @RouteParam() sessionId: String,
-  @QueryParam() path:String
+  @QueryParam() path:String //TODO: use route param, not query param
 )
+case class FileContentRequest(
+  @RouteParam() sessionId: String,
+  @RouteParam() path: URI
+) {
+  def asPath: Path = Paths.get(path.getPath)
+}
 case class RenameRequest(
   @RouteParam() sessionId: String,
   @JsonProperty() oldPath:Path,
@@ -130,6 +137,13 @@ class SessionController@Inject()(
         }
       }
 
+      get("/sessions/:sessionId/files/:path") { req: FileContentRequest =>
+        withSession(req.sessionId) { service =>
+          service.findByPath(req.asPath)
+          .flatMap(errors.notFoundExc(s"file ${req.asPath} not found!"))
+        }
+      }
+
       delete("/sessions/:sessionId/files") { req: DeleteRequest =>
         withSession(req.sessionId) { service =>
           service.delete(Paths.get(req.path)).map(_ => response.noContent)
@@ -156,7 +170,7 @@ class SessionController@Inject()(
           service.simulate(req.toMopeRequest).map { uri =>
             val location = req.request.uri.toString+s"?addr=${uri.toString}"
             response
-              .ok(SimulationResponse(new java.net.URI(location)))
+              .ok(SimulationResponse(new URI(location)))
               .location(location)
           }.handle {
             case e:errors.StepSizeCalculationError => response.badRequest(e.getMessage)

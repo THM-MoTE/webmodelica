@@ -20,6 +20,7 @@ trait FileStore {
   def packageProjectArchive(name:String): Future[java.io.File]
   def copyTo(destination:Path): Future[Unit]
   def fileTree: Future[FileTree]
+  def findByPath(p:Path): Future[Option[ModelicaFile]]
 }
 
 
