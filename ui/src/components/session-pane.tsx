@@ -79,8 +79,8 @@ class SessionPaneCon extends React.Component<Props, State> {
     const updatePromises = files.map((f: File) => this.api.updateFile(f))
     return Promise.all(updatePromises)
       .then((files) => {
-        this.api.projectFileTree(this.props.session.project.id)
-          .then(this.props.setSessionFiles)
+        // this.api.projectFileTree(this.props.session.project.id)
+        //   .then(this.props.setSessionFiles)
       return files
     })
   }
