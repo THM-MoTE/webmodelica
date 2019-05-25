@@ -9,7 +9,7 @@ import { Row, Col, Button, ButtonGroup, Container as RContainer, Card } from 're
 //@ts-ignore
 import Octicon from 'react-octicon'
 import { File, AppState, CompilerError, Session, Shortcut, cmdShiftAnd } from '../models/index'
-import { Action, updateSessionFiles, setCompilerErrors, notifyInfo } from '../redux/actions'
+import { Action, setCompilerErrors, notifyInfo } from '../redux/actions'
 import * as monaco from 'monaco-editor';
 import * as R from 'ramda'
 import { renderErrors } from '../partials/errors';
@@ -24,7 +24,6 @@ interface Props {
   api: ApiClient
   session: Session
   compilerErrors: CompilerError[]
-  updateSessionFiles(f: File[]): void
   setCompilerErrors(ers: CompilerError[]): void
   notifyInfo(msg:string):void
   history: History
@@ -78,7 +77,7 @@ class SessionPaneCon extends React.Component<Props, State> {
     let files: File[] = this.currentFile() ? [{ ...this.currentFile(), content: content }] : []
     const updatePromises = files.map((f: File) => this.api.updateFile(f))
     return Promise.all(updatePromises).then((files) => {
-      this.props.updateSessionFiles(files)
+      //FIXME: update file contents
       return files
     })
   }
@@ -158,7 +157,7 @@ function mapProps(state: AppState) {
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({ updateSessionFiles, setCompilerErrors, notifyInfo }, dispatch)
+  return bindActionCreators({ setCompilerErrors, notifyInfo }, dispatch)
 }
 
 const SessionPane = connect(mapProps, dispatchToProps)(SessionPaneCon)

@@ -10,20 +10,6 @@ const reducerMap = {
   [ActionTypes.SetProject.toString()]: (state: AppState, project: Project) => ({ ...state,
     projects: R.reduce((acc:Project[], p) => R.append((p.id===project.id) ? project : p, acc), [], state.projects)
   }),
-  [ActionTypes.UpdateSessionFiles.toString()]: function(state: AppState, data: File[]): AppState {
-    if (state.session) {
-      let pathNames = data.map(f => f.relativePath)
-      //TODO: only update the files, that are new.. don't replace all files
-      //FIXME: impl this
-      // let oldFiles = R.filter((f: File) => !R.contains(f.relativePath, pathNames), state.session.files)
-      // let newFiles = R.sortBy((f: File) => f.relativePath, oldFiles.concat(data))
-      // return { ...state, session: { ...state!.session, files: newFiles } }
-      return state
-    } else {
-      console.error("can't set session files if no session provided before!")
-      return state
-    }
-  },
   [ActionTypes.SetSessionFiles.toString()]: (state: AppState, files: FileNode) => ({...state, session: {...state.session!, files: setId(files)}}),
   [ActionTypes.AddProject.toString()]: (state: AppState, data: Project) => ({ ...state, projects: R.prepend(data, state.projects) }),
   [ActionTypes.SetProjectPreview.toString()]: (state:AppState, data:ProjectPreviewState) => ({...state, projectPreview: data }),
@@ -55,7 +41,6 @@ const reducerMap = {
     }
     return obj
   },
-  [ActionTypes.CreateNewFile.toString()]: (state: AppState, f: File) => ({ ...state, session: { ...state.session!, files: state.session!.files } }),   //FIXME: impl this
   [ActionTypes.SetCompilerErrors.toString()]: (state: AppState, errors: CompilerError[]) => ({ ...state, session: { ...state.session!, compilerErrors: errors}}),
   [ActionTypes.UpdateSimulationOption.toString()]: (state: AppState, payload: any) => {
     const { idx, option } = payload

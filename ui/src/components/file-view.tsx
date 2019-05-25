@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 import * as R from 'ramda'
 import { File, FileNode, AppState, CompilerError, Project } from '../models/index'
 import * as file from '../models/file'
-import { newFile, setSessionFiles, Action } from '../redux/index'
+import { setSessionFiles, Action } from '../redux/index'
 import { ApiClient } from '../services/api-client';
 import { renderErrors } from '../partials/errors'
 import Dropzone from 'react-dropzone'
@@ -21,7 +21,6 @@ interface Props {
   project: Project
   activeFile?: File
   compilerErrors: CompilerError[]
-  newFile(f: File): Action
   setSessionFiles(f:FileNode): Action
   onFileClicked(f: File): void
   onSaveClicked(): void
@@ -249,7 +248,7 @@ function mapProps(state: AppState) {
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({ newFile, setSessionFiles}, dispatch)
+  return bindActionCreators({setSessionFiles}, dispatch)
 }
 const FileView = connect(mapProps, dispatchToProps)(FileViewCon)
 export default FileView
