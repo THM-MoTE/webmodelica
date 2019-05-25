@@ -5,6 +5,8 @@ import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-d
 import { ProjectView, Landing, SessionPane, SimulationPane, ProjectPreview, NotFound } from './components/index'
 import { ApiClient } from './services/api-client'
 import { rootReducer } from './redux/reducers'
+//@ts-ignore
+import { cookies } from 'brownies';
 import { createStore } from "redux";
 import { Provider } from "react-redux";
 import { withApi } from './partials/api-wrapper';
@@ -30,8 +32,10 @@ function persistedStore() {
 /** Performs logout by clearing localStorage and reloading base path.*/
 function destroySession() {
   localStorage.clear()
-  window.location.href = "/"
-  return (<span>logout..</span>)
+  delete cookies.Authentication
+  delete cookies.Authorization
+  window.location.replace("/")
+  return (<span>logging out ...</span>)
 }
 
 function AuthenticatedRoute(obj: any) {
