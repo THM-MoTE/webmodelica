@@ -217,7 +217,6 @@ class FileViewCon extends React.Component<Props, State> {
   }
 
   render() {
-    const files = this.props.files
     const fileClicked = this.props.onFileClicked
     const errorsInFile = (f: File) => this.props.compilerErrors.filter(e => e.file == f.relativePath)
     const newFileClicked = () => { this.setState({ showNewFileDialog: true }) }
@@ -235,7 +234,6 @@ class FileViewCon extends React.Component<Props, State> {
         </ButtonGroup>
         <h5 className="text-secondary">Files</h5>
         <TreeView
-          tree={files}
           deleteFile={this.deleteFile.bind(this)}
           renameFile={renameFileClicked}
           onFileClicked={this.props.onFileClicked.bind(this)}

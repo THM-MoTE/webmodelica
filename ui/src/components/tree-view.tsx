@@ -1,10 +1,12 @@
 import React from 'react'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 //@ts-ignore
 import Octicon from 'react-octicon'
 //@ts-ignore
 import { Treebeard, decorators } from 'react-treebeard';
 import { SplitButton, Dropdown, Button } from 'react-bootstrap'
-import {FileNode, File} from '../models/index'
+import { AppState, FileNode, File, setId } from '../models/index'
 
 interface Props {
   tree: FileNode
@@ -14,7 +16,6 @@ interface Props {
 }
 
 interface State {
-  tree: FileNode
   cursor?: any
   active?: boolean
 }
@@ -100,13 +101,11 @@ const treeStyle = {
 }
 
 
-export class TreeView extends React.Component<Props,State> {
+export class TreeViewCon extends React.Component<Props,State> {
 
   constructor(p:Props) {
     super(p)
-    this.state = {
-      tree: p.tree
-    }
+    this.state = {}
     this.onToggle = this.onToggle.bind(this);
   }
 
@@ -117,7 +116,7 @@ export class TreeView extends React.Component<Props,State> {
 
     if(node.children) {
       return (
-        <Button variant="link">
+        <Button key={node.path+"/"+node.path} variant="link">
           <Octicon name={iconName} /> {node.path}
         </Button>
       )
@@ -126,7 +125,7 @@ export class TreeView extends React.Component<Props,State> {
         <SplitButton
           title={node.path}
           onClick={() => this.props.onFileClicked(node.file)}
-          key={node.path}
+          key={node.path+"/"+node.path}
           size="sm"
           id={`file-view-dropdown-${node.name}`}
           variant="link">
@@ -138,7 +137,7 @@ export class TreeView extends React.Component<Props,State> {
   };
 
   onToggle(node: any, toggled: boolean) {
-    const { cursor, tree } = this.state;
+    const { cursor } = this.state;
 
     if (cursor) {
       this.setState({ cursor, active: false });
@@ -149,14 +148,14 @@ export class TreeView extends React.Component<Props,State> {
       node.toggled = toggled;
     }
 
-    this.setState({ cursor: node, tree: Object.assign({}, tree) });
+    this.setState({ cursor: node });
   }
 
   render() {
     const Header = this.Header
     return (
     <Treebeard
-      data={this.state.tree}
+      data={this.props.tree}
       style={treeStyle}
       decorators={{...decorators, Header}}
       onToggle={this.onToggle}
@@ -164,3 +163,11 @@ export class TreeView extends React.Component<Props,State> {
     )
   }
 }
+
+function mapProps(state: AppState) {
+  return {
+    tree: state.session!.files,
+  }
+}
+
+export const TreeView = connect(mapProps, null)(TreeViewCon)

@@ -8,7 +8,7 @@ import { ApiClient } from '../services/api-client'
 import { Row, Col, Button, ButtonGroup, Container as RContainer, Card } from 'react-bootstrap'
 //@ts-ignore
 import Octicon from 'react-octicon'
-import { File, AppState, CompilerError, Session, Shortcut, cmdShiftAnd, cmdAnd } from '../models/index'
+import { File, AppState, CompilerError, Session, Shortcut, cmdShiftAnd } from '../models/index'
 import { Action, updateSessionFiles, setCompilerErrors, notifyInfo } from '../redux/actions'
 import * as monaco from 'monaco-editor';
 import * as R from 'ramda'
