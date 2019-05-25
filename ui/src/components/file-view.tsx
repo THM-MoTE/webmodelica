@@ -182,10 +182,8 @@ class FileViewCon extends React.Component<Props, State> {
     } else {
       this.props.api.renameFile(f, name)
         .then(newFile => {
-          //FIXME: impl this
-          // const otherFiles = this.props.files.filter(other => other.relativePath != f.relativePath)
-          // this.props.setSessionFiles(R.append(newFile, otherFiles))
-          // this.setState({ fileToRename: undefined })
+          this.props.setSessionFiles(file.renameFile(this.props.files, f, newFile))
+          this.setState({ fileToRename: undefined })
         })
     }
   }

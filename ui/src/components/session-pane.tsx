@@ -39,7 +39,6 @@ function deltaDecorations(openedFile: File, errors: CompilerError[]): monaco.edi
   return errors
     .filter(e => e.file == openedFile.relativePath)
     .map(e => ({
-      //TODO: possible wrong index for lineNo .. does MoPE return 0-based or 1-baed lineNumbers???
       range: new monaco.Range(e.start.line, 1, e.end.line, e.end.column),
       options: {
         isWholeLine: true,
@@ -57,9 +56,6 @@ class SessionPaneCon extends React.Component<Props, State> {
     super(props)
     this.api = this.props.api
     this.state = { editingFiles: [], deltaMarkers: [], compiling: false }
-  }
-
-  public componentDidMount() {
   }
 
   private setupShortcuts(): Shortcut[] {

@@ -13,6 +13,10 @@ export interface FileNode {
   toggled?: boolean
 }
 
+function fileName(f:File): string {
+  return f.relativePath.substring(f.relativePath.lastIndexOf('/')+1, f.relativePath.length)
+}
+
 export function setId(root:FileNode): FileNode {
   return {
     id: root.path,
@@ -21,6 +25,19 @@ export function setId(root:FileNode): FileNode {
   }
 }
 
+export function renameFile(root:FileNode, oldFile:File, newFile:File): FileNode {
+  if(root.file && root.file === oldFile)
+    return { ...root, path: fileName(newFile), file: newFile }
+  else if(root.children) {
+    const childs: FileNode[] = R.map(n => renameFile(n, oldFile, newFile), root.children)
+    return {
+      ...root,
+      children: childs
+    }
+  } else {
+    return root
+  }
+}
 
 export function removeFile(root:FileNode, file:File): FileNode | undefined {
   if (root.file && root.file.relativePath === file.relativePath) { return undefined }
