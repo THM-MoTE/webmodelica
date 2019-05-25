@@ -8,8 +8,8 @@ import { ApiClient } from '../services/api-client'
 import { Row, Col, Button, ButtonGroup, Container as RContainer, Card } from 'react-bootstrap'
 //@ts-ignore
 import Octicon from 'react-octicon'
-import { File, AppState, CompilerError, Session, Shortcut, cmdShiftAnd } from '../models/index'
-import { Action, setCompilerErrors, notifyInfo } from '../redux/actions'
+import { File, FileNode, AppState, CompilerError, Session, Shortcut, cmdShiftAnd } from '../models/index'
+import { Action, setCompilerErrors, setSessionFiles, notifyInfo } from '../redux/actions'
 import * as monaco from 'monaco-editor';
 import * as R from 'ramda'
 import { renderErrors } from '../partials/errors';
@@ -24,6 +24,7 @@ interface Props {
   api: ApiClient
   session: Session
   compilerErrors: CompilerError[]
+  setSessionFiles(f: FileNode): Action
   setCompilerErrors(ers: CompilerError[]): void
   notifyInfo(msg:string):void
   history: History
@@ -76,8 +77,10 @@ class SessionPaneCon extends React.Component<Props, State> {
     let content = EditorsPane.monacoEditor!.getValue()
     let files: File[] = this.currentFile() ? [{ ...this.currentFile(), content: content }] : []
     const updatePromises = files.map((f: File) => this.api.updateFile(f))
-    return Promise.all(updatePromises).then((files) => {
-      //FIXME: update file contents
+    return Promise.all(updatePromises)
+      .then((files) => {
+        this.api.projectFileTree(this.props.session.project.id)
+          .then(this.props.setSessionFiles)
       return files
     })
   }
@@ -157,7 +160,7 @@ function mapProps(state: AppState) {
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({ setCompilerErrors, notifyInfo }, dispatch)
+  return bindActionCreators({ setCompilerErrors, setSessionFiles, notifyInfo }, dispatch)
 }
 
 const SessionPane = connect(mapProps, dispatchToProps)(SessionPaneCon)
