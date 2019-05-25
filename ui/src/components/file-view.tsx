@@ -5,20 +5,23 @@ import Octicon from 'react-octicon'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as R from 'ramda'
-import { File, AppState, CompilerError, Project } from '../models/index'
-import { newFile, setSessionFiles, Action } from '../redux/index'
+import { File, FileNode, AppState, CompilerError, Project } from '../models/index'
+import * as file from '../models/file'
+import { setSessionFiles, Action } from '../redux/index'
 import { ApiClient } from '../services/api-client';
 import { renderErrors } from '../partials/errors'
 import Dropzone from 'react-dropzone'
+//@ts-ignore
+import { Treebeard, decorators } from 'react-treebeard';
+import { TreeView } from './tree-view';
 
 interface Props {
   api: ApiClient
-  files: File[]
+  files: FileNode
   project: Project
   activeFile?: File
   compilerErrors: CompilerError[]
-  newFile(f: File): Action
-  setSessionFiles(f:File[]): Action
+  setSessionFiles(f:FileNode): Action
   onFileClicked(f: File): void
   onSaveClicked(): void
   onCompileClicked(): void
@@ -46,13 +49,15 @@ class FileViewCon extends React.Component<Props, State> {
     this.state = { showNewFileDialog: false, showUploadDialog: false, errors: [] }
   }
 
+  componentDidMount() {
+    this.props.api.projectFileTree(this.props.project.id)
+      .then(this.props.setSessionFiles.bind(this))
+  }
+
   private updateErrors(err: string[]) {
     this.setState({ showNewFileDialog: !R.isEmpty(err), errors: err })
   }
-  private fileExists(name: string): Boolean {
-    const paths = this.props.files.map(f => f.relativePath)
-    return R.any(p => p == name, paths)
-  }
+  private readonly fileExists = R.curry(file.exists)(this.props.files)
 
   private createNewFile(ev:any) {
     ev.preventDefault()
@@ -71,7 +76,8 @@ class FileViewCon extends React.Component<Props, State> {
       const content = `${tpe} ${name}\nend ${name};`
       this.api
         .updateFile({ relativePath: path, content: content })
-        .then(this.props.newFile)
+        .then(_ => this.api.projectFileTree(this.props.project.id))
+        .then(this.props.setSessionFiles)
         .then(() => this.updateErrors([]))
         .catch(er => this.updateErrors(["Creation failed because of: " + er]))
     } else {
@@ -84,8 +90,8 @@ class FileViewCon extends React.Component<Props, State> {
 
   private deleteFile(f:File) {
     this.props.api.deleteFile(f)
-      .then(() =>
-        this.props.setSessionFiles(this.props.files.filter(oldF => oldF.relativePath != f.relativePath))
+     .then(() =>
+        this.props.setSessionFiles(file.removeFile(this.props.files, f) as FileNode)
       )
   }
 
@@ -130,7 +136,8 @@ class FileViewCon extends React.Component<Props, State> {
     //await all uploads and use last-finished to update session files
     Promise.all(promises)
       .then(results => results[results.length-1])
-      .then(files => this.props.setSessionFiles(files))
+      .then(_ => this.api.projectFileTree(this.props.project.id))
+      .then(this.props.setSessionFiles)
       .then(() => this.setState({showUploadDialog: false}))
   }
 
@@ -171,8 +178,7 @@ class FileViewCon extends React.Component<Props, State> {
     } else {
       this.props.api.renameFile(f, name)
         .then(newFile => {
-          const otherFiles = this.props.files.filter(other => other.relativePath != f.relativePath)
-          this.props.setSessionFiles(R.append(newFile, otherFiles))
+          this.props.setSessionFiles(file.renameFile(this.props.files, f, newFile))
           this.setState({ fileToRename: undefined })
         })
     }
@@ -205,12 +211,12 @@ class FileViewCon extends React.Component<Props, State> {
   }
 
   render() {
-    const files = this.props.files
     const fileClicked = this.props.onFileClicked
     const errorsInFile = (f: File) => this.props.compilerErrors.filter(e => e.file == f.relativePath)
     const newFileClicked = () => { this.setState({ showNewFileDialog: true }) }
     const uploadArchiveClicked = () => { this.setState({showUploadDialog: true}) }
     const renameFileClicked = (f:File) => this.setState({fileToRename: f})
+
     return (<>
         <h5 className="text-secondary">Actions</h5>
         <ButtonGroup vertical className="full-width">
@@ -221,20 +227,11 @@ class FileViewCon extends React.Component<Props, State> {
           <Button variant="outline-primary" onClick={this.props.onCompileClicked}><Octicon name="gear" /> Compile</Button>
         </ButtonGroup>
         <h5 className="text-secondary">Files</h5>
-      <ButtonGroup vertical className="full-width">
-          {this.props.files.map((f: File) =>
-            <SplitButton
-              title={f.relativePath + "  "}
-              onClick={() => fileClicked(f)}
-              key={f.relativePath}
-              size="sm"
-              id={`file-view-dropdown-${f.relativePath}`}
-              variant={(f === this.props.activeFile) ? "secondary" : "outline-secondary"}>
-              <Dropdown.Item className="text-warning" onSelect={() => renameFileClicked(f)}><Octicon name="pencil" /> Rename</Dropdown.Item>
-              <Dropdown.Item className="text-danger" onSelect={() => this.deleteFile(f)}><Octicon name="x" /> Delete</Dropdown.Item>
-            </SplitButton>
-          )}
-        </ButtonGroup>
+        <TreeView
+          deleteFile={this.deleteFile.bind(this)}
+          renameFile={renameFileClicked}
+          onFileClicked={this.props.onFileClicked.bind(this)}
+          />
       {this.newFileDialog()}
       {this.uploadDialog()}
       {this.renameDialog()}
@@ -252,7 +249,7 @@ function mapProps(state: AppState) {
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({ newFile, setSessionFiles}, dispatch)
+  return bindActionCreators({setSessionFiles}, dispatch)
 }
 const FileView = connect(mapProps, dispatchToProps)(FileViewCon)
 export default FileView

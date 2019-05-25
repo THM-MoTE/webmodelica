@@ -1,6 +1,6 @@
 import { initialState, AppState, Session, SimulationOption, SimulationData, ProjectPreviewState, Notification } from '../models/state'
 import { Project } from '../models/project'
-import { File } from '../models/file'
+import { File, FileNode, setId } from '../models/file'
 import { Action, ActionTypes } from './actions'
 import * as R from 'ramda'
 import { CompilerError, AuthServiceToken, WebmodelicaToken } from '../models';
@@ -10,19 +10,7 @@ const reducerMap = {
   [ActionTypes.SetProject.toString()]: (state: AppState, project: Project) => ({ ...state,
     projects: R.reduce((acc:Project[], p) => R.append((p.id===project.id) ? project : p, acc), [], state.projects)
   }),
-  [ActionTypes.UpdateSessionFiles.toString()]: function(state: AppState, data: File[]): AppState {
-    if (state.session) {
-      let pathNames = data.map(f => f.relativePath)
-      //TODO: only update the files, that are new.. don't replace all files
-      let oldFiles = R.filter((f: File) => !R.contains(f.relativePath, pathNames), state.session.files)
-      let newFiles = R.sortBy((f: File) => f.relativePath, oldFiles.concat(data))
-      return { ...state, session: { ...state!.session, files: newFiles } }
-    } else {
-      console.error("can't set session files if no session provided before!")
-      return state
-    }
-  },
-  [ActionTypes.SetSessionFiles.toString()]: (state: AppState, files: File[]) => ({...state, session: {...state.session!, files: R.sortBy(f => f.relativePath, files)}}),
+  [ActionTypes.SetSessionFiles.toString()]: (state: AppState, files: FileNode) => ({...state, session: {...state.session!, files: setId(files)}}),
   [ActionTypes.AddProject.toString()]: (state: AppState, data: Project) => ({ ...state, projects: R.prepend(data, state.projects) }),
   [ActionTypes.SetProjectPreview.toString()]: (state:AppState, data:ProjectPreviewState) => ({...state, projectPreview: data }),
   [ActionTypes.SetSession.toString()]: (state: AppState, session: Session) => ({ ...state, session: session }),
@@ -53,7 +41,6 @@ const reducerMap = {
     }
     return obj
   },
-  [ActionTypes.CreateNewFile.toString()]: (state: AppState, f: File) => ({ ...state, session: { ...state.session!, files: R.append(f, state.session!.files) } }),
   [ActionTypes.SetCompilerErrors.toString()]: (state: AppState, errors: CompilerError[]) => ({ ...state, session: { ...state.session!, compilerErrors: errors}}),
   [ActionTypes.UpdateSimulationOption.toString()]: (state: AppState, payload: any) => {
     const { idx, option } = payload

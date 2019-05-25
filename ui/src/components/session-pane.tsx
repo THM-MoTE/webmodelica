@@ -8,8 +8,8 @@ import { ApiClient } from '../services/api-client'
 import { Row, Col, Button, ButtonGroup, Container as RContainer, Card } from 'react-bootstrap'
 //@ts-ignore
 import Octicon from 'react-octicon'
-import { File, AppState, CompilerError, Session, Shortcut, cmdShiftAnd, cmdAnd } from '../models/index'
-import { Action, updateSessionFiles, setCompilerErrors, notifyInfo } from '../redux/actions'
+import { File, FileNode, AppState, CompilerError, Session, Shortcut, cmdShiftAnd } from '../models/index'
+import { Action, setCompilerErrors, setSessionFiles, notifyInfo } from '../redux/actions'
 import * as monaco from 'monaco-editor';
 import * as R from 'ramda'
 import { renderErrors } from '../partials/errors';
@@ -24,7 +24,7 @@ interface Props {
   api: ApiClient
   session: Session
   compilerErrors: CompilerError[]
-  updateSessionFiles(f: File[]): void
+  setSessionFiles(f: FileNode): Action
   setCompilerErrors(ers: CompilerError[]): void
   notifyInfo(msg:string):void
   history: History
@@ -39,7 +39,6 @@ function deltaDecorations(openedFile: File, errors: CompilerError[]): monaco.edi
   return errors
     .filter(e => e.file == openedFile.relativePath)
     .map(e => ({
-      //TODO: possible wrong index for lineNo .. does MoPE return 0-based or 1-baed lineNumbers???
       range: new monaco.Range(e.start.line, 1, e.end.line, e.end.column),
       options: {
         isWholeLine: true,
@@ -59,9 +58,6 @@ class SessionPaneCon extends React.Component<Props, State> {
     this.state = { editingFiles: [], deltaMarkers: [], compiling: false }
   }
 
-  public componentDidMount() {
-  }
-
   private setupShortcuts(): Shortcut[] {
     return [
       cmdShiftAnd(monaco.KeyCode.KEY_S, this.handleSaveClicked.bind(this)),
@@ -69,8 +65,10 @@ class SessionPaneCon extends React.Component<Props, State> {
     ]
   }
 
-  private handleFileClicked(f: File): void {
-    this.saveCurrentFiles().then(() => this.setState({ editingFiles: [f] }))
+  private handleFileClicked(filePath: File): void {
+    this.saveCurrentFiles()
+      .then(() => this.api.getFile(filePath.relativePath))
+      .then(file => this.setState({ editingFiles: [file] }))
   }
 
   private currentFile(): File {
@@ -81,8 +79,10 @@ class SessionPaneCon extends React.Component<Props, State> {
     let content = EditorsPane.monacoEditor!.getValue()
     let files: File[] = this.currentFile() ? [{ ...this.currentFile(), content: content }] : []
     const updatePromises = files.map((f: File) => this.api.updateFile(f))
-    return Promise.all(updatePromises).then((files) => {
-      this.props.updateSessionFiles(files)
+    return Promise.all(updatePromises)
+      .then((files) => {
+        // this.api.projectFileTree(this.props.session.project.id)
+        //   .then(this.props.setSessionFiles)
       return files
     })
   }
@@ -162,7 +162,7 @@ function mapProps(state: AppState) {
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({ updateSessionFiles, setCompilerErrors, notifyInfo }, dispatch)
+  return bindActionCreators({ setCompilerErrors, setSessionFiles, notifyInfo }, dispatch)
 }
 
 const SessionPane = connect(mapProps, dispatchToProps)(SessionPaneCon)
