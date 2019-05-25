@@ -136,7 +136,8 @@ class FileViewCon extends React.Component<Props, State> {
     //await all uploads and use last-finished to update session files
     Promise.all(promises)
       .then(results => results[results.length-1])
-      // .then(files => this.props.setSessionFiles(files)) //FIXME: impl this
+      .then(_ => this.api.projectFileTree(this.props.project.id))
+      .then(this.props.setSessionFiles)
       .then(() => this.setState({showUploadDialog: false}))
   }
 
