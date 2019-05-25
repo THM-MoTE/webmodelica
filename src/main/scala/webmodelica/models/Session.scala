@@ -21,10 +21,10 @@ case class Session(
 @JsonCodec
 case class JSSession(project: JSProject,
   id: UUIDStr,
-  files: List[ModelicaFile])
+  files: List[ModelicaPath])
 
 object JSSession {
-  def apply(s: Session, files: List[ModelicaFile]=List.empty): JSSession =
+  def apply(s: Session, files: List[ModelicaPath]=List.empty): JSSession =
     s.into[JSSession]
       .withFieldComputed(_.id, _.idString)
       .withFieldComputed(_.project, s => JSProject(s.project))

@@ -55,7 +55,7 @@ class ProjectController@Inject()(
     with ProjectExtractor {
 
   val fileStore: Project => FileStore = FileStore.fromProject(mopeConf.data.hostDirectory, _)
-  val projectFiles: Project => Future[List[ModelicaFile]] = fileStore(_).files
+  val projectFiles: Project => Future[List[ModelicaPath]] = fileStore(_).files
   val projectFileTree: Project => Future[FileTree] = fileStore(_).fileTree
 
   filter[JwtFilter]

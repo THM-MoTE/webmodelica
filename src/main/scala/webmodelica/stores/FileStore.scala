@@ -1,21 +1,19 @@
 package webmodelica.stores
 
 import com.twitter.util.Future
-import webmodelica.models.{FileTree, Session, Project, ModelicaFile, ModelicaFileDocument}
+import webmodelica.models.{FileTree, ModelicaFile, ModelicaFileDocument, ModelicaPath, Project, Session}
 import java.nio.file.Path
+
 import better.files._
 
 trait FileStore {
   def rootDir: Path
-  def files: Future[List[ModelicaFile]]
+  def files: Future[List[ModelicaPath]]
   def update(file:ModelicaFile): Future[Unit]
   def delete(p:Path): Future[Unit]
-  def rename(oldPath:Path, newPath:Path): Future[ModelicaFile]
+  def rename(oldPath:Path, newPath:Path): Future[ModelicaPath]
   def update(files:Seq[ModelicaFile]):Future[Unit] = {
     Future.join(files.map(update))
-  }
-  def updateDocuments(documents: Seq[ModelicaFileDocument]): Future[Unit] = {
-    update(documents.map(ModelicaFile.apply))
   }
   def packageProjectArchive(name:String): Future[java.io.File]
   def copyTo(destination:Path): Future[Unit]

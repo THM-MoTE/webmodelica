@@ -23,18 +23,18 @@ class FSStore(root:Path)
   }
 
   def delete(p:Path): Future[Unit] = Future { File(root.resolve(p)).delete() }
-  def rename(oldPath:Path, newPath:Path): Future[ModelicaFile] =
+  def rename(oldPath:Path, newPath:Path): Future[ModelicaPath] =
     Future {
       val newFile = root.resolve(newPath)
       File(root.resolve(oldPath)).renameTo(newFile.toString)
-      ModelicaFile(root.relativize(newFile), File(newFile).contentAsString(charset=encoding))
+      ModelicaPath(root.relativize(newFile))
     }
 
-  override def files: Future[List[ModelicaFile]] = {
+  override def files: Future[List[ModelicaPath]] = {
     Future.value(
       File(root)
         .glob("**.mo")
-        .map(f => ModelicaFile(root.relativize(f.path), f.contentAsString(charset=encoding)))
+        .map(f => ModelicaPath(root.relativize(f.path)))
         .toList
         .sortBy(_.relativePath)
     )
@@ -61,7 +61,7 @@ class FSStore(root:Path)
 
   val treeGenerator = {
     val fileFilter = (f:File) => f.name.endsWith(".mo")
-    val mapper = (p:Path) => ModelicaFile(root.relativize(p), File(p).contentAsString(charset=encoding))
+    val mapper = (p:Path) => ModelicaPath(root.relativize(p))
     val shortener = (p:Path) => p.getFileName
     FileTree.generate(fileFilter, mapper, shortener)(_)
   }

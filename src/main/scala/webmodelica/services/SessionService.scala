@@ -10,16 +10,14 @@ import com.twitter.finatra.json.FinatraObjectMapper
 import com.twitter.util.{Future, Time}
 import com.twitter.finagle.stats.StatsReceiver
 import webmodelica.models.config.{MopeClientConfig, RedisConfig}
-import webmodelica.models.{FileTree, ModelicaFile, Session}
+import webmodelica.models.{FileTree, ModelicaFile, ModelicaPath, Session, errors}
 import webmodelica.stores.{FSStore, FileStore}
-import webmodelica.models.errors
 import webmodelica.constants
-import java.nio.file.{
-  Path, Paths
-}
+import java.nio.file.{Path, Paths}
+
 import better.files._
 
-import scala.concurrent.{ Future => SFuture, Promise =>  SPromise }
+import scala.concurrent.{Future => SFuture, Promise => SPromise}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class SessionService @Inject()(
@@ -43,9 +41,9 @@ class SessionService @Inject()(
   info(s"fsStore: $fsStore")
   override def rootDir: Path = fsStore.rootDir
   override def update(file: ModelicaFile): Future[Unit] = fsStore.update(file)
-  override def files: Future[List[ModelicaFile]] = fsStore.files
+  override def files: Future[List[ModelicaPath]] = fsStore.files
   override def delete(p: Path): Future[Unit] = fsStore.delete(p)
-  override def rename(oldPath: Path,newPath: Path):Future[ModelicaFile] = fsStore.rename(oldPath, newPath)
+  override def rename(oldPath: Path,newPath: Path):Future[ModelicaPath] = fsStore.rename(oldPath, newPath)
   override def close(deadline:Time):Future[Unit] = disconnect()
   override def packageProjectArchive(name:String): Future[java.io.File] = fsStore.packageProjectArchive(name)
   override def copyTo(destination:Path): Future[Unit] = fsStore.copyTo(destination)
@@ -61,7 +59,7 @@ class SessionService @Inject()(
     }
   }
 
-  def extractArchive(path:Path): Future[List[ModelicaFile]] = {
+  def extractArchive(path:Path): Future[List[ModelicaPath]] = {
     import scala.sys.process._
     Future {
       info(s"extracting $path to ${fsStore.rootDir}")

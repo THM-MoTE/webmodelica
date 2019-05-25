@@ -13,30 +13,27 @@ import webmodelica._
 @JsonCodec
 sealed trait FileTree {
   def path: Path
-  def files: List[ModelicaFile]
+  def files: List[ModelicaPath]
   def isLeaf: Boolean = !isNode
   def isNode: Boolean = !isLeaf
 }
 
 @JsonCodec
-case class Leaf(override val path:Path, file: ModelicaFile) extends FileTree {
-  override def files: List[ModelicaFile] = List(file)
+case class Leaf(override val path:Path, file: ModelicaPath) extends FileTree {
+  override def files: List[ModelicaPath] = List(file)
   override def isLeaf: Boolean = true
 }
 @JsonCodec
 case class Node(override val path:Path, children:List[FileTree]) extends FileTree {
-  override def files: List[ModelicaFile] = children.flatMap(_.files)
+  override def files: List[ModelicaPath] = children.flatMap(_.files)
   override def isNode: Boolean = true
 }
 
 
 object FileTree {
-  def baseMapper(path:Path): ModelicaFile =
-    ModelicaFile(path, new String(Files.readAllBytes(path), constants.encoding))
-
   def generate(
     filter: File => Boolean,
-    fn: Path => ModelicaFile = baseMapper,
+    fn: Path => ModelicaPath = ModelicaPath.apply,
     pathShortener: Path => Path = identity)(base:Path): FileTree = {
     //include directories to recurse into subdirectories
     val includeDirFiler = (f:File) => f.isDirectory || filter(f)

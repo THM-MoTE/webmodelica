@@ -13,12 +13,14 @@ case class ModelicaFileDocument (
   content: String,
 )
 
-
 @JsonCodec
 case class ModelicaFile (
   relativePath: Path,
   content: String,
 )
+
+@JsonCodec
+case class ModelicaPath(relativePath: Path)
 
 object ModelicaFile {
   def apply(doc: ModelicaFileDocument): ModelicaFile = doc.into[ModelicaFile].transform
