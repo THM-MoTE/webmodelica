@@ -276,8 +276,7 @@ export class ApiClient {
   public deleteFile(file:File): Promise<void> {
     return this.withSession("can't delete a file if there is no session!")
       .then(session =>  {
-        const url = new URL(this.sessionUri() + `/${session.id}/files`)
-        url.searchParams.set("path", file.relativePath)
+        const url = new URL(this.sessionUri() + `/${session.id}/files/${encodeURIComponent(file.relativePath)}`)
         return fetch(url.toString(), {
           method: 'DELETE',
           headers: {

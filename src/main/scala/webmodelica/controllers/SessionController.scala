@@ -28,8 +28,10 @@ case class NewFileRequest(
 )
 case class DeleteRequest(
   @RouteParam() sessionId: String,
-  @QueryParam() path:String //TODO: use route param, not query param
-)
+  @RouteParam() path:URI
+) {
+  def asPath: Path = Paths.get(path.getPath)
+}
 case class FileContentRequest(
   @RouteParam() sessionId: String,
   @RouteParam() path: URI
@@ -144,9 +146,9 @@ class SessionController@Inject()(
         }
       }
 
-      delete("/sessions/:sessionId/files") { req: DeleteRequest =>
+      delete("/sessions/:sessionId/files/:path") { req: DeleteRequest =>
         withSession(req.sessionId) { service =>
-          service.delete(Paths.get(req.path)).map(_ => response.noContent)
+          service.delete(req.asPath).map(_ => response.noContent)
         }
       }
       put("/sessions/:sessionId/files/rename") { req: RenameRequest =>
