@@ -14,15 +14,19 @@ import webmodelica._
 sealed trait FileTree {
   def path: Path
   def files: List[ModelicaFile]
+  def isLeaf: Boolean = !isNode
+  def isNode: Boolean = !isLeaf
 }
 
 @JsonCodec
 case class Leaf(override val path:Path, file: ModelicaFile) extends FileTree {
   override def files: List[ModelicaFile] = List(file)
+  override def isLeaf: Boolean = true
 }
 @JsonCodec
 case class Node(override val path:Path, children:List[FileTree]) extends FileTree {
   override def files: List[ModelicaFile] = children.flatMap(_.files)
+  override def isNode: Boolean = true
 }
 
 
@@ -41,7 +45,10 @@ object FileTree {
       if(current.isDirectory) {
         //don't know why, but we need to filter on the iterable, not on the File#list(filter) generator
         //File#list runs into a stackoverflow..
-        val childs = current.list.filter(includeDirFiler).toList.map(rec)
+        val childs = current.list.filter(includeDirFiler).toList.map(rec).sortWith { (a,b) =>
+          if(a.isNode && b.isLeaf) true
+          else (a.path compareTo b.path) < 1
+        }
         Node(pathShortener(p), childs)
       } else {
         Leaf(pathShortener(p), fn(p))
