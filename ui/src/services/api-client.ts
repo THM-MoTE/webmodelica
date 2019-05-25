@@ -289,6 +289,22 @@ export class ApiClient {
       .then(_ => {})
   }
 
+  public getFile(path:string): Promise<File> {
+    return this.withSession("can't fetch file without session!")
+      .then(session => {
+        const url = new URL(this.sessionUri() + `/${session.id}/files/${encodeURIComponent(path)}`)
+        return fetch(url.toString(), {
+          headers: {
+            [authHeader]: this.token(),
+            'Accept': 'application/json'
+          }
+        })
+      })
+      .then(rejectError)
+      .then(this.updateWSToken.bind(this))
+      .then(res => res.json())
+  }
+
   public renameFile(file:File, name:string): Promise<File> {
     return this.withSession("can't rename a file if there is no session!")
       .then(session => {
