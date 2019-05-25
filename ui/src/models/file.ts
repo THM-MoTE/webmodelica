@@ -17,6 +17,13 @@ function fileName(f:File): string {
   return f.relativePath.substring(f.relativePath.lastIndexOf('/')+1, f.relativePath.length)
 }
 
+export function exists(root:FileNode, name:string): boolean {
+  return (root.file &&
+    root.file.relativePath === name) ||
+    (root.children && R.any(n => exists(n, name), root.children)) ||
+    false
+}
+
 export function setId(root:FileNode): FileNode {
   return {
     id: root.path,

@@ -58,12 +58,7 @@ class FileViewCon extends React.Component<Props, State> {
   private updateErrors(err: string[]) {
     this.setState({ showNewFileDialog: !R.isEmpty(err), errors: err })
   }
-  private fileExists(name: string): Boolean {
-      //FIXME: impl this
-    // const paths = this.props.files.map(f => f.relativePath)
-    // return R.any(p => p == name, paths)
-    return true
-  }
+  private readonly fileExists = R.curry(file.exists)(this.props.files)
 
   private createNewFile(ev:any) {
     ev.preventDefault()
@@ -82,7 +77,8 @@ class FileViewCon extends React.Component<Props, State> {
       const content = `${tpe} ${name}\nend ${name};`
       this.api
         .updateFile({ relativePath: path, content: content })
-        .then(this.props.newFile)
+        .then(_ => this.api.projectFileTree(this.props.project.id))
+        .then(this.props.setSessionFiles)
         .then(() => this.updateErrors([]))
         .catch(er => this.updateErrors(["Creation failed because of: " + er]))
     } else {
