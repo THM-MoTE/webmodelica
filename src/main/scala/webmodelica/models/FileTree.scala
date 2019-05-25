@@ -46,7 +46,10 @@ object FileTree {
         //don't know why, but we need to filter on the iterable, not on the File#list(filter) generator
         //File#list runs into a stackoverflow..
         val childs = current.list.filter(includeDirFiler).toList.map(rec).sortWith { (a,b) =>
-          if(a.isNode && b.isLeaf) true
+          //sorts the entries:
+          //first directories lexicographically sorted
+          //then files lexicographically sorted
+          if(a.isNode && b.isLeaf) true //if a is node and b isn't: a is always greater
           else (a.path compareTo b.path) < 1
         }
         Node(pathShortener(p), childs)
