@@ -1,7 +1,7 @@
 version: '3'
 services:
   backend:
-    image: "thmmote/webmodelica:0.7.0"
+    image: "thmmote/webmodelica:0.7.2"
     restart: unless-stopped
     ports:
       - 9002:3000
@@ -20,7 +20,7 @@ services:
       - ../conf/auth-svc-key.pub:/opt/auth-key.pub
       - webmodelica_data:/data
   ui:
-    image: "thmmote/webmodelica-ui:0.7.0"
+    image: "thmmote/webmodelica-ui:0.7.2"
     restart: unless-stopped
     ports:
       - 9003:3000
@@ -31,6 +31,12 @@ services:
       - "de.thm.webmodelica.name=webmodelica-frontend"
   traefik:
     restart: unless-stopped
+    ports:
+      - "80:80"     # The HTTP port
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
+      - ./config/traefik.toml:/etc/traefik/traefik.toml
+      - ./config/traefik-dev.toml:/dev/null
   mongo:
     restart: unless-stopped
   cache:
@@ -43,5 +49,5 @@ services:
     restart: unless-stopped
     volumes:
       - webmodelica_data:/home/openmodelica/data
-      - ./mope.conf:/home/openmodelica/.config/mope/mope.conf
+      - ./config/mope.conf:/home/openmodelica/.config/mope/mope.conf
 #      - ../moie-server/target/scala-2.12/mope-server-0.6.5.jar:/opt/mope-server.jar
