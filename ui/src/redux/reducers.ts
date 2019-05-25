@@ -1,6 +1,6 @@
 import { initialState, AppState, Session, SimulationOption, SimulationData, ProjectPreviewState, Notification } from '../models/state'
 import { Project } from '../models/project'
-import { File, FileNode } from '../models/file'
+import { File, FileNode, setId } from '../models/file'
 import { Action, ActionTypes } from './actions'
 import * as R from 'ramda'
 import { CompilerError, AuthServiceToken, WebmodelicaToken } from '../models';
@@ -24,7 +24,7 @@ const reducerMap = {
       return state
     }
   },
-  [ActionTypes.SetSessionFiles.toString()]: (state: AppState, files: FileNode) => ({...state, session: {...state.session!, files}}),
+  [ActionTypes.SetSessionFiles.toString()]: (state: AppState, files: FileNode) => ({...state, session: {...state.session!, files: setId(files)}}),
   [ActionTypes.AddProject.toString()]: (state: AppState, data: Project) => ({ ...state, projects: R.prepend(data, state.projects) }),
   [ActionTypes.SetProjectPreview.toString()]: (state:AppState, data:ProjectPreviewState) => ({...state, projectPreview: data }),
   [ActionTypes.SetSession.toString()]: (state: AppState, session: Session) => ({ ...state, session: session }),

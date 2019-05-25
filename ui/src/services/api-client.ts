@@ -162,7 +162,7 @@ export class ApiClient {
       .then(this.updateWSToken.bind(this))
       .then(res => res.json())
       .then((obj: any) => ({
-        ...obj, files: {name: 'project'}, compilerErrors: [], simulation: { options: [
+        ...obj, files: {name: 'project', id: 'project'}, compilerErrors: [], simulation: { options: [
           { name: "startTime", value: 0 },
           { name: "stopTime", value: 5 },
           { name: "numberOfIntervals", value: 500 }

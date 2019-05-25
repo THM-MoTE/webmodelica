@@ -6,10 +6,19 @@ export interface File {
 }
 
 export interface FileNode {
-  name: string,
+  path: string,
+  id?: string,
   children?: FileNode[],
   file?: File,
   toggled?: boolean
+}
+
+export function setId(root:FileNode): FileNode {
+  return {
+    id: root.path,
+    children: (root.children) ? root.children.map(setId) : undefined,
+    ...root
+  }
 }
 
 
