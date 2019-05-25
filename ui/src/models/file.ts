@@ -5,11 +5,15 @@ export interface File {
   content: string
 }
 
+export interface FilePath {
+  relativePath: string
+}
+
 export interface FileNode {
   path: string,
   id?: string,
   children?: FileNode[],
-  file?: File,
+  file?: FilePath,
   toggled?: boolean
 }
 
