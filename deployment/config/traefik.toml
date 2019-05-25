@@ -2,32 +2,5 @@ defaultEntryPoints = ["http"]
 logLevel = "INFO"
 
 [file]
-watch = true
-
-[backends]
-  #config for backend server, running at localhost:8888 when started through
-  #'sbt run'
-  [backends.webmodelica-backend-dev]
-    [backends.webmodelica-backend-dev.servers]
-      [backends.webmodelica-backend-dev.servers.s0]
-        url = "http://172.17.0.1:8888"
-  #config for frontend/ui server, running at localhost:3000 when started through
-  #'npm start'
-[backends.webmodelica-ui-dev]
-    [backends.webmodelica-ui-dev.servers]
-      [backends.webmodelica-ui-dev.servers.s0]
-        url = "http://172.17.0.1:3000"
-
-[frontends]
-  [frontends.webmodelica-dev]
-    backend = "webmodelica-backend-dev"
-    passHostHeader = true
-  [frontends.webmodelica-dev.routes]
-    [frontends.webmodelica-dev.routes.r0]
-      rule = "PathPrefix:/api/v{version:[0-9]+}/webmodelica"
-  [frontends.webmodelica-ui]
-    backend = "webmodelica-ui-dev"
-    passHostHeader = true
-  [frontends.webmodelica-ui.routes]
-    [frontends.webmodelica-ui.routes.r0]
-      rule = "PathPrefix:/"
+watch = false
+filename = "/etc/traefik/traefik-dev.toml"

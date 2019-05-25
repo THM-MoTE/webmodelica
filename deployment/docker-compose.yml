@@ -9,6 +9,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
       - ./config/traefik.toml:/etc/traefik/traefik.toml
+      - ./config/traefik-dev.toml:/etc/traefik/traefik-dev.toml
     labels:
       - "de.thm.webmodelica.name=traefik-proxy"
     restart: on-failure
