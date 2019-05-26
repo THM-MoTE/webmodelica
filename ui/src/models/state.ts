@@ -1,5 +1,5 @@
 
-import { CompilerError, File, FileNode, Project, TableFormat } from './index'
+import { CompilerError, File, FilePath, FileNode, Project, TableFormat } from './index'
 import {isFuture} from 'date-fns'
 
 export interface UserAuth {
@@ -39,7 +39,7 @@ export interface SimulationOption {
 
 export interface ProjectPreviewState {
   project: Project
-  files: File[]
+  files: FilePath[]
 }
 
 export enum NotificationType {

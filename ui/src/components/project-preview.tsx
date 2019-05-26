@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { EditorsPane } from './index';
-import { AppState, Project, projectIsPrivate, projectIsPublic, File, ProjectPreviewState } from '../models/index'
+import { AppState, Project, projectIsPrivate, projectIsPublic, File, FilePath, ProjectPreviewState } from '../models/index'
 import { Action, setProjectPreview } from '../redux/index'
 import { WmContainer } from '../partials/container'
 import { ApiClient } from '../services/api-client'
@@ -26,11 +26,12 @@ class ProjectPreviewCon extends Component<Props, State> {
 
   constructor(p:Props) {
     super(p)
-    this.state = { previewFile: (p.projectPreview.files.length>0) ? p.projectPreview.files[0] : undefined }
+    this.state = {}
   }
 
-  private updatePreviewFile(previewFile:File): void {
-    this.setState({previewFile})
+  private updatePreviewFile(previewFile:FilePath): void {
+    this.props.api.getFile(this.props.projectPreview.project, previewFile.relativePath)
+      .then(previewFile => this.setState({previewFile}))
   }
 
   private copyProject(projectToCopy:Project=this.props.projectPreview.project) {
