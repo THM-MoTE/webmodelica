@@ -119,13 +119,6 @@ class ProjectController@Inject()(
           files <- if(requ.format.toLowerCase == "tree") projectFileTree(project) else  projectFiles(project)
         } yield files
       }
-      get("/projects/:id/files/:path") { req: FileContentRequest =>
-        for {
-          username <- extractUsername(req.request)
-          project <- extractProject(req.id, username)
-          file <- fileStore(project).findByPath(req.asPath).flatMap(errors.notFoundExc(s"file ${req.asPath} not found!"))
-        } yield file
-      }
       get("/projects/:id/files/download") { requ: Request =>
         val id = requ.getParam("id")
         for {
@@ -133,6 +126,13 @@ class ProjectController@Inject()(
           project <- extractProject(id, username)
           file <- fileStore(project).packageProjectArchive(project.name)
         } yield sendFile(response)("application/zip", file)
+      }
+      get("/projects/:id/files/:path") { req: FileContentRequest =>
+        for {
+          username <- extractUsername(req.request)
+          project <- extractProject(req.id, username)
+          file <- fileStore(project).findByPath(req.asPath).flatMap(errors.notFoundExc(s"file ${req.asPath} not found!"))
+        } yield file
       }
 
       get("/projects") { requ: Request =>
