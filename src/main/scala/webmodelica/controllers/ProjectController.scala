@@ -10,6 +10,7 @@ import cats.implicits._
 import io.scalaland.chimney.dsl._
 import org.mongodb.scala.bson.BsonObjectId
 import java.nio.file.{Path, Paths}
+import java.net.URI
 
 import webmodelica.models._
 import webmodelica.models.config.MopeClientConfig
@@ -33,7 +34,13 @@ case class CopyProjectRequest(
     )
   }
 }
-
+case class FileContentRequest(
+  @RouteParam() id: String,
+  @RouteParam() path: URI,
+  request: Request,
+) {
+  def asPath: Path = Paths.get(path.getPath)
+}
 case class ProjectFilesRequest(
   @RouteParam() id: String,
   @QueryParam() format:String="list",
@@ -112,6 +119,13 @@ class ProjectController@Inject()(
           project <- extractProject(requ.id, username)
           files <- if(requ.format.toLowerCase == "tree") projectFileTree(project) else  projectFiles(project)
         } yield files
+      }
+      get("/projects/:id/files/:path") { req: FileContentRequest =>
+        for {
+          username <- extractUsername(req.request)
+          project <- extractProject(req.id, username)
+          file <- fileStore(project).findByPath(req.asPath).flatMap(errors.notFoundExc(s"file ${req.asPath} not found!"))
+        } yield file
       }
       get("/projects/:id/files/download") { requ: Request =>
         val id = requ.getParam("id")

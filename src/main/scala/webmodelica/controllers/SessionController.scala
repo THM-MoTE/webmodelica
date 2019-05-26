@@ -32,12 +32,6 @@ case class DeleteRequest(
 ) {
   def asPath: Path = Paths.get(path.getPath)
 }
-case class FileContentRequest(
-  @RouteParam() sessionId: String,
-  @RouteParam() path: URI
-) {
-  def asPath: Path = Paths.get(path.getPath)
-}
 case class RenameRequest(
   @RouteParam() sessionId: String,
   @JsonProperty() oldPath:Path,
@@ -138,14 +132,6 @@ class SessionController@Inject()(
             .getOrElse(Future.value(response.badRequest.body("'archive' file expected!")))
         }
       }
-
-      get("/sessions/:sessionId/files/:path") { req: FileContentRequest =>
-        withSession(req.sessionId) { service =>
-          service.findByPath(req.asPath)
-          .flatMap(errors.notFoundExc(s"file ${req.asPath} not found!"))
-        }
-      }
-
       delete("/sessions/:sessionId/files/:path") { req: DeleteRequest =>
         withSession(req.sessionId) { service =>
           service.delete(req.asPath).map(_ => response.noContent)
