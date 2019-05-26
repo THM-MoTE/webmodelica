@@ -289,10 +289,11 @@ export class ApiClient {
       .then(_ => {})
   }
 
-  public getFile(path:string): Promise<File> {
+  public getFile(project:string|Project, path:string): Promise<File> {
+    const pid = (typeof project === "string") ? project : project.id
     return this.withSession("can't fetch file without session!")
       .then(session => {
-        const url = new URL(this.sessionUri() + `/${session.id}/files/${encodeURIComponent(path)}`)
+        const url = new URL(this.projectUri() + `/${pid}/files/${encodeURIComponent(path)}`)
         return fetch(url.toString(), {
           headers: {
             [authHeader]: this.token(),

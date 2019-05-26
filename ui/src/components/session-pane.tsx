@@ -67,7 +67,7 @@ class SessionPaneCon extends React.Component<Props, State> {
 
   private handleFileClicked(filePath: File): void {
     this.saveCurrentFiles()
-      .then(() => this.api.getFile(filePath.relativePath))
+      .then(() => this.api.getFile(this.props.session.project, filePath.relativePath))
       .then(file => this.setState({ editingFiles: [file] }))
   }
 
