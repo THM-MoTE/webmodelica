@@ -20,7 +20,7 @@ import webmodelica.services.{TokenGenerator, TokenValidator, UserToken}
 import webmodelica.stores.{ProjectStore, UserStore}
 
 case class CopyProjectRequest(
-  @RouteParam() projectId: String,
+  @RouteParam() id: String,
   @JsonProperty() name: Option[String],
   request: Request,
 ) {
@@ -48,7 +48,7 @@ case class ProjectFilesRequest(
 )
 
 case class VisibilityRequest(
-  @RouteParam() projectId: String,
+  @RouteParam() id: String,
   @JsonProperty() visibility: String)
 
 class ProjectController@Inject()(
@@ -90,11 +90,10 @@ class ProjectController@Inject()(
           .map(_ => response.noContent)
       }
 
-      post("/projects/:projectId/copy") { copyReq: CopyProjectRequest =>
-        val id = copyReq.projectId
+      post("/projects/:id/copy") { copyReq: CopyProjectRequest =>
         (for {
           username <- extractUsername(copyReq.request)
-          project <- extractProject(id, username)
+          project <- extractProject(copyReq.id, username)
           newProject = copyReq.newProject(project, username)
           _ <- projectStore add newProject
           _ <- fileStore(project) copyTo fileStore(newProject).rootDir
@@ -104,8 +103,8 @@ class ProjectController@Inject()(
           }
       }
 
-      put("/projects/:projectId/visibility") { visibilityReq: VisibilityRequest =>
-        projectStore.setVisiblity(visibilityReq.projectId, visibilityReq.visibility)
+      put("/projects/:id/visibility") { visibilityReq: VisibilityRequest =>
+        projectStore.setVisiblity(visibilityReq.id, visibilityReq.visibility)
           .map(JSProject.apply)
           .handle {
             case e:IllegalArgumentException =>

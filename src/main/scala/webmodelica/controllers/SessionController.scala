@@ -97,8 +97,8 @@ class SessionController@Inject()(
 
   filter[JwtFilter]
     .prefix(prefix.p) {
-      post("/projects/:projectId/sessions/new") { requ: Request =>
-        val id = requ.getParam("projectId")
+      post("/projects/:id/sessions/new") { requ: Request =>
+        val id = requ.getParam("id")
         for {
           t <- extractToken(requ)
           project <- projectStore.findBy(id, t.username).flatMap(errors.notFoundExc(s"project with $id not found!"))
