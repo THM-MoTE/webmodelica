@@ -63,7 +63,7 @@ class ProjectController@Inject()(
 
   val fileStore: Project => FileStore = FileStore.fromProject(mopeConf.data.hostDirectory, _)
   val projectFiles: Project => Future[List[ModelicaPath]] = fileStore(_).files
-  val projectFileTree: Project => Future[FileTree] = fileStore(_).fileTree
+  val projectFileTree: Project => Future[FileTree] = (p:Project) => fileStore(p).fileTree(Some(p.name))
 
   filter[JwtFilter]
     .prefix(prefix.p) {

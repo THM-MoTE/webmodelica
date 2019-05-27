@@ -47,7 +47,7 @@ class SessionService @Inject()(
   override def close(deadline:Time):Future[Unit] = disconnect()
   override def packageProjectArchive(name:String): Future[java.io.File] = fsStore.packageProjectArchive(name)
   override def copyTo(destination:Path): Future[Unit] = fsStore.copyTo(destination)
-  override def fileTree: Future[FileTree] = fsStore.fileTree
+  override def fileTree(projectName:Option[String]=None): Future[FileTree] = fsStore.fileTree(projectName)
   override def findByPath(p:Path): Future[Option[ModelicaFile]] = fsStore.findByPath(p)
 
 

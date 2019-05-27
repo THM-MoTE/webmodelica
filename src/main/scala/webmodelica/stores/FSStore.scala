@@ -65,7 +65,13 @@ class FSStore(root:Path)
     val shortener = (p:Path) => p.getFileName
     FileTree.generate(fileFilter, mapper, shortener)(_)
   }
-  override def fileTree: Future[FileTree] = Future { treeGenerator(root) }
+  override def fileTree(projectName:Option[String]=None): Future[FileTree] = Future {
+    val tree = treeGenerator(root)
+    projectName match {
+      case Some(name) => tree.rename(name)
+      case None => tree
+    }
+  }
 
   override def findByPath(p:Path): Future[Option[ModelicaFile]] = Future {
     val path = root.resolve(p)

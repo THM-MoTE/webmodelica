@@ -16,17 +16,20 @@ sealed trait FileTree {
   def files: List[ModelicaPath]
   def isLeaf: Boolean = !isNode
   def isNode: Boolean = !isLeaf
+  def rename(name:String): FileTree
 }
 
 @JsonCodec
 case class Leaf(override val path:Path, file: ModelicaPath) extends FileTree {
   override def files: List[ModelicaPath] = List(file)
   override def isLeaf: Boolean = true
+  override def rename(name:String): FileTree = Leaf(Paths.get(name), file)
 }
 @JsonCodec
 case class Node(override val path:Path, children:List[FileTree]) extends FileTree {
   override def files: List[ModelicaPath] = children.flatMap(_.files)
   override def isNode: Boolean = true
+  override def rename(name:String): FileTree = Node(Paths.get(name), children)
 }
 
 
