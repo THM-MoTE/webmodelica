@@ -8,7 +8,9 @@
 
 package webmodelica.services
 
-import webmodelica.models.mope.requests.{Complete, ProjectDescription}
+import java.net.URI
+
+import webmodelica.models.mope.requests.{Complete, ProjectDescription, SimulateRequest}
 import webmodelica.models.mope.responses.Suggestion
 import com.google.inject.Inject
 import com.twitter.finagle.Service
@@ -24,6 +26,7 @@ import webmodelica.constants
 import java.nio.file.{Path, Paths}
 
 import better.files._
+import webmodelica.models.errors.SimulationSetupError
 
 import scala.concurrent.{Future => SFuture, Promise => SPromise}
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -42,6 +45,8 @@ class SessionService @Inject()(
   val fsStore = FileStore.fromSession(mopeConf.data.hostDirectory, session)
   val suggestionCache = new RedisCacheImpl[Seq[Suggestion]](redisConf, constants.completionCacheSuffix, _ => Future.value(None), statsReceiver)
 
+  private val modelToFileMapper = FSStore.findFileFor(fsStore.rootDir)(_)
+
   private val projDescr = ProjectDescription(fsStore.rootDir.toString)
   override val pathMapper = MopeService.pathMapper(fsStore.rootDir.toAbsolutePath, mopeConf.data.bindDirectory.resolve(fsStore.rootDir.toAbsolutePath.getFileName()))
 
@@ -59,9 +64,26 @@ class SessionService @Inject()(
   override def findByPath(p:Path): Future[Option[ModelicaFile]] = fsStore.findByPath(p)
 
 
+  override def simulate(simParam:SimulateRequest): Future[URI] = {
+    modelToFileMapper(simParam.modelName).flatMap {
+      case Some(path) =>
+        compile(path).flatMap { errors =>
+          if(errors.isEmpty) {
+            info(s"found source file for ${simParam.modelName} at ${path}")
+            super.simulate(simParam)
+          }
+          else
+            Future.exception(SimulationSetupError(s"the model ${simParam.modelName} contains compiler errors!"))
+        }
+      case None =>
+        warn(s"don't know where ${simParam.modelName} is stored.. lets hope its compiled already..")
+        super.simulate(simParam)
+    }
+  }
+
   override def complete(c:Complete): Future[Seq[Suggestion]] = {
     suggestionCache.find(c.word).flatMap {
-      case Some(s) => Future.value(s)
+      case Some(s) =>Future.value(s)
       case None =>
         super.complete(c).flatMap(suggestionCache.update(c.word, _))
     }

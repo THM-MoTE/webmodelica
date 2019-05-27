@@ -90,3 +90,15 @@ class FSStore(root:Path)
 
   override def toString:String = s"FSStore($root)"
 }
+
+object FSStore {
+  import webmodelica.constants.encoding
+  def findFileFor(root:Path)(model:String): Future[Option[Path]] = Future {
+    val pattern = s"""(?:(?:model)|(?:class))\\s+${model}""".r
+    val optionalFile = File(root)
+      .glob("**.mo")
+      .map(f => ModelicaFile(f.path, f.contentAsString(charset=encoding)))
+      .find(f => pattern.findFirstIn(f.content).isDefined)
+    optionalFile.map(_.relativePath)
+  }
+}
