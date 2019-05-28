@@ -1,3 +1,6 @@
+defaultEntryPoints = ["http"]
+logLevel = "INFO"
+
 [backends]
   #config for backend server, running at localhost:8888 when started through
   #'sbt run'

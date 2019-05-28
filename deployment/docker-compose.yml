@@ -8,8 +8,7 @@ services:
       - "9080:8080" # The Web UI (enabled by --api)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
-      - ./config/traefik.toml:/etc/traefik/traefik.toml
-      - ./config/traefik-dev.toml:/etc/traefik/traefik-dev.toml
+      - ./config/traefik-dev.toml:/etc/traefik/traefik.toml
     labels:
       - "de.thm.webmodelica.name=traefik-proxy"
     restart: on-failure

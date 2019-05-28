@@ -1,6 +1,0 @@
-defaultEntryPoints = ["http"]
-logLevel = "INFO"
-
-[file]
-watch = false
-directory = "/etc/traefik"
