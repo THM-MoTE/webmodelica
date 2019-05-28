@@ -3,8 +3,4 @@ logLevel = "INFO"
 
 [file]
 watch = false
-filename = "/etc/traefik/traefik-dev.toml"
-
-[file]
-watch = false
-filename = "/etc/traefik/traefik-prod.toml"
+directory = "/etc/traefik"
