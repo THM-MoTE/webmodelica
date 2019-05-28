@@ -7,7 +7,7 @@ logLevel = "WARN"
     [entryPoints.http.redirect]
     entryPoint = "https"
   [entryPoints.https]
-  address = ":9443"
+  address = ":443"
     [entryPoints.https.tls]
       [[entryPoints.https.tls.certificates]]
       certFile = "/etc/ssl/private/cert.pem"
