@@ -10,5 +10,5 @@ logLevel = "WARN"
   address = ":443"
     [entryPoints.https.tls]
       [[entryPoints.https.tls.certificates]]
-      certFile = "/etc/ssl/private/cert.pem"
-      keyFile = "/etc/ssl/private/server.key"
+      certFile = "/ssl/cert.pem"
+      keyFile = "/ssl/server.key"
