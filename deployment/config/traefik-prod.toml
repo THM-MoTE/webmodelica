@@ -1,0 +1,14 @@
+defaultEntryPoints = ["http", "https"]
+logLevel = "WARN"
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+    [entryPoints.http.redirect]
+    entryPoint = "https"
+  [entryPoints.https]
+  address = ":9443"
+    [entryPoints.https.tls]
+      [[entryPoints.https.tls.certificates]]
+      certFile = "/etc/ssl/private/cert.pem"
+      keyFile = "/etc/ssl/private/server.key"
