@@ -90,7 +90,7 @@ class ProjectViewCon extends Component<any, any> {
           <ListGroup.Item>
             <Form onSubmit={this.newProject.bind(this)}>
             <Form.Row className="justify-content-md-center">
-              <Col sm={10}><Form.Control placeholder="Enter project name" onChange={newProjectNameChanged} /></Col>
+              <Col sm={10}><Form.Control placeholder="Enter project name" onChange={newProjectNameChanged} required /></Col>
               <Col sm={1}><Button variant="outline-primary" type="submit"><Octicon name="plus" />New Project</Button></Col>
             </Form.Row>
             </Form>

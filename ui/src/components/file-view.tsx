@@ -113,7 +113,7 @@ class FileViewCon extends React.Component<Props, State> {
           <Form onSubmit={this.createNewFile.bind(this)}>
             <Form.Group>
               <Form.Label>Filename</Form.Label>
-              <Form.Control type="text" size="lg" placeholder="my.package.awesome-file.mo" onChange={handleFilenameChange} />
+              <Form.Control type="text" size="lg" placeholder="my.package.awesome-file.mo" onChange={handleFilenameChange} required />
             </Form.Group>
             <Form.Group controlId="formModeltype">
               <Form.Label>Type</Form.Label>
