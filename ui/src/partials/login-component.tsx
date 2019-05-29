@@ -79,7 +79,7 @@ class LoginComponentCon extends React.Component<Props, State> {
               {renderErrors(this.state.errors)}
               <ButtonGroup>
                 {this.state.providers.map(p =>
-                  (<Button variant="secondary" href={p.uri} key={p.name}>
+                  (<Button variant="secondary" href={p.uri} key={p.name} style={ {backgroundColor: p.color, borderColor: p.color} }>
                     {p.icon && (<Octicon name={p.icon}/>)}&nbsp;
                     {p.name}
                   </Button>)
