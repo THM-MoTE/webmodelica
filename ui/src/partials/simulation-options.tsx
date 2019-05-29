@@ -21,7 +21,7 @@ interface Props {
   addOption(o:Option):void
   updateOption(idx:number, o:Option):void
   deleteOption(idx:number):void
-  simulateClicked():void
+  simulateClicked(ev:any):void
 }
 interface State {
 }
@@ -29,6 +29,7 @@ interface State {
 class SimulationOptionsCon extends React.Component<Props, State> {
   constructor(p:Props) {
     super(p)
+    this.state = {}
   }
 
   private updateName(idx:number, value:string): void {
@@ -48,25 +49,25 @@ class SimulationOptionsCon extends React.Component<Props, State> {
       {this.props.options.map((opt, idx) =>  {
         const values = simulationValuesFor(opt.name)
         return (
-        <Form.Row key={idx}>
-          <Col sm={5}>
-            <Form.Control as="select" placeholder="name" value={opt.name} onChange={(ev:any) => this.updateName(idx, ev.target.value)}>
-              {availableSimulationOptions.map(o => (<option key={o.key}>{o.key}</option>))}
-            </Form.Control>
-          </Col>
-          <Col sm={6}>
-          { //if there are suggestions, provide a selector
-            !R.isEmpty(values) &&
-            (<Form.Control as="select" placeholder="value" value={opt.value.toString()} onChange={(ev: any) => this.updateValue(idx, ev.target.value)}>
-              {values.map(v => (<option key={v}>{v}</option>))}
-            </Form.Control>)
-          }
-          { //if there are no suggestions; provide a textfield
-            R.isEmpty(values) && (<Form.Control placeholder="value" value={opt.value.toString()} onChange={(ev:any) => this.updateValue(idx, ev.target.value)}/>)
-          }
-          </Col>
-          <Col sm={1}><Button variant="outline-danger" onClick={() => this.deleteOptionField(idx)}><Octicon name="x" /></Button></Col>
-        </Form.Row>
+          <Form.Row key={idx}>
+            <Col sm={5}>
+              <Form.Control as="select" placeholder="name" value={opt.name} onChange={(ev:any) => this.updateName(idx, ev.target.value)}>
+                {availableSimulationOptions.map(o => (<option key={o.key}>{o.key}</option>))}
+              </Form.Control>
+            </Col>
+            <Col sm={6}>
+            { //if there are suggestions, provide a selector
+              !R.isEmpty(values) &&
+              (<Form.Control as="select" placeholder="value" value={opt.value.toString()} onChange={(ev: any) => this.updateValue(idx, ev.target.value)}>
+                {values.map(v => (<option key={v}>{v}</option>))}
+              </Form.Control>)
+            }
+            { //if there are no suggestions; provide a textfield
+              R.isEmpty(values) && (<Form.Control placeholder="value" value={opt.value.toString()} onChange={(ev:any) => this.updateValue(idx, ev.target.value)}/>)
+            }
+            </Col>
+            <Col sm={1}><Button variant="outline-danger" onClick={() => this.deleteOptionField(idx)}><Octicon name="x" /></Button></Col>
+          </Form.Row>
         )
         })
       }

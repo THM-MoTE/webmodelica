@@ -17,30 +17,48 @@ interface Props {
   options: SimulationOption[]
   parseSimulationOptions(options:SimulationOption[]):void
 }
-type State = any
+
+interface State {
+  validated?:boolean
+}
 
 class SimulationSetupCon extends React.Component<Props, State> {
   private modelName:string = ""
 
-  private simulateClicked() {
-    this.props.parseSimulationOptions(this.props.options)
-    const opts = R.fromPairs(
-      this.props.options
-        .filter(o => !R.empty(o.name.trim()))
-        .map(o => R.pair(o.name, o.value))
-      )
-    this.props.simulate({modelName: this.modelName, options: opts})
+  constructor(p:Props) {
+    super(p)
+    this.state = {}
+  }
+
+  private simulateClicked(ev:any) {
+    const form = ev.currentTarget
+    this.setState({validated: form.checkValidity()})
+    if(this.state.validated) {
+      this.props.parseSimulationOptions(this.props.options)
+      const opts = R.fromPairs(
+        this.props.options
+          .filter(o => !R.empty(o.name.trim()))
+          .map(o => R.pair(o.name, o.value))
+        )
+      this.props.simulate({modelName: this.modelName, options: opts})
+    }
   }
 
   render() {
     const modelNameChanged = (ev:any) => this.modelName = ev.target.value
     return (<>
+      <Form validated={this.state.validated}>
       <Form.Row>
-        <Col sm={11}><Form.Control placeholder="model to simulate" onChange={modelNameChanged}/></Col>
+        <Col sm={11}>
+          <Form.Control placeholder="model to simulate" onChange={modelNameChanged} required/>
+          <Form.Control.Feedback type="invalid">
+            Provide a modelname!
+          </Form.Control.Feedback>
+        </Col>
         <Col sm={1}></Col>
       </Form.Row>
       <SimulationOptions simulateClicked={this.simulateClicked.bind(this)}/>
-
+      </Form>
       </>
     )
   }
