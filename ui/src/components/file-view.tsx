@@ -141,6 +141,7 @@ class FileViewCon extends React.Component<Props, State> {
       .then(_ => this.api.projectFileTree(this.props.project.id))
       .then(this.props.setSessionFiles)
       .then(() => this.setState({showUploadDialog: false}))
+      .catch((er: ApiError) => this.props.notifyError(`Couldn't upload archive: ${er.statusText}`))
   }
 
   private uploadDialog() {
