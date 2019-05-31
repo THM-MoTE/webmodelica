@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { AppState, Project, projectIsPrivate, projectIsPublic, privateVisibility, publicVisibility} from '../models/index'
+import { AppState, Project, projectIsPrivate, projectIsPublic, privateVisibility, publicVisibility, ApiError} from '../models/index'
 import { Action, setProjects, setProject, addProject, setSession, setProjectPreview, notifyInfo, notifyError } from '../redux/index'
 import { WmContainer } from '../partials/container'
 import { ApiClient } from '../services/api-client'
@@ -24,6 +24,7 @@ class ProjectViewCon extends Component<any, any> {
   public componentDidMount() {
     this.api.projects()
       .then(this.props.setProjects)
+      .catch((er: ApiError) => this.props.notifyError(`Couldn't fetch all projects: ${er.statusText}`))
   }
 
   private newSession(ev: any, p: Project): void {
@@ -43,13 +44,14 @@ class ProjectViewCon extends Component<any, any> {
         this.props.setProjectPreview(p, files)
         this.props.history.push(`/projects/${p.id}/preview`)
       })
+      .catch((er: ApiError) => this.props.notifyError(`Couldn't open files for preview: ${er.statusText}`))
   }
 
   private newProject(ev:any) {
     ev.preventDefault()
     this.api.newProject(this.props.username, this.newProjectName)
       .then(this.props.addProject)
-      .catch(er => this.props.notifyError(er))
+      .catch((er:ApiError) => this.props.notifyError(`Couldn't create new project: ${er.statusText}`))
   }
 
   private updateVisibility(p:Project): void {
@@ -57,6 +59,7 @@ class ProjectViewCon extends Component<any, any> {
     this.props.api.updateVisibility(p.id, newVisibility)
       .then(this.props.setProject)
       .then(() => this.props.notifyInfo(`visibility for ${p.name} changed to ${newVisibility}`))
+      .catch((er:ApiError) => this.props.notifyError(`Couldn't update visibility: ${er.statusText}`))
   }
 
   private deleteProject(p:Project): void {
@@ -64,6 +67,7 @@ class ProjectViewCon extends Component<any, any> {
     this.props.api.deleteProject(p)
       .then(() => this.props.setProjects(newProjects))
       .then(() => this.props.notifyInfo(`Project ${p.name} removed!`))
+      .catch((er: ApiError) => this.props.notifyError(`Couldn't delete project: ${er.statusText}`))
   }
 
   private renderProjectLine(p: Project) {
