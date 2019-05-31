@@ -4,7 +4,7 @@ v0.1, May 2019
 :toc: left
 :imagesdir: images
 :sectnums:
-:source-highlighter: coderay
+:source-highlighter: rouge
 
 include::sections/dependencies.adoc[]
 
