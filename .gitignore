@@ -22,3 +22,4 @@ data
 project/target
 private
 deployment/config/auth-svc.settings.yml
+doc/index.html
