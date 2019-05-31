@@ -1,0 +1,6 @@
+== (implicit) Conversions
+
+The package webmodelica.conversions contains several implicit conversions.
+There are conversions from and to TwitterFutures <=> ScalaFutures and other cases.
+If they are needed, import them: `webmodelica.conversions.futures._`
+This package contains an instance for _cats.Monad_.

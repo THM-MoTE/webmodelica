@@ -1,0 +1,31 @@
+== Deployment
+
+image::deployment.png[]
+
+Webmodelica is deployed as several docker containers orchestrated via _docker-compose_.
+The compose files are in _deployment_:
+
+[source, sh]
+----
+deployment/
+├── config/ #contains container's configuration files
+│   ├── auth-svc.settings.yml #OAuth provider configs for auth-svc
+│   ├── mope.conf #configuration for MoPE
+│   ├── traefik-dev.toml #traefik's development proxy settings
+│   └── traefik-prod.toml #traefik's production proxy settings
+├── docker-compose.prod.yml #production compose file
+└── docker-compose.yml #development compose file
+----
+
+
+=== Containers
+
+- WebmodelicaUi contains the SPA application/frontend, is built from `ui/Dockerfile`.
+- Webmodelica contains the backend, is built from `Dockerfile`.
+- MopeServer contains MoPE and OpenModelica.
+  Accesses project files on a volume thats shared between MoPE and Webmodelica.
+- RedisCache contains our redis db.
+- mongo contains our mongo db.
+- Traefik our api proxy.
+- AuthSvc our authentication service that enables Google, Facebook, Twitter, etc logins via omniauth.
+- UserSvc the user service contains user informations. Its needed by AuthSvc and we use it to store user informations.

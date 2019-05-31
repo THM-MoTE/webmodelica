@@ -1,0 +1,3 @@
+== Domain Model
+
+image::domain-model.png[]
