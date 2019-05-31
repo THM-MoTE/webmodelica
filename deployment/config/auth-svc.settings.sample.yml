@@ -1,0 +1,50 @@
+
+omniauth:
+  providers:
+    developer:
+      name: 'Developer'
+      icon: 'database'
+      color: '#666'
+    # cas3:
+    #   name: ''
+    #   color: ''
+    #   host: ''
+    #   service_validate_url: ''
+    #   uid_field: ''
+
+    # google_oauth2:
+    #   client_id: ''
+    #   client_secret: ''
+
+    # twitter:
+    #   key: ''
+    #   secret: ''
+
+    # github:
+    #   icon: ''
+    #   name: ''
+    #   key: ''
+    #   secret: ''
+
+    # facebook:
+    #   key: ''
+    #   secret: ''
+
+    # windowslive:
+    #   client_id: ''
+    #   secret: ''
+
+    # xing:
+    #   consumer_key: ''
+    #   consumer_secret: ''
+
+    # linkedin:
+    #   key: ''
+    #   secret: ''
+
+    # slack:
+    #   key: ''
+    #   secret: ''
+
+    # steam:
+    #     key: ''
