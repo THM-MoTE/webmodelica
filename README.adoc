@@ -7,18 +7,24 @@ image::doc/screenshot.png[]
 === Docker
 The backend, frontend and MoPE server are published as docker containers to https://hub.docker.com/u/thmmote[DockerHub]:
 
-
 - https://hub.docker.com/r/thmmote/webmodelica[backend]
 - https://hub.docker.com/r/thmmote/webmodelica-ui[frontend]
 - https://hub.docker.com/r/thmmote/mope-server[mope]
 
 Starting a production deployment should be as simple as:
 
+- Setup authentication providers by copying the `auth-svc.settings.sample.yml` file:
+  [source,sh]
+  ----
+  $ cp deployment/config/auth-svc.settings.sample.yml deployment/config/auth-svc.settings.yml
+  ----
+  setup your providers as needed, the *developer login* is enabled by default.
+
 - Running
-[source, sh]
-----
-$ docker-compose --project-name wm -f deployment/docker-compose.yml -f deployment/docker-compose.prod.yml up
-----
+  [source, sh]
+  ----
+  $ docker-compose --project-name wm -f deployment/docker-compose.yml -f deployment/docker-compose.prod.yml up
+  ----
 Now you can access the frontend at `localhost:80`.
 
 - Viewing the development database: You can access the database via mongoshell by logging into the corresponding mongo container:
