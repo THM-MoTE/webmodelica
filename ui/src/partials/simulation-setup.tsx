@@ -33,7 +33,7 @@ class SimulationSetupCon extends React.Component<Props, State> {
   private simulateClicked(ev:any) {
     const form = ev.currentTarget
     this.setState({validated: form.checkValidity()})
-    if(this.state.validated) {
+    if(form.checkValidity()) {
       this.props.parseSimulationOptions(this.props.options)
       const opts = R.fromPairs(
         this.props.options
