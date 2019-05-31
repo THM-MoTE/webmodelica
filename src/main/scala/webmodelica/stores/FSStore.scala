@@ -14,6 +14,7 @@ import java.nio.file.Path
 import webmodelica.models._
 import webmodelica.models.mope.requests._
 import com.twitter.util.Future
+import com.twitter.finatra.http.exceptions.NotFoundException
 
 class FSStore(root:Path)
   extends FileStore {
@@ -30,12 +31,16 @@ class FSStore(root:Path)
     Future.value(())
   }
 
-  def delete(p:Path): Future[Unit] = Future { File(root.resolve(p)).delete() }
-  def rename(oldPath:Path, newPath:Path): Future[ModelicaPath] =
-    Future {
+  def delete(p:Path): Future[Unit] = Future { File(root.resolve(p)).delete(swallowIOExceptions=true) }
+  def rename(oldPath:Path, newPath:Path): Future[ModelicaPath] = {
       val newFile = root.resolve(newPath)
-      File(root.resolve(oldPath)).renameTo(newFile.toString)
-      ModelicaPath(root.relativize(newFile))
+      val file = File(root.resolve(oldPath))
+      if(file.exists) {
+        file.renameTo(newFile.toString)
+        Future.value(ModelicaPath(root.relativize(newFile)))
+      } else {
+        Future.exception(NotFoundException(s"$oldPath not found!"))
+      }
     }
 
   override def files: Future[List[ModelicaPath]] = {

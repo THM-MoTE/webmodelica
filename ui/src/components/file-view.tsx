@@ -5,9 +5,9 @@ import Octicon from 'react-octicon'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as R from 'ramda'
-import { File, FileNode, AppState, CompilerError, Project } from '../models/index'
+import { File, FileNode, AppState, CompilerError, Project, ApiError } from '../models/index'
 import * as file from '../models/file'
-import { setSessionFiles, Action } from '../redux/index'
+import { setSessionFiles, Action, notifyError } from '../redux/index'
 import { ApiClient } from '../services/api-client';
 import { renderErrors } from '../partials/errors'
 import Dropzone from 'react-dropzone'
@@ -21,6 +21,7 @@ interface Props {
   project: Project
   activeFile?: File
   compilerErrors: CompilerError[]
+  notifyError(msg:string): Action
   setSessionFiles(f:FileNode): Action
   onFileClicked(f: File): void
   onSaveClicked(): void
@@ -93,6 +94,7 @@ class FileViewCon extends React.Component<Props, State> {
      .then(() =>
         this.props.setSessionFiles(file.removeFile(this.props.files, f) as FileNode)
       )
+      .catch((er: ApiError) => this.props.notifyError(`Couldn't delete file: ${er.statusText}`))
   }
 
   private newFileDialog() {
@@ -181,6 +183,7 @@ class FileViewCon extends React.Component<Props, State> {
           this.props.setSessionFiles(file.renameFile(this.props.files, f, newFile))
           this.setState({ fileToRename: undefined })
         })
+        .catch((er: ApiError) => this.props.notifyError(`Couldn't rename file: ${er.statusText}`))
     }
   }
 
@@ -249,7 +252,7 @@ function mapProps(state: AppState) {
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({setSessionFiles}, dispatch)
+  return bindActionCreators({ setSessionFiles, notifyError }, dispatch)
 }
 const FileView = connect(mapProps, dispatchToProps)(FileViewCon)
 export default FileView
