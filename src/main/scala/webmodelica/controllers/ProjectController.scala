@@ -80,9 +80,7 @@ class ProjectController@Inject()(
           case username if username == project.owner =>
             val newProj = Project(project)
             projectStore.add(newProj).map(_ => JSProject(newProj))
-          case _ => Future.value(response.forbidden.body(errors.ResourceUsernameError("project").getMessage))
-        }.handle {
-          case e:errors.AlreadyInUse => response.conflict(e.getMessage)
+          case _ => Future.exception(errors.ResourceUsernameError("project"))
         }
       }
 
@@ -106,9 +104,6 @@ class ProjectController@Inject()(
           _ <- projectStore add newProject
           _ <- fileStore(project) copyTo fileStore(newProject).rootDir
         } yield JSProject(newProject))
-          .handle {
-            case e:errors.AlreadyInUse => response.conflict(e.getMessage)
-          }
       }
 
       put("/projects/:id/visibility") { visibilityReq: VisibilityRequest =>
