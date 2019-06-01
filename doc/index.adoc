@@ -5,6 +5,9 @@ v0.1, May 2019
 :imagesdir: images
 :sectnums:
 :source-highlighter: rouge
+:stylesheet: foundation-potion.css
+:nofooter:
+:docinfo:
 
 include::sections/dependencies.adoc[]
 
