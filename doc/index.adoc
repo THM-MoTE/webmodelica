@@ -1,0 +1,19 @@
+= Developer Documentation
+v0.1, May 2019
+:icons: font
+:toc: left
+:imagesdir: images
+:sectnums:
+:source-highlighter: rouge
+
+include::sections/dependencies.adoc[]
+
+include::sections/architecture.adoc[]
+
+include::sections/deployment.adoc[]
+
+include::sections/domain_model.adoc[]
+
+include::sections/architecture.adoc[]
+
+include::sections/conversions.adoc[]

@@ -1,0 +1,18 @@
+== Architecture
+
+image::components.png[]
+
+CAUTION: if not otherwise specified, we are using Twitter Futures, not Scala Futures!
+
+== Redis Usage
+
+We are using redis as cache, as well as session store:
+
+* the user model is _cached_ because we need it for validating authentication tokens.
+* autocomplete suggestions are _cached_.
+* mapping session _UUIDs to its session model_ is done using redis:
+  the redis key is the session UUID and its value is the session model.
+  This removes any state from the Webmodelica backend and moves it into redis.
+  Without state, we can easily scale the backend servers.
+
+== Sessions

@@ -1,0 +1,54 @@
+== Dependencies
+
+Webmodelica is based on the following tools and libraries:
+
+=== Backend
+* Twitter's https://twitter.github.io/finatra/user-guide/[Finatra]
+  a library for HTTP-Backends.
+
+* Twitter's https://twitter.github.io/finagle/[Finagle]
+  a library for distributed systems.
+  Its the middleware that drives Finatra and enables protocol-agnostic
+  RPC-Calls based on Future's.
+  Each RPC-Call is a function: `A => Future[B]`.
+
+* Twitter's https://finagle.github.io/featherbed/doc/02-basic-usage.html[Featherbed]
+  a HTTP-Client library based on finagle.
+  It enables describing HTTP-calls with minimal overhead.
+  The communication with MoPE uses Featherbed for communicating with the HTTP-API.
+
+* https://pureconfig.github.io/[pureconfig]
+  a wrapper around Typesafe's Config library.
+  It parses a config file and generates a Scala case class.
+  In our case it reads `conf/webmodelica.conf` and creates an instance of `webmodelica.config.WMConfig`.
+
+* https://typelevel.org/cats/[scala cats]
+  functional programming library for scala.
+  Its main purpose is for nested Monad transfomers, for example: `Future[Option[A]]`.
+
+* https://scalalandio.github.io/chimney/[chimney]
+  a library for converting objects between case classes.
+  This allows easy conversion between case classes with similar shapes.
+
+* http://www.scalatest.org/at_a_glance/FlatSpec[ScalaTest]
+  testing library for scala based on Behaviour driven Development.
+  Its awesome ;).
+
+* https://www.scala-sbt.org/1.x/docs/index.html[sbt]
+  the scala build tool.
+
+
+=== Frontend
+* https://reactjs.org/[React.js]
+  the SPA framework.
+* https://www.typescriptlang.org/[TypeScript]
+* https://ramdajs.com/docs/[ramda.js]
+  a js library with functional utilities for lists, objects and maps.
+* Gitub's https://octicons.github.com/[octicons]
+  icon library similar to font awesome but from GitHub.
+  redux, react-redux
+* https://getbootstrap.com/[bootstrap]
+* https://react-bootstrap.github.io/[react-bootstrap]
+  a component library for react based on bootstrap.
+* Microsoft's https://microsoft.github.io/monaco-editor/playground.html[Monaco Editor]
+  the code editor that powers VS Code. We are using it for editing Modelica code.
