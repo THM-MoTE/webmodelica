@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Navbar, Nav, Row, Col, Container, NavDropdown } from 'react-bootstrap'
-import {Footer} from './footer'
+import { Footer } from './footer'
 import NotificationComponent from './notification'
 //@ts-ignore
 import Octicon from 'react-octicon'
@@ -11,20 +11,20 @@ import * as R from 'ramda';
 import { oc } from 'ts-optchain';
 
 interface Props {
-  title:string
-  username?:string
-  active?:string
+  title: string
+  username?: string
+  active?: string
   children: any
   notifications: Notification[]
 }
 
 class WmContainerCon extends React.Component<any, any> {
-  private readonly appName:string = "Webmodelica"
+  private readonly appName: string = "Webmodelica"
   constructor(props: any) {
     super(props)
   }
   componentDidMount() {
-    document.title = this.appName+" "+this.props.title
+    document.title = this.appName + " " + this.props.title
   }
 
   simLink() {
@@ -55,12 +55,13 @@ class WmContainerCon extends React.Component<any, any> {
       </Navbar>
       <div className="container-fluid">
         <Row><Col xs='12'>
-        {this.props.notifications.map((n: Notification, idx: number) => (<NotificationComponent key={idx} notification={n} />))}
+          {this.props.notifications.map((n: Notification, idx: number) => (<NotificationComponent key={idx} notification={n} />))}
         </Col></Row>
         <Row><Col xs='12'>
-        {this.props.children}
+          {this.props.children}
         </Col></Row>
       </div>
+      {(window.location.pathname === '/') && <Footer />}
     </>)
   }
 }
