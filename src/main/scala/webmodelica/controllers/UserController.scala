@@ -55,9 +55,6 @@ class UserController@Inject()(userStore:UserStore,
       userStore.add(user)
         .map(_ => tokenGenerator.newToken(user))
         .map(tokenResponse)
-        .handle {
-          case e:errors.AlreadyInUse => response.conflict(e.getMessage)
-        }
     }
 
     post("/users/login") { req: LoginRequest =>
@@ -68,9 +65,6 @@ class UserController@Inject()(userStore:UserStore,
         }
         .map(u => tokenGenerator.newToken(u))
         .map(tokenResponse)
-        .handle {
-          case errors.CredentialsError => response.unauthorized(errors.CredentialsError.getMessage)
-        }
     }
 
     filter[JwtFilter]

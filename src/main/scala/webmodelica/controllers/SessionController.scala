@@ -23,6 +23,7 @@ import webmodelica.services.{SessionRegistry, SessionService, TokenGenerator, To
 import webmodelica.stores.{ProjectStore, UserStore}
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.twitter.finatra.request._
+import com.twitter.finatra.http.exceptions._
 import io.scalaland.chimney.dsl._
 import java.nio.file.{Files, Path, Paths}
 import java.net.URI
@@ -100,7 +101,7 @@ class SessionController@Inject()(
   def withSession[A](id:webmodelica.UUIDStr)(fn: SessionService => Future[A]): Future[_] =
     sessionRegistry.get(id).flatMap {
       case Some(service) => fn(service)
-      case None => Future.value(response.notFound.body(s"Can't find a session for: $id"))
+      case None => Future.exception(NotFoundException(s"Can't find a session for: $id"))
     }
 
   filter[JwtFilter]
@@ -137,7 +138,7 @@ class SessionController@Inject()(
             File(p).writeByteArray(archive.data)
             service.extractArchive(p)
           }
-            .getOrElse(Future.value(response.badRequest.body("'archive' file expected!")))
+            .getOrElse(Future.exception(BadRequestException("'archive' file expected!")))
         }
       }
       delete("/sessions/:sessionId/files/:path") { req: DeleteRequest =>
@@ -168,8 +169,6 @@ class SessionController@Inject()(
             response
               .ok(SimulationResponse(new URI(location)))
               .location(location)
-          }.handle {
-            case e:errors.StepSizeCalculationError => response.badRequest(e.getMessage)
           }
         }
       }
@@ -189,10 +188,6 @@ class SessionController@Inject()(
                 val tableData = (variables("time")+:headers.map(k => variables(k)).toSeq).transpose
                 Future.value(TableFormat(name, tableData, "time"::headers))
               case results => Future.value(results)
-            }
-            .handle {
-              case SimulationNotFinished => response.conflict(SimulationNotFinished.getMessage)
-              case e:SimulationSetupError => response.badRequest(e.getMessage)
             }
         }
       }

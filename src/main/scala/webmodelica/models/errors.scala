@@ -43,7 +43,8 @@ object errors {
     override def resource:String = "Projectname"
   }
 
-  case object CredentialsError extends BRWMException {
+  case object CredentialsError extends WMException {
+    override def status: Status = Status.Unauthorized
     override def getMessage: String = "Wrong username or password!"
   }
   case class ResourceUsernameError(resourceName:String="resource") extends BRWMException {
