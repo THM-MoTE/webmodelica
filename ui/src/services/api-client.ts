@@ -8,25 +8,31 @@ function rejectError(res: Response): Promise<Response> {
   if (res.ok) return Promise.resolve(res)
   else {
     console.error("api error:", res)
-    return res.text().then(txt => Promise.reject(new ApiError(res.status, txt || res.statusText)))
+    if (R.contains("application/json", res.headers.get("Content-Type") || "")) {
+      return res.json()
+        .then(obj => Promise.reject(new ApiError(res.status, obj.errors)))
+    } else {
+      return res.text()
+        .then(txt => Promise.reject(new ApiError(res.status, [txt] || [res.statusText])))
+    }
   }
 }
 
 const authHeader = "Authorization"
 const baseApiPrefix = "/api/v1/"
-const apiPrefix = baseApiPrefix+"webmodelica/"
+const apiPrefix = baseApiPrefix + "webmodelica/"
 
-function backendUri(baseApi:string=apiPrefix): string {
+function backendUri(baseApi: string = apiPrefix): string {
   return window.location.protocol + "//" + window.location.host + baseApi
 }
 export function fetchAppInfos(): Promise<AppInfo> {
-  return fetch(backendUri()+"info", {
+  return fetch(backendUri() + "info", {
     method: 'GET',
     headers: {
       "Accept": 'application/json'
     }
   })
-  .then(res => res.json())
+    .then(res => res.json())
 }
 
 export class ApiClient {
@@ -49,7 +55,7 @@ export class ApiClient {
     return this.base + "sessions"
   }
 
-  private authUri(): string { return backendUri(baseApiPrefix)+"auths" }
+  private authUri(): string { return backendUri(baseApiPrefix) + "auths" }
 
   private updateWSToken(res: Response): Response {
     const headerOpt = res.headers.get(authHeader)
@@ -61,7 +67,7 @@ export class ApiClient {
   }
   private token(): string { return this.store.getState().authentication!.token.raw }
 
-  private withSession<A>(err:string): Promise<Session> {
+  private withSession<A>(err: string): Promise<Session> {
     const session = this.store.getState().session
     if (session) {
       return Promise.resolve(session)
@@ -70,7 +76,7 @@ export class ApiClient {
     }
   }
 
-  public projectDownloadUrl(id:string): string {
+  public projectDownloadUrl(id: string): string {
     return this.projectUri() + `/${id}/files/download`
   }
 
@@ -111,13 +117,13 @@ export class ApiClient {
       .then(res => res.json())
   }
 
-  public projectFiles(pid:string): Promise<File[]> {
-    return fetch(this.projectUri()+`/${pid}/files`,{
+  public projectFiles(pid: string): Promise<File[]> {
+    return fetch(this.projectUri() + `/${pid}/files`, {
       headers: {
         [authHeader]: this.token(),
         'Accept': 'application/json',
       },
-      })
+    })
       .then(res => res.json())
   }
 
@@ -162,37 +168,38 @@ export class ApiClient {
       .then(this.updateWSToken.bind(this))
       .then(res => res.json())
       .then((obj: any) => ({
-        ...obj, files: {name: 'project', id: 'project'}, compilerErrors: [], simulation: { options: [
-          { name: "startTime", value: 0 },
-          { name: "stopTime", value: 5 },
-          { name: "numberOfIntervals", value: 500 }
-        ],
-        data: []
+        ...obj, files: { name: 'project', id: 'project' }, compilerErrors: [], simulation: {
+          options: [
+            { name: "startTime", value: 0 },
+            { name: "stopTime", value: 5 },
+            { name: "numberOfIntervals", value: 500 }
+          ],
+          data: []
         }
       }))
   }
 
-  public deleteSession(sid:string): Promise<void> {
+  public deleteSession(sid: string): Promise<void> {
     console.log("deleting session:", sid)
-    return fetch(this.sessionUri()+`/${sid}`, {
+    return fetch(this.sessionUri() + `/${sid}`, {
       method: 'DELETE',
       headers: {
         [authHeader]: this.token(),
       }
     })
-    .then(rejectError)
-    .then(_ => undefined)
+      .then(rejectError)
+      .then(_ => undefined)
   }
 
   public deleteCurrentSession(): Promise<void> {
     const session = this.store.getState().session
-    if(session) return this.deleteSession(session.id)
+    if (session) return this.deleteSession(session.id)
     else return Promise.resolve(undefined)
   }
 
-  public copyProject(p:Project, newName?:string): Promise<Project> {
+  public copyProject(p: Project, newName?: string): Promise<Project> {
     //POST / api / v1 / projects /: projectId / copy
-    return fetch(this.projectUri()+`/${p.id}/copy`, {
+    return fetch(this.projectUri() + `/${p.id}/copy`, {
       method: 'POST',
       headers: {
         [authHeader]: this.token(),
@@ -201,12 +208,12 @@ export class ApiClient {
       },
       body: (newName) ? JSON.stringify({ name: newName }) : undefined
     })
-    .then(rejectError)
-    .then(this.updateWSToken.bind(this))
-    .then(res => res.json())
+      .then(rejectError)
+      .then(this.updateWSToken.bind(this))
+      .then(res => res.json())
   }
 
-  public deleteProject(p:Project | string): Promise<void> {
+  public deleteProject(p: Project | string): Promise<void> {
     const id = (typeof p == "string") ? p : p.id
     return fetch(this.projectUri() + `/${id}`, {
       method: 'DELETE',
@@ -214,24 +221,24 @@ export class ApiClient {
         [authHeader]: this.token(),
       }
     })
-    .then(rejectError)
-    .then(this.updateWSToken.bind(this))
-    .then(_ => undefined)
+      .then(rejectError)
+      .then(this.updateWSToken.bind(this))
+      .then(_ => undefined)
   }
 
-  public updateVisibility(pId:string, visibility:string): Promise<Project> {
-    return fetch(this.projectUri()+`/${pId}/visibility`, {
+  public updateVisibility(pId: string, visibility: string): Promise<Project> {
+    return fetch(this.projectUri() + `/${pId}/visibility`, {
       method: 'PUT',
       headers: {
         [authHeader]: this.token(),
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      body: JSON.stringify({visibility})
+      body: JSON.stringify({ visibility })
     })
-    .then(rejectError)
-    .then(this.updateWSToken.bind(this))
-    .then(res => res.json())
+      .then(rejectError)
+      .then(this.updateWSToken.bind(this))
+      .then(res => res.json())
   }
 
   public compile(file: File): Promise<CompilerError[]> {
@@ -273,9 +280,9 @@ export class ApiClient {
     }
   }
 
-  public deleteFile(file:File): Promise<void> {
+  public deleteFile(file: File): Promise<void> {
     return this.withSession("can't delete a file if there is no session!")
-      .then(session =>  {
+      .then(session => {
         const url = new URL(this.sessionUri() + `/${session.id}/files/${encodeURIComponent(file.relativePath)}`)
         return fetch(url.toString(), {
           method: 'DELETE',
@@ -286,10 +293,10 @@ export class ApiClient {
       })
       .then(rejectError)
       .then(this.updateWSToken.bind(this))
-      .then(_ => {})
+      .then(_ => { })
   }
 
-  public getFile(project:string|Project, path:string): Promise<File> {
+  public getFile(project: string | Project, path: string): Promise<File> {
     const pid = (typeof project === "string") ? project : project.id
     return this.withSession("can't fetch file without session!")
       .then(session => {
@@ -306,10 +313,10 @@ export class ApiClient {
       .then(res => res.json())
   }
 
-  public renameFile(file:File, name:string): Promise<File> {
+  public renameFile(file: File, name: string): Promise<File> {
     return this.withSession("can't rename a file if there is no session!")
       .then(session => {
-        const data = {oldPath: file.relativePath, newPath: name}
+        const data = { oldPath: file.relativePath, newPath: name }
         return fetch(this.sessionUri() + `/${session.id}/files/rename`, {
           method: 'PUT',
           headers: {
@@ -325,7 +332,7 @@ export class ApiClient {
       .then(res => res.json())
   }
 
-  public uploadArchive(f:any): Promise<File[]> {
+  public uploadArchive(f: any): Promise<File[]> {
     return this.withSession("can't upload archive if there is no session!")
       .then(session => {
         const data = new FormData()
@@ -344,7 +351,7 @@ export class ApiClient {
       .then(res => res.json())
   }
 
-  public simulate(r:SimulateRequest): Promise<string> {
+  public simulate(r: SimulateRequest): Promise<string> {
     const session = this.store.getState().session
     if (session) {
       return fetch(this.sessionUri() + `/${session.id}/simulate`, {
@@ -386,7 +393,7 @@ export class ApiClient {
   public autocomplete(c: Complete): Promise<Suggestion[]> {
     return this.withSession("can't complete without a session")
       .then(session =>
-        fetch(this.sessionUri()+`/${session.id}/complete`, {
+        fetch(this.sessionUri() + `/${session.id}/complete`, {
           method: 'POST',
           headers: {
             [authHeader]: this.token(),
@@ -399,6 +406,6 @@ export class ApiClient {
       .then(rejectError)
       .then(this.updateWSToken.bind(this))
       .then(res => res.json())
-      .then(lst => lst.map((s:Suggestion) => ({ ...s, kind: s.kind.toLowerCase()})))
+      .then(lst => lst.map((s: Suggestion) => ({ ...s, kind: s.kind.toLowerCase() })))
   }
 }

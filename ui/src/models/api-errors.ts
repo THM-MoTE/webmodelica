@@ -1,21 +1,23 @@
 
 export class ApiError {
+  public readonly statusText: string
+
   constructor(
     readonly code: number,
-    readonly statusText: string) {
-
+    readonly errors: string[]) {
+    this.statusText = errors.join("\n")
   }
 
-  isClientError():boolean {
+  isClientError(): boolean {
     return this.code >= 400 && this.code < 500;
   }
-  isNotFound():boolean {
+  isNotFound(): boolean {
     return this.code == 404;
   }
-  isBadRequest():boolean {
+  isBadRequest(): boolean {
     return this.code == 400;
   }
-  isSevere():boolean {
+  isSevere(): boolean {
     return this.code >= 500;
   }
 }
