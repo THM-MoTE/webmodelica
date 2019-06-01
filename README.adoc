@@ -4,7 +4,7 @@ A web-based Modelica-Toolbox.
 
 image::doc/screenshot.png[]
 
-=== Docker
+== Docker
 The backend, frontend and MoPE server are published as docker containers to https://hub.docker.com/u/thmmote[DockerHub]:
 
 - https://hub.docker.com/r/thmmote/webmodelica[backend]
@@ -19,7 +19,7 @@ Starting a production deployment should be as simple as:
 ----
 $ cp deployment/config/auth-svc.settings.sample.yml deployment/config/auth-svc.settings.yml
 ----
- 
+
 setup your providers as needed, the *developer login* is enabled by default.
 
 - Running
@@ -40,7 +40,10 @@ $ docker container exec -it deployment_mongo_1 mongo wm-dev
 ----
 
 
-=== Developer Documentation
+== Developer Documentation
+
+TIP: setting up a development environment is described here:
+      link:doc/sections/dependencies.adoc[Development Setup]
 
 The developer documentation is available in _doc/_.
 You can generate a html file:

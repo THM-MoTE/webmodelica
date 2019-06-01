@@ -1,4 +1,19 @@
-== Dependencies
+== Setup
+
+Setting up a development machine requires a few steps:
+
+* first install the required software:
+  - docker and docker-compose
+  - node and npm
+  - sbt
+  - a TypeScript editor (e.g.: VS Code)
+  - a Scala editor (e.g.: VS Code or IntelliJ Idea)
+* start the development compose file in a separate terminal: `docker-compose -f deployment/docker-compose.yml`
+* fire up the sbt console: `sbt`
+* inside sbt, run the application: `run`
+* start the frontend dev server in a separate terminal: `cd ui && npm start`
+
+== Libraries
 
 Webmodelica is based on the following tools and libraries:
 
