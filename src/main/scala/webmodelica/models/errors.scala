@@ -19,7 +19,10 @@ object errors {
     case _ => Future.exception(NotFoundException(reason))
   }
 
-  trait WMException extends RuntimeException {
+  sealed abstract class WMException extends scala.Exception {
+    //for whatever reason this must be a abstract class..
+    //guice doesn't know how to handle traits ..
+
     def status: Status = Status.InternalServerError
   }
   private[errors] trait BRWMException extends WMException {
