@@ -65,7 +65,8 @@ object errors {
   case class SimulationSetupError(reason:String) extends BRWMException {
     override def getMessage: String = reason
   }
-  case object SimulationNotFinished extends BRWMException {
+  case object SimulationNotFinished extends WMException {
+    override def status: Status = Status.Conflict
     override def getMessage: String = s"simulation not finished!"
   }
 }
