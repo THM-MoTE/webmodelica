@@ -13,6 +13,17 @@ Setting up a development machine requires a few steps:
 * inside sbt, run the application: `run`
 * start the frontend dev server in a separate terminal: `cd ui && npm start`
 
+Now you can access the application at `http://localhost:9000`.
+
+WARNING: in development mode, the traefik proxy - that is available at `localhost:9000` -
+  assumes that the backend is running at `localhost:8888` and the ui is running at `localhost:3000`.
+  Because traefik is running inside of docker, the proxy routes to the docker host address at `172.17.0.1`.
+  If your docker daemon's host address is not `172.17.0.1`, update the config in
+  link:../deployment/config/traefik-dev.toml[traefik-dev.toml].
+  Update the URL of `backends.webmodelica-backend-dev.servers.s0` and `backends.webmodelica-ui-dev.servers.s0`.
+  That's the case when running docker on OSX.
+  PLEASE DON'T COMMIT THIS CHANGE!
+
 == Libraries
 
 Webmodelica is based on the following tools and libraries:
