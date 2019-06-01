@@ -9,7 +9,8 @@
 package webmodelica.models
 
 import com.google.common.net.MediaType
-import com.twitter.finatra.http.exceptions.NotFoundException
+import com.twitter.finagle.http.Status
+import com.twitter.finatra.http.exceptions._
 import com.twitter.util.Future
 
 object errors {
@@ -18,9 +19,17 @@ object errors {
     case _ => Future.exception(NotFoundException(reason))
   }
 
-  trait AlreadyInUse extends RuntimeException {
+  trait WMException extends RuntimeException {
+    def status: Status = Status.InternalServerError
+  }
+  private[errors] trait BRWMException extends WMException {
+    override def status: Status = Status.BadRequest
+  }
+
+  trait AlreadyInUse extends WMException {
     def resource:String
     def name:String
+    override def status: Status = Status.Conflict
     override def getMessage: String = s"$resource `$name` already assigned"
   }
 
@@ -31,18 +40,28 @@ object errors {
     override def resource:String = "Projectname"
   }
 
-  case object CredentialsError extends RuntimeException {
+  case object CredentialsError extends BRWMException {
     override def getMessage: String = "Wrong username or password!"
   }
-  case class ResourceUsernameError(resourceName:String="resource") extends RuntimeException {
+  case class ResourceUsernameError(resourceName:String="resource") extends BRWMException {
     override def getMessage: String = s"You can't create a ${resourceName} for another user!"
   }
-  case class ArchiveError(reason:String) extends RuntimeException(reason)
-  case class StepSizeCalculationError(reason:String) extends RuntimeException(reason)
-  case class MopeServiceError(reason:String) extends RuntimeException(reason)
-  case class UserServiceError(reason:String) extends RuntimeException(reason)
-  case class SimulationSetupError(reason:String) extends RuntimeException(reason)
-  case object SimulationNotFinished extends RuntimeException {
+  case class ArchiveError(reason:String) extends WMException {
+    override def getMessage: String = reason
+  }
+  case class StepSizeCalculationError(reason:String) extends BRWMException {
+    override def getMessage: String = reason
+  }
+  case class MopeServiceError(reason:String) extends WMException {
+    override def getMessage: String = reason
+  }
+  case class UserServiceError(reason:String) extends WMException {
+    override def getMessage: String = reason
+  }
+  case class SimulationSetupError(reason:String) extends BRWMException {
+    override def getMessage: String = reason
+  }
+  case object SimulationNotFinished extends BRWMException {
     override def getMessage: String = s"simulation not finished!"
   }
 }
