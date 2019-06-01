@@ -4,7 +4,7 @@ A web-based Modelica-Toolbox.
 
 image::doc/screenshot.png[]
 
-=== Docker
+== Docker
 The backend, frontend and MoPE server are published as docker containers to https://hub.docker.com/u/thmmote[DockerHub]:
 
 - https://hub.docker.com/r/thmmote/webmodelica[backend]
@@ -35,7 +35,10 @@ $ docker container exec -it deployment_mongo_1 mongo wm-dev
 ----
 
 
-=== Developer Documentation
+== Developer Documentation
+
+TIP: setting up a development environment is described here:
+      link:doc/sections/dependencies.adoc[Development Setup]
 
 The developer documentation is available in _doc/_.
 You can generate a html file:
@@ -46,4 +49,4 @@ make deps #install dependencies
 make #generate html file
 ----
 
-NOTE: you need _bundler_ to install the dependencies.
+WARNING: you need _bundler_ to install the dependencies.
