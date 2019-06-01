@@ -13,7 +13,7 @@ function rejectError(res: Response): Promise<Response> {
         .then(obj => Promise.reject(new ApiError(res.status, obj.errors)))
     } else {
       return res.text()
-        .then(txt => Promise.reject(new ApiError(res.status, [txt] || [res.statusText])))
+        .then(txt => Promise.reject(new ApiError(res.status, [txt || res.statusText])))
     }
   }
 }
