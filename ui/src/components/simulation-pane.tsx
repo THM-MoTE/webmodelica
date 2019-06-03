@@ -9,7 +9,7 @@ import Octicon from 'react-octicon'
 import { Row, Col, Button, ButtonGroup, Container as RContainer, Card, Alert } from 'react-bootstrap'
 import { renderErrors } from '../partials/errors';
 import * as R from 'ramda';
-import { Action, addSimulationData, notifyError } from '../redux/actions'
+import { Action, addSimulationData, notifyError, setBackgroundJobInfo } from '../redux/actions'
 import { AppState, Session, SimulationResult, TableFormat, SimulateRequest, SimulationState, ApiError } from '../models/index'
 import { ApiClient } from '../services/api-client'
 import { LoadingSpinner } from '../partials/loading-spinner';
@@ -19,6 +19,7 @@ interface Props {
   api: ApiClient
   session: Session
   simulationData?: SimulationData
+  setBackgroundJobInfo(running:boolean, msg?: string):Action
   addSimulationData(data:SimulationData):void
   notifyError(msg:string): void
 }
@@ -36,6 +37,7 @@ class SimulationPaneCon extends React.Component<Props, State> {
   private simulate(sr: SimulateRequest): void {
     console.log("gonna simulate: ", sr)
     this.setState({ simulating: true })
+    this.props.setBackgroundJobInfo(true, "simulating be patient..")
     this.props.api.simulate(sr)
       .then(l => {
         const url = new URL(l)
@@ -53,15 +55,18 @@ class SimulationPaneCon extends React.Component<Props, State> {
         //TODO: handle multiple simulation results
         this.props.addSimulationData({address: location, data:rs as TableFormat})
         this.setState({simulating: false})
+        this.props.setBackgroundJobInfo(false)
       })
       .catch((er: ApiError) => {
         if(er.isBadRequest()) {
           this.props.notifyError(er.statusText)
           this.setState({simulating: false})
+          this.props.setBackgroundJobInfo(false)
         } else if(er.code === 409) {
           window.setTimeout(() => this.queryResults(location), 5000)
         } else {
           console.error("don't know how to handle error:", er)
+          this.props.setBackgroundJobInfo(false)
         }
       })
   }
@@ -73,7 +78,6 @@ class SimulationPaneCon extends React.Component<Props, State> {
         <SimulationSetup api={this.props.api} simulate={this.simulate.bind(this)} />
 
         {this.props.simulationData && this.props.simulationData.data && (<SimulationPlot data={this.props.simulationData.data!} address={this.props.simulationData.address} api={this.props.api} />)}
-        <LoadingSpinner msg={"simulating be patient.."} display={this.state.simulating}/>
       </WmContainer>
     )
   }
@@ -85,7 +89,7 @@ function mapProps(state: AppState) {
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({addSimulationData, notifyError}, dispatch)
+  return bindActionCreators({ addSimulationData, notifyError, setBackgroundJobInfo}, dispatch)
 }
 
 const SimulationPane = connect(mapProps, dispatchToProps)(SimulationPaneCon)
