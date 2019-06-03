@@ -24,6 +24,29 @@ WARNING: in development mode, the traefik proxy - that is available at `localhos
   That's the case when running docker on OSX.
   PLEASE DON'T COMMIT THIS CHANGE!
 
+== Release new versions
+
+WARNING: before you can publish a new release, you need a DockerHub account and write access to the https://hub.docker.com/u/thmmote[thmmote] group!
+
+There is a script (`project/release.sh`) available for generating new releases.
+This script does the following:
+
+. write the new version into `project/version.txt`. sbt reads this file to set the version.
+. fully compiles and packages the backend through sbt into `target/universal/webmodelica-<new version>.txz`
+. fully builds the frontend into `ui/build`
+. commits and tags the `version.txt` file
+. builds both docker images for backend and frontend
+. replaces the versions in `deployment/docker-compose.prod.yml`
+. pushes the commits and tags onto GitHub
+. pushes the images onto DockerHub
+
+Usage:
+[source, sh]
+----
+$ bash scripts/release.sh <new version number>
+$ bash scripts/release.sh 0.6.5
+----
+
 == Libraries
 
 Webmodelica is based on the following tools and libraries:
