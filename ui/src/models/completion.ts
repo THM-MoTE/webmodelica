@@ -30,14 +30,14 @@ const typeMap: { [k: string]: monaco.languages.CompletionItemKind } = {
   'property': monaco.languages.CompletionItemKind.Property
 }
 
-export function toVSCodeComplete(wordAtCursor: string|undefined, s:Suggestion):monaco.languages.CompletionItem {
+export function toVSCodeComplete(wordAtCursor: string, s:Suggestion):monaco.languages.CompletionItem {
   const kind = typeMap[s.kind] || monaco.languages.CompletionItemKind.Class
-  const text = (wordAtCursor) ? s.name.substring(wordAtCursor.length-1) : s.name;
+  const text = (wordAtCursor.endsWith('.')) ? s.name.substring(wordAtCursor.length) : s.name.substring(wordAtCursor.length-1);
   return {
     label: s.name,
     insertText: text,
     kind: kind,
     documentation: s.classComment,
-    detail: s.type
+    detail: s.type || s.kind
   }
 }

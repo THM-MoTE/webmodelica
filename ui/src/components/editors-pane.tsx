@@ -60,7 +60,6 @@ export class EditorsPane extends React.Component<Props, any> {
             position: {line: position.lineNumber, column: position.column},
             word: wordAtCursor
           }
-          console.log("word below cursor: ", wordAtCursor)
           return this.props.api
             .autocomplete(c)
             .then(sugs => {
