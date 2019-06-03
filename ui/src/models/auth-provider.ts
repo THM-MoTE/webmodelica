@@ -1,7 +1,7 @@
 import * as R from 'ramda'
 
 export interface AuthProvider {
-  key: string
+  provider: string
   color?: string
   name: string
   uri: string
@@ -22,8 +22,5 @@ function findIcon(key:string, provider:any): string | undefined {
 }
 
 export function parseAuthPayload(baseUri:string, obj:any): AuthProvider[] {
-  return R.keys(obj.auths).map(k => {
-    const provider = obj.auths[k]
-    return ({ key: k, uri: baseUri+`/${String(k)}`, icon: findIcon(String(k), provider), ...provider })
-  })
+  return obj.auths.map((o:any) => ({ ...o, uri: baseUri+'/'+o.provider }))
 }

@@ -6,18 +6,19 @@ import Octicon from 'react-octicon'
 import { ApiClient } from '../services/api-client'
 import { Redirect } from 'react-router'
 import { defaultMapDispatchToProps, mapAuthenticationToProps } from '../redux'
-import { Action, updateToken } from '../redux/index'
+import { Action, updateToken, notifyError } from '../redux/index'
 import { renderErrors } from '../partials/errors'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as R from 'ramda'
-import { userIsAuthenticated, UserAuth, AuthProvider } from '../models/index';
+import { userIsAuthenticated, UserAuth, AuthProvider, ApiError } from '../models/index';
 //@ts-ignore
 import {cookies, local, db, session, subscribe} from 'brownies';
 
 interface Props {
   api: ApiClient
   history: any
+  notifyError(msg:string): void
   authentication?: UserAuth
   updateToken(token:string): void
 }
@@ -54,6 +55,7 @@ class LoginComponentCon extends React.Component<Props, State> {
       this.props.updateToken(cookies.Authentication)
     } else if(!userIsAuthenticated(this.props.authentication)) {
       this.props.api.getAuthenticationProviders().then(providers => this.setState({providers}))
+        .catch((err:ApiError) => this.props.notifyError("couldn't fetch OAuth providers: "+err.statusText))
     }
   }
 
@@ -97,7 +99,7 @@ class LoginComponentCon extends React.Component<Props, State> {
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({ updateToken }, dispatch)
+  return bindActionCreators({ updateToken, notifyError }, dispatch)
 }
 
 const LoginComponent = connect(mapAuthenticationToProps, dispatchToProps)(LoginComponentCon)

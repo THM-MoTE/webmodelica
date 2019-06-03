@@ -89,7 +89,7 @@ export class ApiClient {
     return fetch(this.authUri())
       .then(rejectError)
       .then(res => res.json())
-      .then(R.curry(parseAuthPayload)(this.authUri()))
+      .then((obj:any) => parseAuthPayload(this.authUri(), obj))
   }
 
   public login(user: string, pw: string): Promise<TokenWrapper> {
