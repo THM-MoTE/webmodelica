@@ -16,7 +16,8 @@ export enum ActionTypes {
   AddSimulationData,
   SetProjectPreview,
   NewNotification,
-  RemoveNotifications
+  RemoveNotifications,
+  SetBackgroundJobInfo
 }
 
 export interface Action {
@@ -42,3 +43,4 @@ export const notifyInfo = (msg:string) => addNotification({type: NotificationTyp
 export const notifyError = (msg:string) => addNotification({type: NotificationType.Error, message: msg})
 export const notifyWarning = (msg:string) => addNotification({type: NotificationType.Warning, message: msg})
 export const removeNotifications = (n: Notification[]) => ({ type: ActionTypes.RemoveNotifications, payload: n })
+export const setBackgroundJobInfo = (running: boolean, msg: string | undefined) => ({ type: ActionTypes.SetBackgroundJobInfo, payload: { message: msg, running: running}})

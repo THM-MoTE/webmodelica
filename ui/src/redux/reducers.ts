@@ -1,4 +1,4 @@
-import { initialState, AppState, Session, SimulationOption, SimulationData, ProjectPreviewState, Notification } from '../models/state'
+import { initialState, AppState, Session, SimulationOption, SimulationData, ProjectPreviewState, Notification, BackgroundJobInfo } from '../models/state'
 import { Project } from '../models/project'
 import { File, FileNode, setId } from '../models/file'
 import { Action, ActionTypes } from './actions'
@@ -70,6 +70,8 @@ const reducerMap = {
     R.assoc("notifications", R.append(data, state.notifications), state),
   [ActionTypes.RemoveNotifications.toString()]: (state: AppState, data: Notification[]) =>
     R.assoc("notifications", state.notifications.filter(n => !R.contains(n, data)), state),
+  [ActionTypes.SetBackgroundJobInfo.toString()]: (state: AppState, info:BackgroundJobInfo) =>
+    R.assoc('jobInfo', info, state),
 }
 
 export function rootReducer(state: AppState = initialState(), action: Action): AppState {

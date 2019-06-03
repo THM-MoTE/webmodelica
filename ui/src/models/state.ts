@@ -42,6 +42,13 @@ export interface ProjectPreviewState {
   files: FilePath[]
 }
 
+//indicates that a background job (e.g.: ajax call) is running and that the
+//loading overlay should be displayed
+export interface BackgroundJobInfo {
+  running: boolean
+  message?: string
+}
+
 export enum NotificationType {
   Info,
   Warning,
@@ -59,6 +66,7 @@ export interface AppState {
   projectPreview?: ProjectPreviewState
   session?: Session
   notifications: Notification[]
+  jobInfo: BackgroundJobInfo
 }
 
 export function initialState(): AppState {
@@ -66,7 +74,8 @@ export function initialState(): AppState {
     authentication: undefined,
     projects: [],
     session: undefined,
-    notifications: []
+    notifications: [],
+    jobInfo: {running: false}
   }
 }
 export function userIsAuthenticated(auth?:UserAuth):boolean {
