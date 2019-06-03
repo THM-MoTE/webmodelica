@@ -30,23 +30,26 @@ class ProjectViewCon extends Component<any, any> {
 
   private newSession(ev: any, p: Project): void {
     withOverlay(this.props.setBackgroundJobInfo, "opening project ...")(
-    this.api.newSession(p)
-      .then(s => {
-        this.props.setSession(s)
-        return s
-      })
-      .then(s => this.props.history.push("/session/" + s.id)))
+      this.api.newSession(p)
+        .then(s => {
+          this.props.setSession(s)
+          return s
+        })
+        .then(s => this.props.history.push("/session/" + s.id))
+    )
     ev.preventDefault()
   }
 
   private previewProject(ev: any, p:Project): void {
     ev.preventDefault()
-    this.api.projectFiles(p.id)
-      .then(files => {
-        this.props.setProjectPreview(p, files)
-        this.props.history.push(`/projects/${p.id}/preview`)
-      })
-      .catch((er: ApiError) => this.props.notifyError(`Couldn't open files for preview: ${er.statusText}`))
+    withOverlay(this.props.setBackgroundJobInfo, "opening project ...")(
+      this.api.projectFiles(p.id)
+        .then(files => {
+          this.props.setProjectPreview(p, files)
+          this.props.history.push(`/projects/${p.id}/preview`)
+        })
+        .catch((er: ApiError) => this.props.notifyError(`Couldn't open files for preview: ${er.statusText}`))
+    )
   }
 
   private newProject(ev:any) {
