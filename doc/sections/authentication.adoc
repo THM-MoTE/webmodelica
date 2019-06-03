@@ -1,0 +1,5 @@
+== Authentication flow
+
+image:authentication-flow.png[]
+
+Because we are using an external service for authentication, the auhtentication flow needs special attention.

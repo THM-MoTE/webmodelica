@@ -15,8 +15,12 @@ include::sections/architecture.adoc[]
 
 include::sections/deployment.adoc[]
 
+include::sections/authentication.adoc[]
+
 include::sections/domain_model.adoc[]
 
-include::sections/architecture.adoc[]
-
 include::sections/conversions.adoc[]
+
+== TBD
+* project path mapper
+* authentication flow
