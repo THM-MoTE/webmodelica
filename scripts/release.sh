@@ -27,14 +27,15 @@ docker build -t $backendImage:$version .
 echo "==> Generating frontend image.."
 cd ui && docker build -t $frontendImage:$version . && cd ..
 
-echo "==> pushing to remotes.."
-git push origin master
-git push origin --tags
+echo "==> pushing to dockerhub.."
 docker push $backendImage:$version
 docker push $frontendImage:$version
 
 echo "==> updating compose file.."
 sed -iE "s/thmmote\/webmodelica:[0-9].[0-9].[0-9]/thmmote\/webmodelica:$version/" deployment/docker-compose.prod.yml
 sed -iE "s/thmmote\/webmodelica-ui:[0-9].[0-9].[0-9]/thmmote\/webmodelica-ui:$version/" deployment/docker-compose.prod.yml
+
+echo "==> pushing to github.."
 git commit deployment/*.yml -m "use new container versions"
 git push origin master
+git push origin --tags
