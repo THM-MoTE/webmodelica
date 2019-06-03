@@ -22,8 +22,8 @@ function findIcon(key:string, provider:any): string | undefined {
 }
 
 export function parseAuthPayload(baseUri:string, obj:any): AuthProvider[] {
-  return R.keys(obj.providers).map(k => {
-    const provider = obj.providers[k]
+  return R.keys(obj.auths).map(k => {
+    const provider = obj.auths[k]
     return ({ key: k, uri: baseUri+`/${String(k)}`, icon: findIcon(String(k), provider), ...provider })
   })
 }

@@ -60,7 +60,7 @@ services:
       - "traefik.port=3000"
       - "de.thm.webmodelica.name=webmodelica-user-svc"
   auth-svc:
-    image: thmmote/webmodelica-auth-svc:0.0.2
+    image: thmmote/webmodelica-auth-svc:0.0.3
     restart: on-failure
     ports:
       - 9013:3000
