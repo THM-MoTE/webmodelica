@@ -20,9 +20,3 @@ include::sections/domain_model.adoc[]
 include::sections/architecture.adoc[]
 
 include::sections/conversions.adoc[]
-
-
-=== TBC
-* release script
-* treafik dev proxy including configs
-* example for chimney
