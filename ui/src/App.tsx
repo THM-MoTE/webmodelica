@@ -51,6 +51,7 @@ function AuthenticatedRoute(obj: any) {
   )
 }
 
+/** Main application wiring that setups ReactRouter and the redux store. */
 class App extends Component {
   render() {
     return (

@@ -19,12 +19,14 @@ function extractWord(model: monaco.editor.ITextModel, position: monaco.Position)
   return (matches) ? R.last(matches) : undefined
 }
 
+/** the monaco editor wrapped inside of a react component. */
 export class EditorsPane extends React.Component<Props, any> {
 
   static editorName: string = "monaco-editor"
   static monacoEditor?: monaco.editor.IStandaloneCodeEditor = undefined
 
   componentDidMount() {
+    //make sure we have only 1 instance of MonacoEditor regardless of how many EditorsPane's are created
     if (!EditorsPane.monacoEditor) {
       EditorsPane.monacoEditor = monaco.editor.create(document.getElementById(EditorsPane.editorName) as HTMLElement, {
         value: "your editor for modelica code!",

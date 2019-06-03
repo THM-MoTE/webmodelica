@@ -101,6 +101,7 @@ const treeStyle = {
 }
 
 
+/** the TreeView left of editor below the Action buttons. */
 export class TreeViewCon extends React.Component<Props,State> {
 
   constructor(p:Props) {

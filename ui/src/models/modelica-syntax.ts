@@ -1,3 +1,6 @@
+/** modelica tokenizer for the monaco editor.
+ * see: https://microsoft.github.io/monaco-editor/monarch.html
+*/
 let ModelicaTokenizer = {
   keywords: [
     "algorithm", "and", "annotation", "assert", "block", "break", "class", "connect", "connector", "constant", "constrainedby", "der", "discrete", "each",

@@ -50,6 +50,8 @@ function deltaDecorations(openedFile: File, errors: CompilerError[]): monaco.edi
     }))
 }
 
+
+/** The session pane, displayed at `session/:sessionId` */
 class SessionPaneCon extends React.Component<Props, State> {
   private readonly api: ApiClient
 

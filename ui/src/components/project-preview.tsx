@@ -22,6 +22,7 @@ interface State {
   projectToCopy?: Project
 }
 
+/** The project preview pane, displayed at `projects/:projectId/preview` */
 class ProjectPreviewCon extends Component<Props, State> {
 
   constructor(p:Props) {

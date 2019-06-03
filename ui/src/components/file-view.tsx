@@ -35,6 +35,7 @@ interface State {
   errors: string[]
 }
 
+/** the view left of the editor containing the Action buttons (save file, new file, compile, ...) & FileTree. */
 class FileViewCon extends React.Component<Props, State> {
   private newFilename?: string = undefined
 

@@ -19,6 +19,13 @@ interface Props {
   notifications: Notification[]
 }
 
+/** Application wrapper, its a wrapper for the whole page and contains from top to bottom:
+ * - the navbar
+ * - the notifications area
+ * - the actual component as children
+ * - the loading overlay
+ * - the optional footer, only displayed on landing page
+*/
 class WmContainerCon extends React.Component<any, any> {
   private readonly appName: string = "Webmodelica"
   constructor(props: any) {

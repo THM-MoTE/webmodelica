@@ -12,6 +12,8 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as R from 'ramda'
 
+
+/** The project view displayed at `/projects`. */
 class ProjectViewCon extends Component<any, any> {
   private api: ApiClient
   private newProjectName: string

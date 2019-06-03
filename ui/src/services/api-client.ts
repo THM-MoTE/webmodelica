@@ -4,6 +4,7 @@ import { Store } from 'redux';
 import { updateToken } from '../redux/index';
 import * as R from 'ramda'
 
+/** Maps all ajax response errors to ApiError's. */
 function rejectError(res: Response): Promise<Response> {
   if (res.ok) return Promise.resolve(res)
   else {
@@ -25,6 +26,8 @@ const apiPrefix = baseApiPrefix + "webmodelica/"
 function backendUri(baseApi: string = apiPrefix): string {
   return window.location.protocol + "//" + window.location.host + baseApi
 }
+
+/** fetches app infos from '/api/v1/webmodelica/info' */
 export function fetchAppInfos(): Promise<AppInfo> {
   return fetch(backendUri() + "info", {
     method: 'GET',
@@ -35,6 +38,7 @@ export function fetchAppInfos(): Promise<AppInfo> {
     .then(res => res.json())
 }
 
+/** Main client for commmunicating with the backend. */
 export class ApiClient {
   private readonly base: string
   private readonly store: Store<AppState>
@@ -57,6 +61,7 @@ export class ApiClient {
 
   private authUri(): string { return backendUri(baseApiPrefix) + "auths" }
 
+  /** updates our copy of authentication token by reading it either from cookie or header field. */
   private updateWSToken(res: Response): Response {
     const headerOpt = res.headers.get(authHeader)
     if (headerOpt) {

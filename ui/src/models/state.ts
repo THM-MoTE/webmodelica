@@ -7,6 +7,7 @@ export interface UserAuth {
   token: JwtToken
 }
 
+/** the authentication token. */
 export interface JwtToken {
   username: string
   expires: Date
@@ -14,10 +15,10 @@ export interface JwtToken {
 }
 
 export interface Session {
-  project: Project
+  project: Project //the underlying project
   id: string
-  files: FileNode,
-  openedFiles: File[]
+  files: FileNode, //filetree for FileTree component
+  openedFiles: File[] //files that are open in monaco editor
   compilerErrors: CompilerError[]
   simulation: SimulationState
 }
@@ -38,8 +39,8 @@ export interface SimulationOption {
 }
 
 export interface ProjectPreviewState {
-  project: Project
-  files: FilePath[]
+  project: Project //project to preview
+  files: FilePath[] //available files
 }
 
 //indicates that a background job (e.g.: ajax call) is running and that the
@@ -60,12 +61,13 @@ export interface Notification {
   message: string
 }
 
+/** Main applicatino state that is stored inside of redux. */
 export interface AppState {
-  authentication?: UserAuth
-  projects: Project[]
-  projectPreview?: ProjectPreviewState
-  session?: Session
-  notifications: Notification[]
+  authentication?: UserAuth //authentication informations
+  projects: Project[] //all available projects
+  projectPreview?: ProjectPreviewState //state for project preview
+  session?: Session //currently opened session
+  notifications: Notification[] //all notifications, displayed in the nofitication area of WmContainer
   jobInfo: BackgroundJobInfo
 }
 
