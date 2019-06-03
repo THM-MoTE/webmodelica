@@ -16,3 +16,10 @@ We are using redis as cache, as well as session store:
   Without state, we can easily scale the backend servers.
 
 == Sessions
+
+A session is a connection between a project, a running MoPE project instance and the project directory containing the modelica files.
+MoPE assigns each open project an ID so does Webmodelica.
+Webmodelica assigns a UUID, whereas MoPE assigns integers.
+The project directory is currently resolved as `<owner>_<project name>`.
+
+The session model is saved into redis to avoid state in Webmodelica.

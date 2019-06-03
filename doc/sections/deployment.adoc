@@ -20,12 +20,17 @@ deployment/
 
 === Containers
 
-- WebmodelicaUi contains the SPA application/frontend, is built from `ui/Dockerfile`.
-- Webmodelica contains the backend, is built from `Dockerfile`.
+- WebmodelicaUi contains the SPA application/frontend; built from `ui/Dockerfile`.
+- Webmodelica contains the backend; built from `Dockerfile`.
 - MopeServer contains MoPE and OpenModelica.
   Accesses project files on a volume thats shared between MoPE and Webmodelica.
 - RedisCache contains our redis db.
 - mongo contains our mongo db.
 - Traefik our api proxy.
-- AuthSvc our authentication service that enables Google, Facebook, Twitter, etc logins via omniauth.
+  Traefik proxies routes as follows:
+  * `/api/v1/webmodelica/*` to Webmodelica
+  * `/api/v1/users/*` to UserSvc
+  * `/api/v1/auths/*` to AuthSvc
+  * all other (`/*`) goes to WebmodelicaUi
+- AuthSvc our authentication service that enables Google, Facebook, Twitter, CAS, etc logins via omniauth.
 - UserSvc the user service contains user informations. Its needed by AuthSvc and we use it to store user informations.
