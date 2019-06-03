@@ -125,12 +125,16 @@ class SessionPaneCon extends React.Component<Props, State> {
   }
 
   render() {
+    const fileClicked = R.curry((path:string, ev:any) => {
+      ev.preventDefault()
+      this.handleFileClicked({relativePath: path, content: ""})
+    })
     const errorLine = (e: CompilerError) => (
       <div key={e.file + "-" + e.start}>
         <p><span className="errorGlyph"><Octicon name="alert" /> {e.type.toUpperCase()} </span>
           <span>L:{e.start.line} </span>
           <span>{e.message} </span>
-          <span>({e.file})</span>
+          <span>(<a href="#" onClick={fileClicked(e.file).bind(this)}>{e.file}</a>)</span>
         </p>
       </div>)
     return (
