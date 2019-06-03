@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { AppState, Project, projectIsPrivate, projectIsPublic, privateVisibility, publicVisibility, ApiError} from '../models/index'
-import { Action, setProjects, setProject, addProject, setSession, setProjectPreview, notifyInfo, notifyError } from '../redux/index'
+import { Action, setProjects, setProject, addProject, setSession, setProjectPreview, notifyInfo, notifyError, setBackgroundJobInfo } from '../redux/index'
 import { WmContainer } from '../partials/container'
+import { withOverlay } from '../partials/loading-overlay'
 import { ApiClient } from '../services/api-client'
 // import * as alerts from './partials/alerts'
 import { ListGroup, Card, Form, Button, Col, Row, Alert, ButtonGroup } from 'react-bootstrap'
@@ -28,12 +29,13 @@ class ProjectViewCon extends Component<any, any> {
   }
 
   private newSession(ev: any, p: Project): void {
+    withOverlay(this.props.setBackgroundJobInfo, "opening project ...")(
     this.api.newSession(p)
       .then(s => {
         this.props.setSession(s)
         return s
       })
-      .then(s => this.props.history.push("/session/" + s.id))
+      .then(s => this.props.history.push("/session/" + s.id)))
     ev.preventDefault()
   }
 
@@ -126,7 +128,7 @@ function mapToProps(state: AppState) {
   return { projects: state.projects, username: state.authentication!.username }
 }
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({ setProjects, setProject, addProject, setSession, setProjectPreview, notifyInfo, notifyError }, dispatch)
+  return bindActionCreators({ setProjects, setProject, addProject, setSession, setProjectPreview, notifyInfo, notifyError, setBackgroundJobInfo }, dispatch)
 }
 const ProjectView = connect(mapToProps, dispatchToProps)(ProjectViewCon)
 export default ProjectView;
