@@ -1,4 +1,4 @@
-INPUT=index.adoc
+INPUT=readme.adoc
 
 all: html
 
