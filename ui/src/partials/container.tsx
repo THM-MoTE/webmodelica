@@ -9,6 +9,7 @@ import { compose } from 'redux'
 import { AppState, Notification } from '../models/index'
 import * as R from 'ramda';
 import { oc } from 'ts-optchain';
+import { LoadingOverlay } from './loading-overlay';
 
 interface Props {
   title: string
@@ -61,6 +62,7 @@ class WmContainerCon extends React.Component<any, any> {
           {this.props.children}
         </Col></Row>
       </div>
+      <LoadingOverlay/>
       {(window.location.pathname === '/') && <Footer />}
     </>)
   }
