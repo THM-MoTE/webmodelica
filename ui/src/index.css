@@ -36,6 +36,11 @@ span.errorGlyph {
   width: 100%;
 }
 
+span.treeViewError {
+  margin-right: 0.3rem;
+  padding: 0.25rem 0.5rem;
+}
+
 .footer {
   position: absolute;
   bottom: 0;

@@ -6,10 +6,11 @@ import Octicon from 'react-octicon'
 //@ts-ignore
 import { Treebeard, decorators } from 'react-treebeard';
 import { SplitButton, Dropdown, Button } from 'react-bootstrap'
-import { AppState, FileNode, File, setId } from '../models/index'
+import { AppState, FileNode, File, setId, CompilerError } from '../models/index'
 
 interface Props {
   tree: FileNode
+  compilerErrors: CompilerError[]
   deleteFile(f:File): void
   renameFile(f:File): void
   onFileClicked(f: File): void
@@ -110,6 +111,8 @@ export class TreeViewCon extends React.Component<Props,State> {
     this.onToggle = this.onToggle.bind(this);
   }
 
+  private errorsInFile = (path: string) => this.props.compilerErrors.filter(e => e.file == path)
+
   Header = (obj: any) => {
     let {style, node} = obj
     const iconName = node.children ? 'file-directory' : 'file-text';
@@ -122,9 +125,15 @@ export class TreeViewCon extends React.Component<Props,State> {
         </Button>
       )
     } else {
+      const errorCount = this.errorsInFile(node.path).length
+      const btnTitle = (<span>
+        { (errorCount>0) && (<span className="badge badge-danger treeViewError">{errorCount}</span>) }
+        { node.path }
+        </span>
+      )
       return (
         <SplitButton
-          title={node.path}
+          title={btnTitle}
           onClick={() => this.props.onFileClicked(node.file)}
           key={node.path+"/"+node.path}
           size="sm"
@@ -168,6 +177,7 @@ export class TreeViewCon extends React.Component<Props,State> {
 function mapProps(state: AppState) {
   return {
     tree: state.session!.files,
+    compilerErrors: state.session!.compilerErrors
   }
 }
 

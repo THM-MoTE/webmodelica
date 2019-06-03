@@ -216,8 +216,6 @@ class FileViewCon extends React.Component<Props, State> {
   }
 
   render() {
-    const fileClicked = this.props.onFileClicked
-    const errorsInFile = (f: File) => this.props.compilerErrors.filter(e => e.file == f.relativePath)
     const newFileClicked = () => { this.setState({ showNewFileDialog: true }) }
     const uploadArchiveClicked = () => { this.setState({showUploadDialog: true}) }
     const renameFileClicked = (f:File) => this.setState({fileToRename: f})
