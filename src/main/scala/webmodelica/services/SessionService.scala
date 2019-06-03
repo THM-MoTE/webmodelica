@@ -96,7 +96,7 @@ class SessionService @Inject()(
       Seq("unzip", path.toAbsolutePath.toString, "-d", fsStore.rootDir.toAbsolutePath.toString).!
     }.flatMap {
       case status:Int if status==0 => this.files
-      case _ => Future.exception(errors.ArchiveError("Unzipping $path failed!"))
+      case _ => Future.exception(errors.ArchiveError(s"Unzipping $path failed!"))
     }
   }
   def locateSimulationCsv(modelName:String): Future[Option[java.io.File]] = Future {

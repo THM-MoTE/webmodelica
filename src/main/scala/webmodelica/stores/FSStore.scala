@@ -17,7 +17,8 @@ import com.twitter.util.Future
 import com.twitter.finatra.http.exceptions.NotFoundException
 
 class FSStore(root:Path)
-  extends FileStore {
+    extends FileStore
+    with com.twitter.inject.Logging {
   import webmodelica.constants.encoding
 
   mkdirs(File(root))
@@ -53,17 +54,19 @@ class FSStore(root:Path)
     )
   }
 
-  override def packageProjectArchive(name:String): Future[java.io.File] = Future {
+  override def packageProjectArchive(name:String): Future[java.io.File] = {
     import scala.sys.process._
     val outDir = File(rootDir) / ProjectDescription(rootDir.toString).outputDirectory
-    //package up all files except:
-    // - inside ${root}/out/*
-    // - ${root} itself
-    // - ${root}/out itself
-    // - all .zip archives
-    val files = File(rootDir).list(file => file!=outDir && file!=File(rootDir) && !outDir.isParentOf(file) && !file.toString.endsWith(".zip"))
-    val zipFile = File(s"/tmp/${name}.zip").zipIn(files)
-    zipFile.toJava
+    //package up all files inside of the project root, except the output directory
+    val zipFile = File(s"/tmp/${name}.zip")
+    val args = Seq("zip", "-r", s"--exclude=*${outDir.name}*", "--exclude=*.zip", zipFile.toString, "./"+rootDir.getFileName.toString)
+    //run zip in parent directory of the project
+    val process = Process(args, rootDir.getParent.toFile)
+    debug(s"running $args in ${rootDir.getParent}")
+    Future(process.!).flatMap {
+      case status if status==0 => Future.value(zipFile.toJava)
+      case code => Future.exception(errors.ArchiveError(s"Zipping $name failed, exit code: $code!"))
+    }
   }
 
   override def copyTo(destination:Path): Future[Unit] = Future {
