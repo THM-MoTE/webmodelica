@@ -24,19 +24,13 @@ interface Props {
   notifyError(msg:string): void
 }
 
-interface State {
-  simulating:boolean
-}
-
-class SimulationPaneCon extends React.Component<Props, State> {
+class SimulationPaneCon extends React.Component<Props, any> {
   constructor(p: Props) {
     super(p)
-    this.state = {simulating: false}
   }
 
   private simulate(sr: SimulateRequest): void {
     console.log("gonna simulate: ", sr)
-    this.setState({ simulating: true })
     this.props.setBackgroundJobInfo(true, "simulating be patient..")
     this.props.api.simulate(sr)
       .then(l => {
@@ -54,13 +48,11 @@ class SimulationPaneCon extends React.Component<Props, State> {
       .then(rs => {
         //TODO: handle multiple simulation results
         this.props.addSimulationData({address: location, data:rs as TableFormat})
-        this.setState({simulating: false})
         this.props.setBackgroundJobInfo(false)
       })
       .catch((er: ApiError) => {
         if(er.isBadRequest()) {
           this.props.notifyError(er.statusText)
-          this.setState({simulating: false})
           this.props.setBackgroundJobInfo(false)
         } else if(er.code === 409) {
           window.setTimeout(() => this.queryResults(location), 5000)
