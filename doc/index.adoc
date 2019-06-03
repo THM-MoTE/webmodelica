@@ -1,5 +1,5 @@
-= Developer Documentation
-v0.1, May 2019
+= Webmodelica Developer Documentation
+:author: Nicola Justus
 :icons: font
 :toc: left
 :imagesdir: images
