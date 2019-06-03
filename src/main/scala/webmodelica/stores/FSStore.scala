@@ -59,6 +59,7 @@ class FSStore(root:Path)
     val outDir = File(rootDir) / ProjectDescription(rootDir.toString).outputDirectory
     //package up all files inside of the project root, except the output directory
     val zipFile = File(s"/tmp/${name}.zip")
+    zipFile.delete()
     val args = Seq("zip", "-r", s"--exclude=*${outDir.name}*", "--exclude=*.zip", zipFile.toString, "./"+rootDir.getFileName.toString)
     //run zip in parent directory of the project
     val process = Process(args, rootDir.getParent.toFile)
