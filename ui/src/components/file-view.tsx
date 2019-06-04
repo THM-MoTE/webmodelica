@@ -10,6 +10,7 @@ import * as file from '../models/file'
 import { setSessionFiles, Action, notifyError } from '../redux/index'
 import { ApiClient } from '../services/api-client';
 import { renderErrors } from '../partials/errors'
+import { SessionHelp } from '../partials/session-help'
 import Dropzone from 'react-dropzone'
 //@ts-ignore
 import { Treebeard, decorators } from 'react-treebeard';
@@ -31,6 +32,7 @@ interface Props {
 interface State {
   showNewFileDialog: boolean
   showUploadDialog: boolean
+  showHelpDialog: boolean
   fileToRename?: File
   errors: string[]
 }
@@ -48,7 +50,7 @@ class FileViewCon extends React.Component<Props, State> {
   constructor(props: any) {
     super(props)
     this.api = this.props.api
-    this.state = { showNewFileDialog: false, showUploadDialog: false, errors: [] }
+    this.state = { showNewFileDialog: false, showUploadDialog: false, showHelpDialog: false, errors: [] }
   }
 
   componentDidMount() {
@@ -220,8 +222,10 @@ class FileViewCon extends React.Component<Props, State> {
     const uploadArchiveClicked = () => { this.setState({showUploadDialog: true}) }
     const renameFileClicked = (f:File) => this.setState({fileToRename: f})
 
+    const helpClicked = () => this.setState({showHelpDialog: true})
+
     return (<>
-        <h5 className="text-secondary">Actions</h5>
+        <h5 className="text-secondary">Actions <Button variant='link' onClick={helpClicked}><Octicon name='question'/></Button></h5>
         <ButtonGroup vertical className="full-width">
           <Button variant="outline-success" onClick={this.props.onSaveClicked}><Octicon name="check" /> Save</Button>
           <Button variant="outline-primary" onClick={newFileClicked}><Octicon name="plus" /> New File</Button>
@@ -240,6 +244,9 @@ class FileViewCon extends React.Component<Props, State> {
       {this.newFileDialog()}
       {this.uploadDialog()}
       {this.renameDialog()}
+      <SessionHelp
+        display={this.state.showHelpDialog}
+        onCloseClicked={() => this.setState({ showHelpDialog: false })} />
     </>
     )
   }
