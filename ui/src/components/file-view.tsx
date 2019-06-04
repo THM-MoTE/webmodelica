@@ -231,6 +231,8 @@ class FileViewCon extends React.Component<Props, State> {
         </ButtonGroup>
         <h5 className="text-secondary">Files</h5>
         <TreeView
+          tree={this.props.files}
+          compilerErrors={this.props.compilerErrors}
           deleteFile={this.deleteFile.bind(this)}
           renameFile={renameFileClicked}
           onFileClicked={this.props.onFileClicked.bind(this)}

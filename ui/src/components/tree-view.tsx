@@ -177,9 +177,7 @@ export class TreeViewCon extends React.Component<Props,State> {
 
 function mapProps(state: AppState) {
   return {
-    tree: state.session!.files,
-    compilerErrors: state.session!.compilerErrors
   }
 }
 
-export const TreeView = connect(mapProps, null)(TreeViewCon)
+export const TreeView = connect(null, null)(TreeViewCon)
