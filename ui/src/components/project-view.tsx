@@ -45,7 +45,7 @@ class ProjectViewCon extends Component<any, any> {
   private previewProject(ev: any, p:Project): void {
     ev.preventDefault()
     withOverlay(this.props.setBackgroundJobInfo, "opening project ...")(
-      this.api.projectFiles(p.id)
+      this.api.projectFileTree(p.id)
         .then(files => {
           this.props.setProjectPreview(p, files)
           this.props.history.push(`/projects/${p.id}/preview`)

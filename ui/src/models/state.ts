@@ -40,7 +40,7 @@ export interface SimulationOption {
 
 export interface ProjectPreviewState {
   project: Project //project to preview
-  files: FilePath[] //available files
+  files: FileNode //filetree for FileTree component
 }
 
 //indicates that a background job (e.g.: ajax call) is running and that the

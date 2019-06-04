@@ -37,7 +37,7 @@ export const deleteOption = (idx: number) => ({type: ActionTypes.DeleteSimulatio
 export const setSessionFiles = (files:FileNode) => ({type: ActionTypes.SetSessionFiles, payload: files})
 export const addSimulationData = (data: SimulationData) => ({type: ActionTypes.AddSimulationData, payload: data})
 export const parseSimulationOptions = (pl: SimulationOption[]) => ({type: ActionTypes.ParseSimulationOptions, payload: pl})
-export const setProjectPreview = (p: Project, files: []) => ({ type: ActionTypes.SetProjectPreview, payload: {project:p, files:files}})
+export const setProjectPreview = (p: Project, files: FileNode) => ({ type: ActionTypes.SetProjectPreview, payload: {project:p, files:files}})
 export const addNotification = (n:Notification) => ({type: ActionTypes.NewNotification, payload: n})
 export const notifyInfo = (msg:string) => addNotification({type: NotificationType.Info, message: msg})
 export const notifyError = (msg:string) => addNotification({type: NotificationType.Error, message: msg})

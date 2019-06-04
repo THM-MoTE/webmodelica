@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { EditorsPane } from './index';
+import { EditorsPane, TreeView } from './index';
 import { AppState, Project, projectIsPrivate, projectIsPublic, File, FilePath, ProjectPreviewState } from '../models/index'
 import { Action, setProjectPreview } from '../redux/index'
 import { WmContainer } from '../partials/container'
@@ -30,7 +30,7 @@ class ProjectPreviewCon extends Component<Props, State> {
     this.state = {}
   }
 
-  private updatePreviewFile(previewFile:FilePath): void {
+  private updatePreviewFile(previewFile:File): void {
     this.props.api.getFile(this.props.projectPreview.project, previewFile.relativePath)
       .then(previewFile => this.setState({previewFile}))
   }
@@ -45,6 +45,7 @@ class ProjectPreviewCon extends Component<Props, State> {
   render() {
     const project = this.props.projectPreview.project
     const files = this.props.projectPreview.files
+
     return (<WmContainer title={"Preview: "+project.name}>
     <Row>
       <Col xs={2}>
@@ -52,13 +53,7 @@ class ProjectPreviewCon extends Component<Props, State> {
             <Button variant="outline-primary" onClick={() => this.copyProject()}><Octicon name="repo-clone" /> Copy Project</Button>
           <Button variant="outline-primary" href={this.props.api.projectDownloadUrl(project.id)}><Octicon name="cloud-download" /> Download Archive</Button>
         </ButtonGroup>
-        <ListGroup>
-          {files.map(file => (
-            <ListGroup.Item key={file.relativePath} onClick={() => this.updatePreviewFile(file)} action>
-              {file.relativePath}
-            </ListGroup.Item>
-          ))}
-        </ListGroup>
+        <TreeView tree={files} compilerErrors={[]} onFileClicked={this.updatePreviewFile.bind(this)} />
       </Col>
       <Col xs={10}>
           <EditorsPane
