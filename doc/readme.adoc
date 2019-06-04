@@ -75,3 +75,5 @@ include::sections/conversions.adoc[]
 == TBD
 * project path mapper
 * authentication flow
+* redux, flux
+* display UI marked components
