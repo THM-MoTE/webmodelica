@@ -6,14 +6,14 @@ import Octicon from 'react-octicon'
 //@ts-ignore
 import { Treebeard, decorators } from 'react-treebeard';
 import { SplitButton, Dropdown, Button } from 'react-bootstrap'
-import { AppState, FileNode, File, setId, CompilerError } from '../models/index'
+import { AppState, FileNode, File, FilePath, setId, CompilerError } from '../models/index'
 
 interface Props {
   tree: FileNode
   compilerErrors: CompilerError[]
-  deleteFile(f:File): void
-  renameFile(f:File): void
-  onFileClicked(f: File): void
+  onFileClicked: (f: File) => void
+  deleteFile?: (f:File) => void
+  renameFile?: (f: File) => void
 }
 
 interface State {
@@ -140,8 +140,8 @@ export class TreeViewCon extends React.Component<Props,State> {
           size="sm"
           id={`file-view-dropdown-${node.name}`}
           variant="link">
-          <Dropdown.Item className="text-warning" onClick={() => this.props.renameFile(node.file)}><Octicon name="pencil" /> Rename</Dropdown.Item>
-          <Dropdown.Item className="text-danger" onClick={() => this.props.deleteFile(node.file)}><Octicon name="x" /> Delete</Dropdown.Item>
+          {this.props.renameFile && <Dropdown.Item className="text-warning" onClick={() => this.props.renameFile!(node.file)}><Octicon name="pencil" /> Rename</Dropdown.Item>}
+          {this.props.renameFile && <Dropdown.Item className="text-danger" onClick={() => this.props.deleteFile!(node.file)}><Octicon name="x" /> Delete</Dropdown.Item>}
         </SplitButton>
       );
     }
