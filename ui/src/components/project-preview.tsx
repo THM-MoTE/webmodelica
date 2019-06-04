@@ -60,7 +60,7 @@ class ProjectPreviewCon extends Component<Props, State> {
           ))}
         </ListGroup>
       </Col>
-      <Col>
+      <Col xs={10}>
           <EditorsPane
             file={this.state.previewFile}
             api={this.props.api}
