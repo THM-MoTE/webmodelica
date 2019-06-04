@@ -53,6 +53,7 @@ class ProjectPreviewCon extends Component<Props, State> {
             <Button variant="outline-primary" onClick={() => this.copyProject()}><Octicon name="repo-clone" /> Copy Project</Button>
           <Button variant="outline-primary" href={this.props.api.projectDownloadUrl(project.id)}><Octicon name="cloud-download" /> Download Archive</Button>
         </ButtonGroup>
+        <h5 className="text-secondary">Files</h5>
         <TreeView tree={files} compilerErrors={[]} onFileClicked={this.updatePreviewFile.bind(this)} />
       </Col>
       <Col xs={10}>
