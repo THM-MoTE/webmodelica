@@ -114,13 +114,14 @@ export class TreeViewCon extends React.Component<Props,State> {
   private errorsInFile = (path: string) => this.props.compilerErrors.filter(e => e.file == path)
 
   Header = (obj: any) => {
-    let {style, node} = obj
+    const {style, node} = obj
     const iconName = node.children ? 'file-directory' : 'file-text';
-    const iconStyle = { marginRight: '5px' };
 
     if(node.children) {
+      //if directory doesn't contain children; set text color=grey
+      const btnClass = (node.children.length<=0) ? 'text-secondary' : undefined
       return (
-        <Button key={node.path+"/"+node.path} variant="link">
+        <Button key={node.path} variant='link' className={btnClass}>
           <Octicon name={iconName} /> {node.path}
         </Button>
       )
