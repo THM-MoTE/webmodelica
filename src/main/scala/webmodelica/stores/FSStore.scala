@@ -34,11 +34,13 @@ class FSStore(root:Path)
 
   def delete(p:Path): Future[Unit] = Future { File(root.resolve(p)).delete(swallowIOExceptions=true) }
   def rename(oldPath:Path, newPath:Path): Future[ModelicaPath] = {
-      val newFile = root.resolve(newPath)
+      val newFile = File(root.resolve(newPath))
       val file = File(root.resolve(oldPath))
-      if(file.exists) {
+      if(file.exists && !newFile.exists) {
         file.renameTo(newFile.toString)
         Future.value(ModelicaPath(root.relativize(newFile)))
+      } else if (newFile.exists) {
+        Future.exception(errors.FileAlreadyInUse(newPath.toString))
       } else {
         Future.exception(NotFoundException(s"$oldPath not found!"))
       }

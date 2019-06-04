@@ -42,6 +42,9 @@ object errors {
   case class ProjectnameAlreadyInUse(override val name:String) extends AlreadyInUse {
     override def resource:String = "Projectname"
   }
+  case class FileAlreadyInUse(override val name:String) extends AlreadyInUse {
+    override def resource:String = "File"
+  }
 
   case object CredentialsError extends WMException {
     override def status: Status = Status.Unauthorized
