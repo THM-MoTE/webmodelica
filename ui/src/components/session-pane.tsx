@@ -71,7 +71,11 @@ class SessionPaneCon extends React.Component<Props, State> {
   private handleFileClicked(filePath: File): void {
     this.saveCurrentFiles()
       .then(() => this.api.getFile(this.props.session.project, filePath.relativePath))
-      .then(file => this.setState({ editingFiles: [file] }))
+      .then(file => {
+        this.setState({ editingFiles: [file] })
+        //when opening a new file; display error markers for the new file
+        this.markErrors(this.state.deltaMarkers, this.props.compilerErrors)
+      })
   }
 
   private currentFile(): File {
