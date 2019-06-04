@@ -102,6 +102,9 @@ class FSStore(root:Path)
 
 object FSStore {
   import webmodelica.constants.encoding
+  /** Searches for the file containing the given 'model' name.
+   *  Currently it traverses all files in the root directory and greps for a `model|class <modelname>` definition.
+  */
   def findFileFor(root:Path)(model:String): Future[Option[Path]] = Future {
     val pattern = s"""(?:(?:model)|(?:class))\\s+${model}""".r
     val optionalFile = File(root)

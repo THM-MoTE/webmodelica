@@ -17,6 +17,7 @@ import webmodelica.stores.UserStore
 import featherbed._
 import webmodelica.models.errors.UserServiceError
 
+/** A UserService that talks to the UserSvc. */
 class UserServiceProxy@Inject()(conf:UserServiceConf)
   extends UserStore
     with com.twitter.inject.Logging {

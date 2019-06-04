@@ -19,6 +19,8 @@ Setting up a development machine requires a few steps:
   - sbt
   - a TypeScript editor (e.g.: VS Code)
   - a Scala editor (e.g.: VS Code or IntelliJ Idea)
+* setup authentication providers as described in the repositories https://github.com/THM-MoTE/webmodelica#docker[README]:
+  `cp deployment/config/auth-svc.settings.sample.yml deployment/config/auth-svc.settings.yml`
 * start the development compose file in a separate terminal: `docker-compose -f deployment/docker-compose.yml up`
 * fire up the sbt console: `sbt`
 * inside sbt, run the application: `run`

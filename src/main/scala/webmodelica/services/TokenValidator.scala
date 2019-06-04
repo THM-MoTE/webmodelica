@@ -17,6 +17,7 @@ trait TokenValidator {
 }
 
 object TokenValidator {
+  /** Combines the 2 validators by first running 'a' and if a failes try running 'b'. */
   def combine(a:TokenValidator, b:TokenValidator): TokenValidator = new TokenValidator {
     override def decode(token: String): Future[UserToken] =
       a.decode(token).rescue {

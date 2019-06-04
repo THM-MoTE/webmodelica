@@ -35,6 +35,7 @@ case class AuthTokenPayload(user: AuthUser, exp:Long) {
       .transform
 }
 
+/** Validator for JWT tokens from AuthSvc. */
 trait AuthTokenValidator extends TokenValidator {
   import io.circe.parser
   def publicKey:PublicKey

@@ -21,6 +21,7 @@ import com.twitter.finagle.stats.StatsReceiver
 import com.google.inject.Inject
 import scala.collection.JavaConverters._
 
+/** A UserStore that caches calls to the underlying store. */
 class UserService@Inject()(redisConfig:RedisConfig, statsReceiver:StatsReceiver, underlying:UserStore)
     extends UserStore
     with com.twitter.inject.Logging {

@@ -23,6 +23,7 @@ case class UserTokenPayload(username: String)
 @JsonCodec
 case class UserToken(username:String, iat: Option[Long], exp: Long)
 
+/** Generator & Validator for our own JWT tokens. */
 class TokenGenerator(secret:String, exp:Duration=(15 minutes)) extends TokenValidator {
   import io.circe.generic.auto._
   import io.circe.parser

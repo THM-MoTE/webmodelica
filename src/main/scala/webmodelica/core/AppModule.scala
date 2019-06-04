@@ -25,6 +25,9 @@ import webmodelica.stores._
 
 import scala.concurrent.ExecutionContext
 
+/** Main application wiring.
+ * This module configures all services and dependencies for Webmodelica.
+ */
 object AppModule
   extends TwitterModule
     with webmodelica.models.DocumentWriters {
