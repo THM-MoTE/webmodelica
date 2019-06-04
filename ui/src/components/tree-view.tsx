@@ -7,6 +7,7 @@ import Octicon from 'react-octicon'
 import { Treebeard, decorators } from 'react-treebeard';
 import { SplitButton, Dropdown, Button } from 'react-bootstrap'
 import { AppState, FileNode, File, FilePath, setId, CompilerError } from '../models/index'
+import * as R from 'ramda';
 
 interface Props {
   tree: FileNode
@@ -105,10 +106,14 @@ const treeStyle = {
 /** the TreeView left of editor below the Action buttons. */
 export class TreeViewCon extends React.Component<Props,State> {
 
+  /* indicates if at least one of the props functions is defined */
+  private readonly oneSplitButtonFunctionDefined :boolean
+
   constructor(p:Props) {
     super(p)
     this.state = {}
     this.onToggle = this.onToggle.bind(this);
+    this.oneSplitButtonFunctionDefined = R.any((fn) => fn !== undefined, [this.props.renameFile, this.props.deleteFile])
   }
 
   private errorsInFile = (path: string) => this.props.compilerErrors.filter(e => e.file == path)
@@ -132,18 +137,33 @@ export class TreeViewCon extends React.Component<Props,State> {
         { node.path }
         </span>
       )
-      return (
+
+      const splitButton = () => (
         <SplitButton
           title={btnTitle}
           onClick={() => this.props.onFileClicked(node.file)}
           key={node.path+"/"+node.path}
           size="sm"
           id={`file-view-dropdown-${node.name}`}
-          variant="link">
+          variant="link"
+          >
           {this.props.renameFile && <Dropdown.Item className="text-warning" onClick={() => this.props.renameFile!(node.file)}><Octicon name="pencil" /> Rename</Dropdown.Item>}
-          {this.props.renameFile && <Dropdown.Item className="text-danger" onClick={() => this.props.deleteFile!(node.file)}><Octicon name="x" /> Delete</Dropdown.Item>}
+          {this.props.deleteFile && <Dropdown.Item className="text-danger" onClick={() => this.props.deleteFile!(node.file)}><Octicon name="x" /> Delete</Dropdown.Item>}
         </SplitButton>
-      );
+      )
+      const button = () => (
+        <Button
+          onClick={() => this.props.onFileClicked(node.file)}
+          key={node.path + "/" + node.path}
+          size="sm"
+          id={`file-view-dropdown-${node.name}`}
+          variant="link">
+            {btnTitle}
+        </Button>
+      )
+      //create a SplitButton on demand if at least one of the functions is defined; create a Button otherwise
+      //(we don't need a SplitButton if the functions aren't defined)
+      return (this.oneSplitButtonFunctionDefined) ? splitButton() : button()
     }
   };
 
