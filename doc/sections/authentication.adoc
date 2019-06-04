@@ -3,3 +3,23 @@
 image:authentication-flow.png[]
 
 Because we are using an external service for authentication, the auhtentication flow needs special attention.
+The authentication flow follows this pattern:
+
+. first the user opens the webpage, that is delivered from the ui container
+. when the user clicks on an login provider (Developer Login, Google, CAS, GitHub) traefik redirects him
+  to the AuthSvc. Notice that this *is not* the webmodelica backend!
+. the AuthSvc redirects him further to the external provider (that is: Google, CAS, GitHub ..)
+. the provider then delivers the login form and performs the actual login
+. if the login was successfull, the external provider redirects to AuthSvc
+. the AuthSvc creates the user informations in UserSvc, sets the Authentication cookie
+  and redirects to the frontend.
+. finally the frontend _authenticates using the cookie_ provided by AuthSvc to access projects on the webmodelica backend.
+
+NOTE: The preferred authentication method is through the _Authentication header_ that contains a valid JWT token.
+      This header is set by the frontend and used in each ajax call.
+      The inital login uses a cookie instead, because redirects don't allow any headers.
+
+=== Notes
+* AuthSvc refers to the `thmmote/webmodelica-auth-svc` docker image configured in the auth-svc service definition
+* UserSvc refers to the `thmmote/webmodelica-user-svc` docker image configured in the user-svc service definition
+* https://developers.google.com/identity/protocols/OAuth2WebServer#obtainingaccesstokens[OAuthProvider] is an OAuth provider: Google, GitHub, CAS
