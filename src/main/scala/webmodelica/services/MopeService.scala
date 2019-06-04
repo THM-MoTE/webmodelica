@@ -187,11 +187,16 @@ trait MopeService {
 }
 
 object MopeService {
+  /** A PathMapper that converts between 2 root directories. */
   trait PathMapper {
+    /** Strip the root directory from this path by relativizing 'p' against hostPath or bindPath depending on which one is 'p's root. */
     def relativize(p:Path): Path
     def relativize(p:String): Path = relativize(Paths.get(p))
+    /** Converts the given path to a bind path, that is: to a path inside of MoPE. */
     def toBindPath(p:Path): Path
+    /** Converts the given path to a host path, that is: to a path inside of Webmodelica. */
     def toHostPath(p:Path): Path
+    /** The project directory (normally the bindPath) as path inside of MoPE. */
     def projectDirectory: Path
   }
   def pathMapper(hostPath:Path, bindPath:Path): PathMapper = new PathMapper() {

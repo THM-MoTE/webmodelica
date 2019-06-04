@@ -4,7 +4,7 @@ image::components.png[]
 
 CAUTION: if not otherwise specified, we are using Twitter Futures, not Scala Futures!
 
-== Redis Usage
+=== Redis Usage
 
 We are using redis as cache, as well as session store:
 
@@ -15,7 +15,7 @@ We are using redis as cache, as well as session store:
   This removes any state from the Webmodelica backend and moves it into redis.
   Without state, we can easily scale the backend servers.
 
-== Sessions
+=== Sessions
 
 A session is a connection between a project, a running MoPE project instance and the project directory containing the modelica files.
 MoPE assigns each open project an ID so does Webmodelica.
@@ -23,3 +23,57 @@ Webmodelica assigns a UUID, whereas MoPE assigns integers.
 The project directory is currently resolved as `<owner>_<project name>`.
 
 The session model is saved into redis to avoid state in Webmodelica.
+
+=== File paths & shared volume
+The Webmodelica backend and MoPE container share a volume to access the project files.
+Because its a shared volume, that is mounted somewhere in the container, a path in the Webmodelica backend isn't necessarily the same as in MoPE.
+If the volume is mounted into Webmodelica at `/data` and in MoPE at `/home/openmodelica/data` the paths aren't the same:
+
+.A simple Path Example
+====
+- path as seen from Webmodelica: `[red]#/data#/tom_testProject/utils/fac.mo`
+- path as seen from MoPE: `[blue]#/home/openmodelica/data#/tom_testProject/utils/fac.mo`
+====
+
+However, for compiling modelica files, we need the absolute path to the currently open file.
+This path must be *valid for* MoPE and not for Webmodelica:
+
+.A compilation request for MoPE.
+[source, sh]
+----
+http POST mope:9001/mope/project/0/compile
+
+{ "path": "/home/openmodelica/data/tom_testProject/utils/fac.mo" } <1>
+----
+
+.The response from MoPE.
+[source, json]
+----
+[{
+  "end": {
+      "column": 2,
+      "line": 4
+  },
+  "file": "/home/openmodelica/data/tom_testProject/utils/fac.mo", <1>
+  "message": "Missing token: SEMICOLON",
+  "start": {
+      "column": 2,
+      "line": 4
+  },
+  "type": "Error"
+}]
+
+----
+
+<1> This path is known in MoPE, but not in Webmodelica. In Webmodelica it would be: `/data/tom_testProject/utils/fac.mo`.
+
+The compilation response contains paths to modelica files, that are valid in the MoPE context but *not in* Webmodelica.
+Furthermore users don't care about the absolute path.
+Users are only interested in the path starting at the project directory.
+All of this means that we need a mapping mechanism, that converts paths *between this two root directories*.
+
+The _webmodelica.services.MopeService.PathMapper_ trait in `webmodelica/services/MopeService.scala` describes such a mapper.
+
+IMPORTANT: The PathMapper needs both paths: the webmodelicas path and MoPE path.
+  These paths are configured in `webmodelica.conf` at `mope.data.host-directory` and `mope.data.bind-directory`.
+  Here the `host-directory` is the Webmodelica path and `bind-directory` is the MoPE path.
