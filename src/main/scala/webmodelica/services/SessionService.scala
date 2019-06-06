@@ -41,7 +41,7 @@ class SessionService @Inject()(
     with MopeService
   with com.twitter.inject.Logging
   with com.twitter.util.Closable {
-  override def clientProvider() = new featherbed.Client(new java.net.URL(mopeConf.address+"mope/"))
+  override def clientProvider() = new CustomFeatherbedClient(new java.net.URL(mopeConf.address+"mope/"))
   val fsStore = FileStore.fromSession(mopeConf.data.hostDirectory, session)
   val suggestionCache = new RedisCacheImpl[Seq[Suggestion]](redisConf, constants.completionCacheSuffix, _ => Future.value(None), statsReceiver)
 
