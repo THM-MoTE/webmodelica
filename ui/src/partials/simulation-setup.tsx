@@ -23,6 +23,7 @@ interface Props {
 
 interface State {
   validated?:boolean
+  modelName: string
 }
 
 const withinPackagePattern = /within\s+([\w\.]+)/m //extracts 'within a.b.c.examples'
@@ -31,11 +32,10 @@ const experimentPattern = /experiment\((.+)\)/m //extracts 'experiment([experime
 const experimentOptionsPattern = /(\w+)\s*\=\s*([\w\.\-]+)/g //extracts 'startTime = 0' from result of experimentPattern
 
 class SimulationSetupCon extends React.Component<Props, State> {
-  private modelName:string = ""
 
   constructor(p:Props) {
     super(p)
-    this.state = {}
+    this.state = {modelName: this.openedModelName() || ''}
     this.experimentOptions()
   }
 
@@ -49,7 +49,7 @@ class SimulationSetupCon extends React.Component<Props, State> {
           .filter(o => !R.empty(o.name.trim()))
           .map(o => R.pair(o.name, o.value))
         )
-      this.props.simulate({modelName: this.modelName, options: opts})
+      this.props.simulate({modelName: this.state.modelName, options: opts})
     }
   }
 
@@ -86,9 +86,7 @@ class SimulationSetupCon extends React.Component<Props, State> {
   }
 
   render() {
-    //make sure we set a model name, even if its taken from the opened file
-    this.modelName = this.openedModelName() || ''
-    const modelNameChanged = (ev:any) => this.modelName = ev.target.value
+    const modelNameChanged = (ev:any) => this.setState({modelName: ev.target.value})
     return (<>
       <Form validated={this.state.validated}>
       <Form.Row>
