@@ -7,6 +7,7 @@ import Octicon from 'react-octicon'
 import { AppState, Session, File, TableFormat, SimulateRequest, SimulationOption, availableSimulationOptions } from '../models/index'
 import { ApiClient } from '../services/api-client'
 import { Action, parseSimulationOptions } from '../redux/actions'
+import * as utils from '../utils'
 import * as R from 'ramda';
 import SimulationOptions from './simulation-options'
 import { strictEqual } from 'assert';
@@ -24,8 +25,10 @@ interface State {
   validated?:boolean
 }
 
-const withinPackagePattern = /within\s+([\w\.]+)/m
-const modelNamePattern = /(?:(?:model)|(?:class))\s+(\w+)/m
+const withinPackagePattern = /within\s+([\w\.]+)/m //extracts 'within a.b.c.examples'
+const modelNamePattern = /(?:(?:model)|(?:class))\s+(\w+)/m //extracts the model name: 'model FullModel'
+const experimentPattern = /experiment\((.+)\)/m //extracts 'experiment([experimentOptions])'
+const experimentOptionsPattern = /(\w+)\s*\=\s*([\w\.\-]+)/g //extracts 'startTime = 0' from result of experimentPattern
 
 class SimulationSetupCon extends React.Component<Props, State> {
   private modelName:string = ""
@@ -33,6 +36,7 @@ class SimulationSetupCon extends React.Component<Props, State> {
   constructor(p:Props) {
     super(p)
     this.state = {}
+    this.experimentOptions()
   }
 
   private simulateClicked(ev:any) {
@@ -49,6 +53,7 @@ class SimulationSetupCon extends React.Component<Props, State> {
     }
   }
 
+  //greps the modelname inside of the currently open file
   private openedModelName(): string|undefined {
     if (this.props.openFile) {
       const content = this.props.openFile.content
@@ -63,7 +68,26 @@ class SimulationSetupCon extends React.Component<Props, State> {
     }
   }
 
+  private experimentOptions() {
+    if(this.props.openFile) {
+      const content = this.props.openFile.content
+      const experimentMatch = experimentPattern.exec(content)
+      let optionMatch = (experimentMatch) ? experimentOptionsPattern.exec(experimentMatch[1]) : undefined
+      let parsedOptions:SimulationOption[] = []
+      while(optionMatch) {
+        const name = utils.downCaseString(optionMatch[1])
+        const value = optionMatch[2]
+        parsedOptions.push({name, value})
+        optionMatch = experimentOptionsPattern.exec(experimentMatch![1])
+      }
+      console.log("options: ", parsedOptions)
+      this.props.parseSimulationOptions(parsedOptions)
+    }
+  }
+
   render() {
+    //make sure we set a model name, even if its taken from the opened file
+    this.modelName = this.openedModelName() || ''
     const modelNameChanged = (ev:any) => this.modelName = ev.target.value
     return (<>
       <Form validated={this.state.validated}>
