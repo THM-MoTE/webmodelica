@@ -4,15 +4,17 @@ import { connect } from 'react-redux'
 import { Row, Col, Button, Form } from 'react-bootstrap'
 //@ts-ignore
 import Octicon from 'react-octicon'
-import { AppState, Session, TableFormat, SimulateRequest, SimulationOption, availableSimulationOptions } from '../models/index'
+import { AppState, Session, File, TableFormat, SimulateRequest, SimulationOption, availableSimulationOptions } from '../models/index'
 import { ApiClient } from '../services/api-client'
 import { Action, parseSimulationOptions } from '../redux/actions'
 import * as R from 'ramda';
 import SimulationOptions from './simulation-options'
 import { strictEqual } from 'assert';
+import { EditorsPane } from '../components';
 
 interface Props {
   api: ApiClient
+  openFile?: File
   simulate(sr: SimulateRequest):void
   options: SimulationOption[]
   parseSimulationOptions(options:SimulationOption[]):void
@@ -21,6 +23,9 @@ interface Props {
 interface State {
   validated?:boolean
 }
+
+const withinPackagePattern = /within\s+([\w\.]+)/m
+const modelNamePattern = /(?:(?:model)|(?:class))\s+(\w+)/m
 
 class SimulationSetupCon extends React.Component<Props, State> {
   private modelName:string = ""
@@ -44,13 +49,27 @@ class SimulationSetupCon extends React.Component<Props, State> {
     }
   }
 
+  private openedModelName(): string|undefined {
+    if (this.props.openFile) {
+      const content = this.props.openFile.content
+      const withinMatch = withinPackagePattern.exec(content)
+      const modelMatch = modelNamePattern.exec(content)
+      const withinPrefix = (withinMatch) ? withinMatch[1]+'.' : ''
+      const modelName = (modelMatch) ? withinPrefix+modelMatch[1] : ''
+      console.log("within match: ", withinMatch, "modelMatch ", modelMatch)
+      return modelName
+    } else {
+      return undefined
+    }
+  }
+
   render() {
     const modelNameChanged = (ev:any) => this.modelName = ev.target.value
     return (<>
       <Form validated={this.state.validated}>
       <Form.Row>
         <Col sm={11}>
-          <Form.Control placeholder="model to simulate" onChange={modelNameChanged} required/>
+            <Form.Control placeholder="model to simulate" value={this.openedModelName()} onChange={modelNameChanged} required/>
           <Form.Control.Feedback type="invalid">
             Provide a modelname!
           </Form.Control.Feedback>
@@ -65,7 +84,7 @@ class SimulationSetupCon extends React.Component<Props, State> {
 }
 
 function mapProps(state: AppState) {
-  return { options: state.session!.simulation.options }
+  return { options: state.session!.simulation.options, openFile: state.session!.openedFile }
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {
