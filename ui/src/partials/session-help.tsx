@@ -21,8 +21,8 @@ export class SessionHelp extends React.Component<Props, {}> {
         <Modal.Body>
           <p>We  are supporting shortcuts:</p>
           <ul>
-            <li>Strg/Cmd+Shift+B compiles the current file</li>
-            <li>Strg/Cmd+Shift+S saves the file</li>
+            <li>Ctrl/Cmd+Shift+B compiles the current file</li>
+            <li>Ctrl/Cmd+Shift+S saves the file</li>
           </ul>
         </Modal.Body>
       </Modal>
