@@ -69,7 +69,7 @@ class SimulationSetupCon extends React.Component<Props, State> {
       <Form validated={this.state.validated}>
       <Form.Row>
         <Col sm={11}>
-            <Form.Control placeholder="model to simulate" value={this.openedModelName()} onChange={modelNameChanged} required/>
+            <Form.Control placeholder="model to simulate" defaultValue={this.openedModelName()} onChange={modelNameChanged} required/>
           <Form.Control.Feedback type="invalid">
             Provide a modelname!
           </Form.Control.Feedback>
