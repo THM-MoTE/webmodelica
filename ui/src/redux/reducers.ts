@@ -13,6 +13,7 @@ const reducerMap = {
   [ActionTypes.SetSessionFiles.toString()]: (state: AppState, files: FileNode) => ({...state, session: {...state.session!, files: setId(files)}}),
   [ActionTypes.AddProject.toString()]: (state: AppState, data: Project) => ({ ...state, projects: R.prepend(data, state.projects) }),
   [ActionTypes.SetProjectPreview.toString()]: (state: AppState, data: ProjectPreviewState) => ({ ...state, projectPreview: { ...data, files: setId(data.files)} }),
+  [ActionTypes.SetOpenFile.toString()]: (state: AppState, file: File) => R.assocPath(['session', 'openedFile'], file, state),
   [ActionTypes.SetSession.toString()]: (state: AppState, session: Session) => ({ ...state, session: session }),
   [ActionTypes.UpdateWsToken.toString()]: (state: AppState, token: string) => {
     //if the token came from auth-service it has a different structure than our token

@@ -9,6 +9,7 @@ export enum ActionTypes {
   SetSession,
   UpdateWsToken,
   SetCompilerErrors,
+  SetOpenFile,
   AddSimulationOption,
   UpdateSimulationOption,
   DeleteSimulationOption,
@@ -30,6 +31,7 @@ export const addProject = (p: Project) => ({ type: ActionTypes.AddProject, paylo
 export const setProjects: (ps: Project[]) => Action = (ps: Project[]) => { return { type: ActionTypes.SetProjects, payload: ps } }
 export const setProject: (ps: Project) => Action = (ps: Project) => { return { type: ActionTypes.SetProject, payload: ps } }
 export const setSession = (s: Session) => ({ type: ActionTypes.SetSession, payload: s })
+export const setOpenFile = (f:File) => ({type: ActionTypes.SetOpenFile, payload: f})
 export const setCompilerErrors = (ers: CompilerError[]) => ({ type: ActionTypes.SetCompilerErrors, payload: ers})
 export const addOption = (o: SimulationOption) => ({ type: ActionTypes.AddSimulationOption, payload: o})
 export const updateOption = (idx: number, o: SimulationOption) => ({ type: ActionTypes.UpdateSimulationOption, payload: {idx: idx, option: o}})

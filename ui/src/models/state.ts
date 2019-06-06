@@ -18,7 +18,7 @@ export interface Session {
   project: Project //the underlying project
   id: string
   files: FileNode, //filetree for FileTree component
-  openedFiles: File[] //files that are open in monaco editor
+  openedFile?: File //file that is open in monaco editor
   compilerErrors: CompilerError[]
   simulation: SimulationState
 }
