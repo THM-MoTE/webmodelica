@@ -48,6 +48,7 @@ class SimulationPaneCon extends React.Component<Props, any> {
       .getSimulationResults(location)
       .then(rs => {
         //TODO: handle multiple simulation results
+        //save the data into local state and not redux store to avoid overflowing browser's storage size limits
         this.setState({data: {address: location, data:rs as TableFormat}})
         this.props.setBackgroundJobInfo(false)
       })
