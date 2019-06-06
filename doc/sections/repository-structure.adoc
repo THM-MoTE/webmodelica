@@ -1,0 +1,18 @@
+== Structure of this repository
+
+.The repository structure
+[source, sh]
+----
+├── conf #backend configuration files
+│   ├── logback.xml #logging config
+│   └── webmodelica.conf #backend config file
+├── deployment #deployment configs, see the 'Deployment' section
+├── doc #this documentation's sources
+├── log #generated log files
+├── private #data directories for dev mode
+├── project #sbt includes
+├── scripts #additional custom helper scripts, e.g.: the release script
+├── src #backend source files
+└── ui #frontend project
+    └── src #frontend source files
+----
