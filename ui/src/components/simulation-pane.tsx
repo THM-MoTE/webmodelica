@@ -27,6 +27,7 @@ interface Props {
 class SimulationPaneCon extends React.Component<Props, any> {
   constructor(p: Props) {
     super(p)
+    this.state = { data: undefined }
   }
 
   private simulate(sr: SimulateRequest): void {
@@ -36,7 +37,7 @@ class SimulationPaneCon extends React.Component<Props, any> {
       .then(l => {
         const url = new URL(l)
         url.host = window.location.host
-        this.props.addSimulationData({ address: url })
+        //this.props.addSimulationData({ address: url })
         this.queryResults(url)
       })
   }
@@ -47,10 +48,12 @@ class SimulationPaneCon extends React.Component<Props, any> {
       .getSimulationResults(location)
       .then(rs => {
         //TODO: handle multiple simulation results
-        this.props.addSimulationData({address: location, data:rs as TableFormat})
+        //save the data into local state and not redux store to avoid overflowing browser's storage size limits
+        this.setState({data: {address: location, data:rs as TableFormat}})
         this.props.setBackgroundJobInfo(false)
       })
       .catch((er: ApiError) => {
+        console.error("query results got error: ", er)
         if(er.isBadRequest()) {
           this.props.notifyError(er.statusText)
           this.props.setBackgroundJobInfo(false)
@@ -69,7 +72,7 @@ class SimulationPaneCon extends React.Component<Props, any> {
         <Alert variant="secondary" dismissible>Before simulating, compile your model.</Alert>
         <SimulationSetup api={this.props.api} simulate={this.simulate.bind(this)} />
 
-        {this.props.simulationData && this.props.simulationData.data && (<SimulationPlot data={this.props.simulationData.data!} address={this.props.simulationData.address} api={this.props.api} />)}
+        {this.state.data && (<SimulationPlot data={this.state.data.data!} address={this.state.data.address} api={this.props.api} />)}
       </WmContainer>
     )
   }

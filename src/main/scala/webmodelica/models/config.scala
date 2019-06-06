@@ -30,6 +30,7 @@ package config {
 
   case class MopeClientConfig(
     address: String,
+    clientResponseSize: Int,
     data: MopeDataConfig
   )
   case class MopeDataConfig(
