@@ -9,14 +9,13 @@ import { Row, Col, Button, ButtonGroup, Container as RContainer, Card } from 're
 //@ts-ignore
 import Octicon from 'react-octicon'
 import { File, FileNode, AppState, CompilerError, Session, Shortcut, cmdShiftAnd } from '../models/index'
-import { Action, setCompilerErrors, setSessionFiles, notifyInfo, notifyWarning } from '../redux/actions'
+import { Action, setCompilerErrors, setSessionFiles, notifyInfo, notifyWarning, setOpenFile } from '../redux/actions'
 import * as monaco from 'monaco-editor';
 import * as R from 'ramda'
 import { renderErrors } from '../partials/errors';
 import { LoadingSpinner } from '../partials/loading-spinner';
 
 interface State {
-  editingFiles: File[]
   deltaMarkers: any[]
   compiling:boolean
 }
@@ -24,6 +23,8 @@ interface Props {
   api: ApiClient
   session: Session
   compilerErrors: CompilerError[]
+  openedFile?: File
+  setOpenFile(f:File): Action
   setSessionFiles(f: FileNode): Action
   setCompilerErrors(ers: CompilerError[]): void
   notifyInfo(msg:string):void
@@ -58,7 +59,7 @@ class SessionPaneCon extends React.Component<Props, State> {
   constructor(props: any) {
     super(props)
     this.api = this.props.api
-    this.state = { editingFiles: [], deltaMarkers: [], compiling: false }
+    this.state = { deltaMarkers: [], compiling: false }
   }
 
   private setupShortcuts(): Shortcut[] {
@@ -70,46 +71,47 @@ class SessionPaneCon extends React.Component<Props, State> {
 
   private handleFileClicked(filePath: File): void {
     this.saveCurrentFiles()
-      .then(() => this.api.getFile(this.props.session.project, filePath.relativePath))
+        //ignore errors and fetch current file
+      .then(() => this.api.getFile(this.props.session.project, filePath.relativePath),
+        () => this.api.getFile(this.props.session.project, filePath.relativePath))
       .then(file => {
-        this.setState({ editingFiles: [file] })
+        this.props.setOpenFile(file)
         //when opening a new file; display error markers for the new file
         this.markErrors(this.state.deltaMarkers, this.props.compilerErrors)
       })
   }
 
-  private currentFile(): File {
-    return this.state.editingFiles[0]
+  private currentFile(): File|undefined {
+    return this.props.openedFile
   }
 
-  private saveCurrentFiles(): Promise<File[]> {
+  private saveCurrentFiles(): Promise<File> {
     let content = EditorsPane.monacoEditor!.getValue()
-    let files: File[] = this.currentFile() ? [{ ...this.currentFile(), content: content }] : []
-    const updatePromises = files.map((f: File) => this.api.updateFile(f))
-    return Promise.all(updatePromises)
-      .then((files) => {
-        // this.api.projectFileTree(this.props.session.project.id)
-        //   .then(this.props.setSessionFiles)
-      return files
-    })
+    const curFile = this.currentFile()
+    if(curFile) {
+      return this.api.updateFile({...curFile, content: content})
+    } else {
+      return Promise.reject('no opened file!')
+    }
   }
 
-  handleSaveClicked(): Promise<File[]> {
+  handleSaveClicked(): Promise<File> {
     return this.saveCurrentFiles()
-      .then((files) => {
-        this.setState({ editingFiles: files })
+      .then(file => {
+        this.props.setOpenFile(file)
         this.props.notifyInfo("all files saved!")
-        return files
+        return file
       })
   }
   handleCompileClicked() {
-    if(R.isEmpty(this.state.editingFiles)) {
+    if(!this.currentFile()) {
       this.props.notifyWarning("Please open a file before compilation!");
     } else {
       console.log("compiling .. ")
       this.setState({compiling: true})
       this.handleSaveClicked()
-        .then(files => this.api.compile(this.currentFile()))
+        .catch(er => /** no open file; ignore error */ undefined)
+        .then(files => this.api.compile(this.currentFile()!))
         .then(errors => {
           console.log("errors:", errors)
           if(R.isEmpty(errors)) {
@@ -124,7 +126,7 @@ class SessionPaneCon extends React.Component<Props, State> {
 
   markErrors(oldMarkers: string[], errors: CompilerError[]): string[] {
     console.log("old markers ", oldMarkers)
-    const decos = deltaDecorations(this.currentFile(), errors)
+    const decos = deltaDecorations(this.currentFile()!, errors)
     return EditorsPane.monacoEditor!.deltaDecorations(oldMarkers, decos)
   }
 
@@ -150,11 +152,11 @@ class SessionPaneCon extends React.Component<Props, State> {
               onCompileClicked={this.handleCompileClicked.bind(this)}
               onFileClicked={(f: File) => this.handleFileClicked(f)}
               api={this.api}
-              activeFile={this.state.editingFiles[0] } />
+              activeFile={this.currentFile()} />
           </Col>
           <Col sm={10}>
           <EditorsPane
-            file={(this.state.editingFiles.length>0) ? this.state.editingFiles[0] : undefined}
+            file={(this.currentFile()) ? this.currentFile() : undefined}
             api={this.props.api}
             interactive
             shortcuts={this.setupShortcuts()}/>
@@ -173,11 +175,15 @@ class SessionPaneCon extends React.Component<Props, State> {
 }
 
 function mapProps(state: AppState) {
-  return { session: state.session, compilerErrors: state.session!.compilerErrors }
+  return {
+    session: state.session,
+    compilerErrors: state.session!.compilerErrors,
+    openedFile: state.session!.openedFile
+  }
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({ setCompilerErrors, setSessionFiles, notifyInfo, notifyWarning }, dispatch)
+  return bindActionCreators({ setCompilerErrors, setSessionFiles, setOpenFile, notifyInfo, notifyWarning }, dispatch)
 }
 
 const SessionPane = connect(mapProps, dispatchToProps)(SessionPaneCon)
