@@ -4,6 +4,12 @@ image::components.png[]
 
 CAUTION: if not otherwise specified, we are using Twitter Futures, not Scala Futures!
 
+* the frontend (the React SPA) is deployed as independent container and uses AJAX for communication with the backend.
+* Login and authentication is fully provided through _AuthSvc_.
+* the  IDE features: compile, autocomplete, simulate, .. are provided through https://github.com/THM-MoTE/mope-server[MoPE].
+  All IDE related requests are forwarded to MoPE.
+* Modelica files are saved onto disk, specifically into a shared docker volume.
+
 === Redis Usage
 
 We are using redis as cache, as well as session store:
