@@ -71,6 +71,8 @@ $ bash scripts/release.sh 0.6.5
 
 include::sections/dependencies.adoc[]
 
+include::sections/repository-structure.adoc[]
+
 include::sections/architecture.adoc[]
 
 include::sections/deployment.adoc[]
