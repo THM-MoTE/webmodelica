@@ -5,7 +5,7 @@ import Octicon from 'react-octicon'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as R from 'ramda'
-import { File, FileNode, AppState, CompilerError, Project, ApiError } from '../models/index'
+import { File, FilePath, FileNode, AppState, CompilerError, Project, ApiError } from '../models/index'
 import * as file from '../models/file'
 import { setSessionFiles, Action, notifyError } from '../redux/index'
 import { ApiClient } from '../services/api-client';
@@ -33,7 +33,7 @@ interface State {
   showNewFileDialog: boolean
   showUploadDialog: boolean
   showHelpDialog: boolean
-  fileToRename?: File
+  fileToRename?: FilePath
   errors: string[]
 }
 
@@ -92,7 +92,7 @@ class FileViewCon extends React.Component<Props, State> {
     }
   }
 
-  private deleteFile(f:File) {
+  private deleteFile(f:FilePath) {
     this.props.api.deleteFile(f)
      .then(() =>
         this.props.setSessionFiles(file.removeFile(this.props.files, f) as FileNode)
@@ -175,7 +175,7 @@ class FileViewCon extends React.Component<Props, State> {
     )
   }
 
-  private renameFile(f:File, name:string) {
+  private renameFile(f:FilePath, name:string) {
     if(R.isEmpty(name) || R.contains(" ", name)) {
       this.updateErrors([
         "The filename can't contain spaces!",
@@ -220,7 +220,7 @@ class FileViewCon extends React.Component<Props, State> {
   render() {
     const newFileClicked = () => { this.setState({ showNewFileDialog: true }) }
     const uploadArchiveClicked = () => { this.setState({showUploadDialog: true}) }
-    const renameFileClicked = (f:File) => this.setState({fileToRename: f})
+    const renameFileClicked = (f:FilePath) => this.setState({fileToRename: f})
 
     const helpClicked = () => this.setState({showHelpDialog: true})
 

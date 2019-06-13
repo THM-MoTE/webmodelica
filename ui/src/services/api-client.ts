@@ -1,5 +1,5 @@
 
-import { File, FileNode, Project, TokenWrapper, Session, AppState, CompilerError, SimulationResult, TableFormat, SimulateRequest, Complete, Suggestion, AppInfo, parseAuthPayload, AuthProvider, ApiError } from '../models/index'
+import { File, FileNode, Project, TokenWrapper, Session, AppState, CompilerError, SimulationResult, TableFormat, SimulateRequest, Complete, Suggestion, AppInfo, parseAuthPayload, AuthProvider, ApiError, FilePath } from '../models/index'
 import { Store } from 'redux';
 import { updateToken } from '../redux/index';
 import * as R from 'ramda'
@@ -285,7 +285,7 @@ export class ApiClient {
     }
   }
 
-  public deleteFile(file: File): Promise<void> {
+  public deleteFile(file: FilePath): Promise<void> {
     return this.withSession("can't delete a file if there is no session!")
       .then(session => {
         const url = new URL(this.sessionUri() + `/${session.id}/files/${encodeURIComponent(file.relativePath)}`)
@@ -318,7 +318,7 @@ export class ApiClient {
       .then(res => res.json())
   }
 
-  public renameFile(file: File, name: string): Promise<File> {
+  public renameFile(file: FilePath, name: string): Promise<File> {
     return this.withSession("can't rename a file if there is no session!")
       .then(session => {
         const data = { oldPath: file.relativePath, newPath: name }

@@ -13,8 +13,8 @@ interface Props {
   tree: FileNode
   compilerErrors: CompilerError[]
   onFileClicked: (f: File) => void
-  deleteFile?: (f:File) => void
-  renameFile?: (f: File) => void
+  deleteFile?: (f:FilePath) => void
+  renameFile?: (f: FilePath) => void
 }
 
 interface State {
