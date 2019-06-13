@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { AppState, Project, projectIsPrivate, projectIsPublic, privateVisibility, publicVisibility, ApiError} from '../models/index'
 import { Action, setProjects, setProject, addProject, setSession, setProjectPreview, notifyInfo, notifyError, setBackgroundJobInfo } from '../redux/index'
 import { WmContainer } from '../partials/container'
+import { ProjectList } from '../partials/project-list'
 import { withOverlay } from '../partials/loading-overlay'
 import { ApiClient } from '../services/api-client'
 // import * as alerts from './partials/alerts'
@@ -77,54 +78,28 @@ class ProjectViewCon extends Component<any, any> {
       .catch((er: ApiError) => this.props.notifyError(`Couldn't delete project: ${er.statusText}`))
   }
 
-  private renderProjectLine(p: Project) {
-    //if the current user is project owner: create a session, open preview otherwise
-    const currentUserIsOwner = p.owner === this.props.username
-    const link = (currentUserIsOwner) ? "#" + p.id : `#${p.id}/preview`
-    const onClick = (currentUserIsOwner) ? (ev: any) => this.newSession(ev, p) : (ev: any) => this.previewProject(ev, p)
-    return (
-      <Button variant="link" href={link} onClick={onClick}>
-        <Octicon name="key" className={projectIsPublic(p) ? "text-success" : "text-danger"} />
-        &nbsp;&nbsp;<Octicon name="repo" />
-        &nbsp;{p.owner} - {p.name}
-      </Button>
-    )
+  private myProjects(): Project[] {
+    return this.props.projects.filter((p:Project) => p.owner === this.props.username)
   }
 
   public render() {
     const newProjectNameChanged = (ev: any) => this.newProjectName = ev.target.value
-
     return (<WmContainer title="Projects">
-      <Card>
-        <Card.Header>Your Projects</Card.Header>
-        <ListGroup variant="flush">
-          <ListGroup.Item>
-            <Form onSubmit={this.newProject.bind(this)}>
-            <Form.Row className="justify-content-md-center">
-              <Col sm={10}><Form.Control placeholder="Enter project name" onChange={newProjectNameChanged} required /></Col>
-              <Col sm={1}><Button variant="outline-primary" type="submit"><Octicon name="plus" />New Project</Button></Col>
-            </Form.Row>
-            </Form>
-          </ListGroup.Item>
-          {
-            this.props.projects && this.props.projects.map((p: Project) =>
-              (<ListGroup.Item key={p.id}>
-                <Row className="editor-row">
-                  <Col>
-                    {this.renderProjectLine(p)}
-                  </Col>
-                  <Col>
-                    <ButtonGroup className="float-right">
-                      <Button variant="outline-info" href={`#${p.id}/preview`} onClick={(ev:any) => this.previewProject(ev, p)}><Octicon name="device-desktop"/></Button>
-                      <Button variant="outline-primary" onClick={() => this.updateVisibility(p)}><Octicon name="key"/></Button>
-                      <Button variant="outline-danger" onClick={() => this.deleteProject(p)}><Octicon name="flame"/></Button>
-                    </ButtonGroup>
-                  </Col>
-                </Row>
-              </ListGroup.Item>))
-          }
-        </ListGroup>
-      </Card>
+      <Form onSubmit={this.newProject.bind(this)}>
+        <Form.Row className="justify-content-md-center">
+          <Col sm={9}><Form.Control placeholder="Enter project name" onChange={newProjectNameChanged} required /></Col>
+          <Col sm={2}><Button variant="outline-primary" type="submit"><Octicon name="plus" />New Project</Button></Col>
+        </Form.Row>
+      </Form>
+      <ProjectList
+        username={this.props.username}
+        title="My Projects"
+        projects={this.myProjects()}
+        newSession={this.newSession.bind(this)}
+        previewProject={this.previewProject.bind(this)}
+        updateVisibility={this.updateVisibility.bind(this)}
+        deleteProject={this.deleteProject.bind(this)}
+        />
     </WmContainer >)
   }
 }
