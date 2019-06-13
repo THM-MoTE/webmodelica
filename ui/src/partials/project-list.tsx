@@ -50,6 +50,11 @@ export class ProjectList extends React.Component<Props, any> {
         <Card.Header>{this.props.title}</Card.Header>
         <ListGroup variant="flush">
           { this.props.projects.map(p => this.renderProjectLine(p)) }
+          { this.props.projects.length<=0 &&
+            (<ListGroup.Item key="no-proj-ids">
+              <p>There are no projects.</p>
+            </ListGroup.Item>)
+          }
         </ListGroup>
       </Card>
     )
