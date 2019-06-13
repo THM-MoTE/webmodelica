@@ -95,7 +95,7 @@ class ProjectViewCon extends Component<any, any> {
         </Form.Row>
       </Form>
       <Tab.Container id="project-tabs" defaultActiveKey="my-projects">
-        <Row>
+        <Row style={{marginTop: '1.5em'}}>
           <Col sm={2}>
             <Nav variant="pills" className="flex-column">
               <Nav.Item>
