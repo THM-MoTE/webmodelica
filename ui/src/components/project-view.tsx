@@ -6,7 +6,7 @@ import { ProjectList } from '../partials/project-list'
 import { withOverlay } from '../partials/loading-overlay'
 import { ApiClient } from '../services/api-client'
 // import * as alerts from './partials/alerts'
-import { ListGroup, Card, Form, Button, Col, Row, Alert, ButtonGroup } from 'react-bootstrap'
+import { ListGroup, Card, Form, Button, Col, Row, Alert, ButtonGroup, Tab, Nav } from 'react-bootstrap'
 //@ts-ignore
 import Octicon from 'react-octicon'
 import { connect } from 'react-redux'
@@ -81,6 +81,9 @@ class ProjectViewCon extends Component<any, any> {
   private myProjects(): Project[] {
     return this.props.projects.filter((p:Project) => p.owner === this.props.username)
   }
+  private publicProjects(): Project[] {
+    return this.props.projects.filter(projectIsPublic)
+  }
 
   public render() {
     const newProjectNameChanged = (ev: any) => this.newProjectName = ev.target.value
@@ -91,15 +94,44 @@ class ProjectViewCon extends Component<any, any> {
           <Col sm={2}><Button variant="outline-primary" type="submit"><Octicon name="plus" />New Project</Button></Col>
         </Form.Row>
       </Form>
-      <ProjectList
-        username={this.props.username}
-        title="My Projects"
-        projects={this.myProjects()}
-        newSession={this.newSession.bind(this)}
-        previewProject={this.previewProject.bind(this)}
-        updateVisibility={this.updateVisibility.bind(this)}
-        deleteProject={this.deleteProject.bind(this)}
-        />
+      <Tab.Container id="project-tabs" defaultActiveKey="my-projects">
+        <Row>
+          <Col sm={2}>
+            <Nav variant="pills" className="flex-column">
+              <Nav.Item>
+                <Nav.Link eventKey="my-projects">My Projects</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="public-projects">Public Projects</Nav.Link>
+              </Nav.Item>
+            </Nav>
+          </Col>
+          <Col sm={10}>
+            <Tab.Content>
+              <Tab.Pane eventKey="my-projects">
+                <ProjectList
+                  username={this.props.username}
+                  title="My Projects"
+                  projects={this.myProjects()}
+                  newSession={this.newSession.bind(this)}
+                  previewProject={this.previewProject.bind(this)}
+                  updateVisibility={this.updateVisibility.bind(this)}
+                  deleteProject={this.deleteProject.bind(this)} />
+              </Tab.Pane>
+              <Tab.Pane eventKey="public-projects">
+                <ProjectList
+                  username={this.props.username}
+                  title="Public Projects"
+                  projects={this.publicProjects()}
+                  newSession={this.newSession.bind(this)}
+                  previewProject={this.previewProject.bind(this)}
+                  updateVisibility={this.updateVisibility.bind(this)}
+                  deleteProject={this.deleteProject.bind(this)} />
+              </Tab.Pane>
+            </Tab.Content>
+          </Col>
+        </Row>
+      </Tab.Container>
     </WmContainer >)
   }
 }
