@@ -88,12 +88,13 @@ class ProjectViewCon extends Component<any, any> {
   public render() {
     const newProjectNameChanged = (ev: any) => this.newProjectName = ev.target.value
     return (<WmContainer title="Projects">
+      <Row> <Col sm={2} /><Col sm={10}>
       <Form onSubmit={this.newProject.bind(this)}>
-        <Form.Row className="justify-content-md-center">
-          <Col sm={9}><Form.Control placeholder="Enter project name" onChange={newProjectNameChanged} required /></Col>
-          <Col sm={2}><Button variant="outline-primary" type="submit"><Octicon name="plus" />New Project</Button></Col>
+        <Form.Row>
+          <Col sm={10}><Form.Control placeholder="Enter project name" onChange={newProjectNameChanged} required /></Col>
+          <Col sm={2}><Button variant="outline-primary" type="submit" style={{width: '100%'}}><Octicon name="plus" />New Project</Button></Col>
         </Form.Row>
-      </Form>
+      </Form> </Col></Row>
       <Tab.Container id="project-tabs" defaultActiveKey="my-projects">
         <Row style={{marginTop: '1.5em'}}>
           <Col sm={2}>
