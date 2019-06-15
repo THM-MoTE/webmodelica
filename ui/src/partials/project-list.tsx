@@ -34,7 +34,10 @@ export class ProjectList extends React.Component<Props, any> {
             <a href={link} onClick={onClick}>{p.name}</a>
             <h6>
               <Octicon name='person' /> {p.owner} &nbsp;&nbsp;
-              <Octicon name="key" className={projectIsPublic(p) ? "text-success" : "text-danger"} />
+              <span className={projectIsPublic(p) ? "text-success" : "text-danger"}>
+                <Octicon name="key" />&nbsp;
+                {projectIsPublic(p) ? 'public' : 'private'}
+              </span>
             </h6>
           </Col>
            <Col><ButtonGroup size="lg" className="float-right">
