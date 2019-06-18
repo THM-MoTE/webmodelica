@@ -27,10 +27,11 @@ store.subscribe(() => {
 /** read state from localStorage.  */
 function persistedStore() {
   const item = localStorage.getItem(stateKey)
-  return (item) ? JSON.parse(item) : undefined
+  const state = (item) ? JSON.parse(item) : undefined
+  return (state && userIsAuthenticated(state.authentication)) ? state : undefined
 }
 /** Performs logout by clearing localStorage and reloading base path.*/
-function destroySession() {
+export function destroySession() {
   localStorage.clear()
   delete cookies.Authentication
   delete cookies.Authorization

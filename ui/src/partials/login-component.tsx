@@ -54,7 +54,8 @@ class LoginComponentCon extends React.Component<Props, State> {
     if(cookies.Authentication) {
       this.props.updateToken(cookies.Authentication)
     } else if(!userIsAuthenticated(this.props.authentication)) {
-      this.props.api.getAuthenticationProviders().then(providers => this.setState({providers}))
+      this.props.api.getAuthenticationProviders()
+        .then(providers => this.setState({providers}))
         .catch((err:ApiError) => this.props.notifyError("couldn't fetch OAuth providers: "+err.statusText))
     }
   }
