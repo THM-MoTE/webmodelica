@@ -80,8 +80,9 @@ class SimulationSetupCon extends React.Component<Props, State> {
         parsedOptions.push({name, value})
         optionMatch = experimentOptionsPattern.exec(experimentMatch![1])
       }
-      console.log("options: ", parsedOptions)
-      this.props.parseSimulationOptions(parsedOptions)
+        //only use new sim options if there are at least 1
+      if(parsedOptions.length>0)
+        this.props.parseSimulationOptions(parsedOptions)
     }
   }
 
