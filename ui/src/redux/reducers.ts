@@ -2,6 +2,7 @@ import { initialState, AppState, Session, SimulationOption, SimulationData, Proj
 import { Project } from '../models/project'
 import { File, FileNode, setId } from '../models/file'
 import { Action, ActionTypes } from './actions'
+import * as utils from '../utils'
 import * as R from 'ramda'
 import { CompilerError, AuthServiceToken, WebmodelicaToken } from '../models';
 
@@ -46,7 +47,9 @@ const reducerMap = {
   [ActionTypes.UpdateSimulationOption.toString()]: (state: AppState, payload: any) => {
     const { idx, option } = payload
     const simulationOptions:SimulationOption[] = state.session!.simulation.options.map((opt, i) => {
-      if(i === idx) return option
+      if(i === idx) {
+        return {name: option.name, value: utils.convertFloat(option.value)}
+      }
       else return opt
     })
     return R.assocPath(["session", "simulation", "options"], simulationOptions, state) as AppState
@@ -57,11 +60,7 @@ const reducerMap = {
     R.assocPath(["session", "simulation", "options"], state.session!.simulation.options.filter((_,i) => i !== idx), state) as AppState,
   [ActionTypes.ParseSimulationOptions.toString()]: (state:AppState, options:SimulationOption[]) => {
     const opts:SimulationOption[] = options.map(o => {
-        //convert string to number if it's a true float number
-        //parseFloat returns NaN if it couldn't convert to float
-        const f: number = parseFloat(o.value as any)
-        const v: string | number = (!isNaN(f)) ? f : o.value
-        return ({ name: o.name, value: v })
+        return { name: o.name, value: utils.convertFloat(o.value) }
       })
     return R.assocPath(["session", "simulation", "options"], opts, state)
   },
