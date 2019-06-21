@@ -89,7 +89,8 @@ case class FSimulateStatusRequest(
 case class TableFormat(
   modelName: String,
   data: Traversable[Traversable[Double]],
-  header: Traversable[String]
+  header: Traversable[String],
+  dataManipulated: Option[String]
 )
 
 class SessionController@Inject()(
@@ -190,10 +191,17 @@ class SessionController@Inject()(
                     case None => response.notFound(s"no results for $name available!")
                   }
               case result@SimulationResult(name, _) if req.format == "chartjs" =>
+                val originalVariablesSize = result.variables.values.head.size
                 val variables = result.trimmedVariables(maxSimulationData.value)
                 val headers = variables.keys.filterNot(k => k=="time").toList
                 val tableData = (variables("time")+:headers.map(k => variables(k)).toSeq).transpose
-                Future.value(TableFormat(name, tableData, "time"::headers))
+                Future.value(TableFormat(
+                  name,
+                  tableData,
+                  "time"::headers,
+                  if(originalVariablesSize>maxSimulationData.value) Some(s"The plot doesn't contain all variables ($originalVariablesSize). Variables stripped to ${maxSimulationData.value}. ")
+                  else None
+                ))
               case results => Future.value(results)
             }
         }

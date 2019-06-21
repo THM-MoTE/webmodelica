@@ -12,7 +12,8 @@ export interface SimulateRequest {
 export interface TableFormat {
   modelName: string,
   data: number[][],
-  header: string[]
+  header: string[],
+  dataManipulated?:string
 }
 
 export interface SimulationOptionSuggestions {
