@@ -6,6 +6,8 @@ import { Alert } from 'react-bootstrap'
 import { Toast } from 'react-bootstrap'
 import { Notification, NotificationType } from '../models/index'
 import { removeNotifications, Action } from '../redux/index';
+//@ts-ignore
+import Octicon from 'react-octicon'
 
 interface Props {
   notification: Notification
@@ -46,7 +48,9 @@ export class NotificationComponentCon extends React.Component<Props, any> {
     return (
       <Toast onClose={this.removeNotification.bind(this)}>
       <Toast.Header>
-        <strong className="mr-auto">Info</strong>
+        <strong className="mr-auto">
+          <Octicon name="light-bulb" /> Info
+        </strong>
       </Toast.Header>
       <Toast.Body>
         {this.props.notification.message}
