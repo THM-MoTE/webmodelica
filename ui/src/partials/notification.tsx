@@ -38,9 +38,21 @@ export class NotificationComponentCon extends React.Component<Props, any> {
   }
 
   private renderAlert() {
+    let octicon = ""
+    switch(this.variant()) {
+      case 'info' :
+        octicon = 'light-bulb'
+        break
+      case 'warning':
+        octicon = 'stop'
+        break
+      case 'danger':
+        octicon = 'flame'
+        break
+    }
     return (
       <Alert variant={this.variant()} dismissible onClose={this.removeNotification.bind(this)}>
-        {this.props.notification.message}
+        <Octicon name={octicon} /> {this.props.notification.message}
       </Alert>
     )
   }
