@@ -6,7 +6,7 @@ import NotificationComponent from './notification'
 import Octicon from 'react-octicon'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { AppState, Notification } from '../models/index'
+import { AppState, Notification, NotificationType } from '../models/index'
 import * as R from 'ramda';
 import { oc } from 'ts-optchain';
 import { LoadingOverlay } from './loading-overlay';
@@ -61,9 +61,16 @@ class WmContainerCon extends React.Component<any, any> {
           </div>
         )}
       </Navbar>
-      <div className="container-fluid">
+      <div className="position-absolute w-100 d-flex flex-row-reverse p-4 fixed-bottom" style={{zIndex:100}}>
+        <div className="d-flex flex-column">
+            { /** all info notifications are displayed bottom-right as toasts */
+              this.props.notifications.filter((n: Notification) => n.type === NotificationType.Info).map((n: Notification, idx: number) => (<NotificationComponent key={idx} notification={n} />))}
+          </div>
+      </div>
+      <div className="container-fluid py-2">
         <Row><Col xs='12'>
-          {this.props.notifications.map((n: Notification, idx: number) => (<NotificationComponent key={idx} notification={n} />))}
+          { /** all other notifications are displayed as Alerts on-top of all children */
+            this.props.notifications.filter((n:Notification) => n.type !== NotificationType.Info).map((n: Notification, idx: number) => (<NotificationComponent key={idx} notification={n} />))}
         </Col></Row>
         <Row><Col xs='12'>
           {this.props.children}

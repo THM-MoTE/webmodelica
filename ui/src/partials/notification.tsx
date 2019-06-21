@@ -2,7 +2,8 @@ import React from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Alert } from 'react-bootstrap'
-
+//@ts-ignore
+import { Toast } from 'react-bootstrap'
 import { Notification, NotificationType } from '../models/index'
 import { removeNotifications, Action } from '../redux/index';
 
@@ -34,12 +35,31 @@ export class NotificationComponentCon extends React.Component<Props, any> {
     this.props.removeNotifications([this.props.notification])
   }
 
-  render() {
+  private renderAlert() {
     return (
       <Alert variant={this.variant()} dismissible onClose={this.removeNotification.bind(this)}>
         {this.props.notification.message}
       </Alert>
     )
+  }
+  private renderToast() {
+    return (
+      <Toast onClose={this.removeNotification.bind(this)}>
+      <Toast.Header>
+        <strong className="mr-auto">Info</strong>
+      </Toast.Header>
+      <Toast.Body>
+        {this.props.notification.message}
+      </Toast.Body>
+    </Toast>
+    )
+  }
+
+  render() {
+    if(this.props.notification.type === NotificationType.Info)
+      return this.renderToast()
+    else
+      return this.renderAlert()
   }
 }
 
