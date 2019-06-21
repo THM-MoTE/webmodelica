@@ -13,6 +13,7 @@ import pureconfig.ConfigReader
 import scala.concurrent.duration.Duration
 
 package config {
+  case class MaxSimulationData(value:Int) extends AnyVal
   case class WMConfig(
     mope: MopeClientConfig,
     mongodb: MongoDBConfig,
@@ -20,7 +21,8 @@ package config {
     userService:UserServiceConf,
     jwtConf:JwtConf,
     cacheUsers: Boolean,
-    redisSessions:Boolean
+    redisSessions:Boolean,
+    maxSimulationData:MaxSimulationData
   )
 
   case class MongoDBConfig(

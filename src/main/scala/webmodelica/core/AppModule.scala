@@ -73,6 +73,8 @@ object AppModule
   def mopeConfigProvider(wm:WMConfig): MopeClientConfig = wm.mope
   @Provides
   def jwtConfProvider(wm:WMConfig): JwtConf = wm.jwtConf
+  @Provides
+  def maxSimulationData(wm:WMConfig): MaxSimulationData = wm.maxSimulationData
   @Singleton
   @Provides
   def mongoClientProvider(dbConf:MongoDBConfig): MongoClient = MongoClient(dbConf.address)

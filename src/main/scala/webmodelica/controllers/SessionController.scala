@@ -8,13 +8,16 @@
 
 package webmodelica.controllers
 
-import com.google.inject.Inject
+import com.google.inject.{
+  Inject
+}
 import com.twitter.util.{Future, FuturePool}
 import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
 import com.twitter.finatra.http.fileupload._
 import org.mongodb.scala.bson.BsonObjectId
 import webmodelica.models._
+import webmodelica.models.config.MaxSimulationData
 import webmodelica.models.errors._
 import webmodelica.models.mope.{FilePath, FilePosition}
 import webmodelica.models.mope.requests.{Complete, SimulateRequest}
@@ -93,10 +96,13 @@ class SessionController@Inject()(
   projectStore:ProjectStore,
   sessionRegistry: SessionRegistry,
   prefix:webmodelica.ApiPrefix,
+  maxSimulationData:MaxSimulationData,
   override val userStore: UserStore,
   override val gen: TokenValidator)
     extends Controller
     with UserExtractor {
+
+  info(s"maxSimulationdata: ${maxSimulationData.value}")
 
   def withSession[A](id:webmodelica.UUIDStr)(fn: SessionService => Future[A]): Future[_] =
     sessionRegistry.get(id).flatMap {
@@ -184,7 +190,7 @@ class SessionController@Inject()(
                     case None => response.notFound(s"no results for $name available!")
                   }
               case result@SimulationResult(name, _) if req.format == "chartjs" =>
-                val variables = result.trimmedVariables(2000)
+                val variables = result.trimmedVariables(maxSimulationData.value)
                 val headers = variables.keys.filterNot(k => k=="time").toList
                 val tableData = (variables("time")+:headers.map(k => variables(k)).toSeq).transpose
                 Future.value(TableFormat(name, tableData, "time"::headers))
