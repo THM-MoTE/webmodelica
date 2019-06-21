@@ -183,7 +183,8 @@ class SessionController@Inject()(
                     case Some(file) => sendFile(response)("text/csv", file)
                     case None => response.notFound(s"no results for $name available!")
                   }
-              case SimulationResult(name, variables) if req.format == "chartjs" =>
+              case result@SimulationResult(name, _) if req.format == "chartjs" =>
+                val variables = result.trimmedVariables(2000)
                 val headers = variables.keys.filterNot(k => k=="time").toList
                 val tableData = (variables("time")+:headers.map(k => variables(k)).toSeq).transpose
                 Future.value(TableFormat(name, tableData, "time"::headers))

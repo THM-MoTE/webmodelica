@@ -8,6 +8,7 @@
 
 package webmodelica.models.mope
 
+import webmodelica.utils
 import io.circe.generic.JsonCodec
 
 /** mope-server response types. */
@@ -35,5 +36,13 @@ object responses {
   }
 
   @JsonCodec
-  case class SimulationResult(modelName:String, variables:Map[String,Seq[Double]])
+  case class SimulationResult(modelName:String, variables:Map[String,Seq[Double]]) {
+    //trim simulation data to max_value by returning only every n-th element
+    def trimmedVariables(size:Int): Map[String,Seq[Double]] = {
+      variables.mapValues {
+        case timeSeries if timeSeries.size>size => utils.skip(timeSeries, timeSeries.size/size)
+        case timeSeries => timeSeries
+      }
+    }
+  }
 }
