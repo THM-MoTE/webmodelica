@@ -1,8 +1,7 @@
 @startuml
 
 class User {
-  userName: String
-  name: String
+  username: String
   email: String
 }
 
@@ -10,12 +9,11 @@ class Project {
   id: ObjectId
   owner: User
   name: String
+  visibility = 'public' | 'private'
 }
 
 
 class ModelicaFile {
-  id: ObjectId
-  projectID: ObjectId
   relativePath: Path
   content: Text
 }
@@ -23,8 +21,7 @@ class ModelicaFile {
 class Session {
   id: UUID
   project: Project
-  user: User
-  mopeEndpoint: Address
+  mopeId: Int
 }
 
 Project "1"--"*" ModelicaFile : has >

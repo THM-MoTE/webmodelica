@@ -32,12 +32,12 @@ node "webmodelica" {
 
   [SessionService] --> [DocumentFSStore]
   [SessionService] --> [DocumentDBStore]
-  [SessionService] --> [MopeClient]
+  [SessionService] --> [MopeService]
 }
 
 node "mope" {
   () "HTTP" as mope_http
-  [MopeClient] --> mope_http
+  [MopeService] --> mope_http
   mope_http - [Endpoint]
 }
 
