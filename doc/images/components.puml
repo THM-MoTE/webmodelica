@@ -14,24 +14,20 @@ node "webmodelica" {
   () "HTTP-API" as wm_http
   [JS-Client] --> wm_http
   [JS-Client] --> AuthSvc
-  [ProjectService] #Grey
   [UserService] --> UserSvc
-  [DocumentDBStore] #Grey
   wm_http - [Routes] : "api calls"
 
   [Routes] --> [SessionService]
   [Routes] --> [SessionRegistry]
-  [Routes] --> [ProjectService]
+  [Routes] --> [ProjectStore]
   [Routes] --> [UserService]
   [Routes] --> [(JW-)Token Generator]
 
-  [ProjectService] --> [ProjectDBStore]
   [UserService] --> [UserDBStore]
 
   [SessionRegistry] --> [SessionService]
 
-  [SessionService] --> [DocumentFSStore]
-  [SessionService] --> [DocumentDBStore]
+  [SessionService] --> [FileStore]
   [SessionService] --> [MopeService]
 }
 
@@ -41,25 +37,25 @@ node "mope" {
   mope_http - [Endpoint]
 }
 
-storage RedisCache
+storage RedisCache #red
 
 database MongoDB {
-  storage User
   storage Project
-  storage ModelicaFile as doc_file
+  storage User #grey
 }
 
 database "filesystem" {
-  rectangle ModelicaFile as fs_file
+  storage ModelicaFile as fs_file
 }
 note left of fs_file : the directory that mope "sees"
 
-[ProjectDBStore] --> Project
+[UserDBStore] #grey
+
+[ProjectStore] --> Project
 [UserDBStore] --> User
 [UserService] --> RedisCache : cache users
 [SessionService] --> RedisCache : cache completions
-[DocumentDBStore] --> doc_file
-[DocumentFSStore] --> fs_file : write project files
+[FileStore] --> fs_file : write project files
 
 [Endpoint] <-- fs_file : read project files
 @enduml
