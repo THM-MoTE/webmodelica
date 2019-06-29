@@ -60,7 +60,7 @@ services:
       - "traefik.port=3000"
       - "de.thm.webmodelica.name=webmodelica-user-svc"
   auth-svc:
-    image: thmmote/webmodelica-auth-svc:0.0.3.1
+    image: thmmote/webmodelica-auth-svc:0.0.4
     restart: on-failure
     ports:
       - 9013:3000
@@ -73,6 +73,7 @@ services:
       - MONGO_PORT=27017
       - USER_SERVICE_HOST=user-svc
       - USER_SERVICE_PORT=3000
+      - USER_SERVICE_PROTOCOL=http
       #- LOGIN_REDIRECT_URI=http://localhost:9000/
     volumes:
       - ./config/auth-svc.settings.yml:/application/config/settings.yml
@@ -81,7 +82,6 @@ services:
       - "traefik.backend=webmodelica-auth-svc"
       - "traefik.port=3000"
       - "de.thm.webmodelica.name=webmodelica-auth-svc"
-
 volumes:
   webmodelica_data:
   webmodelica_db:
