@@ -43,10 +43,17 @@ trait MongoDBModule
   }
 }
 
+trait AkkaModule {
+  import com.typesafe.config.ConfigFactory
+  val config = ConfigFactroy.load("akka.conf")
+  implicit lazy val system = ActorSystem(s"${buildinfo.BuildInfo.name}-system", config)
+  implicit lazy val materializer = ActorMaterializer()
+}
 
 trait WebmodelicaModule
     extends ConfigModule
-    with MongoDBModule {
+    with MongoDBModule
+    with AkkaModule {
   lazy val noOpReceiver = new com.twitter.finagle.stats.NullStatsReceiver()
   def prefixProvider: ApiPrefix = ApiPrefix("/api/v1/webmodelica")
 
