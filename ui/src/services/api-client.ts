@@ -65,7 +65,7 @@ export class ApiClient {
   private updateWSToken(res: Response): Response {
     const headerOpt = res.headers.get(authHeader)
     if (headerOpt) {
-      document.cookie = `Authorization=${headerOpt}; path=/;`
+      document.cookie = `token=${headerOpt}; path=/;`
       this.store.dispatch(updateToken(headerOpt))
     }
     return res

@@ -27,11 +27,10 @@ case class KeyFile(file:Path) extends PublicKey {
 case class KeyString(override val key:String) extends PublicKey
 
 @JsonCodec
-case class AuthTokenPayload(user: AuthUser, exp:Long) {
+case class AuthTokenPayload(data: AuthUser, iat:Long, exp:Long) {
   def toUserToken:UserToken =
     this.into[UserToken]
-      .withFieldComputed(_.username, _.user.username)
-      .withFieldConst(_.iat, None)
+      .withFieldComputed(_.username, _.data.username)
       .transform
 }
 
