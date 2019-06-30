@@ -48,6 +48,11 @@ object Dependencies {
     "com.typesafe.scala-logging" %% "scala-logging" % "3.9.+",
   )
 
+  val akka = Seq(
+    "com.typesafe.akka" %% "akka-http"   % "10.1.8",
+    "com.typesafe.akka" %% "akka-stream" % "2.5.23"
+  )
+
   val deps = Seq(
     "com.twitter"   %% "finatra-http"    % finatraVersion,
     "com.twitter" %% "finagle-redis" % finatraVersion,
@@ -57,5 +62,5 @@ object Dependencies {
     "org.scalatest" %% "scalatest" % "3.0.+" % "test",
     "org.scalacheck" %% "scalacheck" % "1.14.+" % "test",
     "io.github.finagle" %% "featherbed" % "0.3.+",
-  ) ++ utils
+  ) ++ utils ++ akka
 }
