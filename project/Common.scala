@@ -45,6 +45,7 @@ object Dependencies {
     "com.pauldijou" %% "jwt-core" % "1.1.+",
     "com.softwaremill.macwire" %% "macros" % "2.3.+",
     "org.rogach" %% "scallop" % "3.3.+",
+    "com.typesafe.scala-logging" %% "scala-logging" % "3.9.+",
   )
 
   val deps = Seq(
