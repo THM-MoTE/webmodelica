@@ -43,6 +43,8 @@ object Dependencies {
     "com.github.pathikrit" %% "better-files" % "3.7.+",
     "io.scalaland" %% "chimney" % "0.3.+",
     "com.pauldijou" %% "jwt-core" % "1.1.+",
+    "com.softwaremill.macwire" %% "macros" % "2.3.+",
+    "org.rogach" %% "scallop" % "3.3.+",
   )
 
   val deps = Seq(
