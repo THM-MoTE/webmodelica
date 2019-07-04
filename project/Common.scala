@@ -35,7 +35,7 @@ object Common {
 }
 
 object Dependencies {
-  val finatraVersion = "19.1.0"
+  val finatraVersion = "19.6.0"
 
   val utils = Seq(
     "com.github.pureconfig" %% "pureconfig" % "0.10.1",
@@ -49,7 +49,6 @@ object Dependencies {
     "com.twitter"   %% "finatra-http"    % finatraVersion,
     "com.twitter" %% "finagle-redis" % finatraVersion,
     "ch.qos.logback" % "logback-classic" % "1.2.3",
-    "javax.activation" % "activation" % "1.1.1", //java EE package needed for finagle because it's not provided anymore since java 11
     "org.mongodb.scala" %% "mongo-scala-driver" % "2.5.+",
     "org.scalatest" %% "scalatest" % "3.0.+" % "test",
     "org.scalacheck" %% "scalacheck" % "1.14.+" % "test",
