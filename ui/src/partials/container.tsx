@@ -61,12 +61,14 @@ class WmContainerCon extends React.Component<any, any> {
           </div>
         )}
       </Navbar>
-      <div className="position-absolute w-100 d-flex flex-row-reverse p-4 fixed-bottom" style={{zIndex:100}}>
-        <div className="d-flex flex-column">
-            { /** all info notifications are displayed bottom-right as toasts */
-              this.props.notifications.filter((n: Notification) => n.type === NotificationType.Info).map((n: Notification, idx: number) => (<NotificationComponent key={idx} notification={n} />))}
-          </div>
-      </div>
+      { !R.isEmpty(this.props.notifications) && (
+        <div className="position-absolute w-100 d-flex flex-row-reverse p-4 fixed-bottom" style={{zIndex:100}}>
+          <div className="d-flex flex-column">
+              { /** all info notifications are displayed bottom-right as toasts */
+                this.props.notifications.filter((n: Notification) => n.type === NotificationType.Info).map((n: Notification, idx: number) => (<NotificationComponent key={idx} notification={n} />))}
+            </div>
+        </div>
+      )}
       <div className="container-fluid py-2">
         <Row><Col xs='12'>
           { /** all other notifications are displayed as Alerts on-top of all children */
