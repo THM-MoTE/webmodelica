@@ -4,7 +4,7 @@
 :toc: left
 :imagesdir: images
 :sectnums:
-:source-highlighter: rouge
+:source-highlighter: highlightjs
 :stylesheet: foundation-potion.css
 :nofooter:
 :docinfo:

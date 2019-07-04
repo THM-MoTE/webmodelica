@@ -54,12 +54,12 @@ TIP: setting up a development environment is described here:
       link:doc/sections/dependencies.adoc[Development Setup]
 
 The developer documentation is available in _doc/_.
-You can generate a html file:
+You can generate a html file using asciidoctor.js:
 
 [source, sh]
 ----
-$ make deps #install dependencies
-$ make #generate html file
+$ cd ui
+$ npm run generate-doc
 ----
 
-NOTE: you need _bundler_ to install the dependencies.
+The resulting documentation is available at `ui/public/documentation.html`.
