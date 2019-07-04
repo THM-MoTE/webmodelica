@@ -15,7 +15,10 @@ echo "==> Compiling backend.."
 sbt ";clean;compile;universal:packageXzTarball"
 
 echo "==> Building frontend.."
-cd ui && npm run build && cd ..
+cd ui &&\
+  npm run generate-doc &&\
+  npm run build &&\
+  cd ..
 
 echo "==> Tagging.."
 git commit $versionFile -m ':up: version '$version
