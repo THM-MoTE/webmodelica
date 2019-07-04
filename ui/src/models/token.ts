@@ -5,7 +5,7 @@ export interface TokenWrapper {
 
 /** a JWT created by the auth-service. */
 export interface AuthServiceToken {
-  user: {
+  data: {
     username: string
     email: string
   }
