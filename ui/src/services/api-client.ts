@@ -89,7 +89,7 @@ export class ApiClient {
     return fetch(this.authUri())
       .then(rejectError)
       .then(res => res.json())
-      .then((obj:any) => parseAuthPayload(this.authUri(), obj))
+      .then((obj: any) => parseAuthPayload(this.authUri(), obj))
   }
 
   public login(user: string, pw: string): Promise<TokenWrapper> {
@@ -303,16 +303,13 @@ export class ApiClient {
 
   public getFile(project: string | Project, path: string): Promise<File> {
     const pid = (typeof project === "string") ? project : project.id
-    return this.withSession("can't fetch file without session!")
-      .then(session => {
-        const url = new URL(this.projectUri() + `/${pid}/files/${encodeURIComponent(path)}`)
-        return fetch(url.toString(), {
-          headers: {
-            [authHeader]: this.token(),
-            'Accept': 'application/json'
-          }
-        })
-      })
+    const url = new URL(this.projectUri() + `/${pid}/files/${encodeURIComponent(path)}`)
+    return fetch(url.toString(), {
+      headers: {
+        [authHeader]: this.token(),
+        'Accept': 'application/json'
+      }
+    })
       .then(rejectError)
       .then(this.updateWSToken.bind(this))
       .then(res => res.json())
