@@ -79,7 +79,7 @@ services:
       - USER_SERVICE_PROTOCOL=http
       #- LOGIN_REDIRECT_URI=http://localhost:9000/
     volumes:
-      - ./config/auth-svc.settings.yml:/application/config/settings.local.yml
+      - ./config/auth-svc.settings.yml:/config.yml
     labels:
       - "traefik.frontend.rule=PathPrefix:/api/v{[0-9]+}/auths"
       - "traefik.backend=webmodelica-auth-svc"
