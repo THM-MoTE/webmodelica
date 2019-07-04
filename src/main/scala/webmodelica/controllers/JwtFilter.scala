@@ -26,19 +26,10 @@ class JwtFilter@Inject()(gen:TokenGenerator, store:UserStore)(validator:TokenVal
     val headerField = request.headerMap.get(constants.authorizationHeader)
     lazy val cookie = request.cookies.get("token").map(_.value)
     val resultOpt = headerField.orElse(cookie).filter(validator.isValid).map { token =>
-      val userF = validator.decode(token).flatMap(t => store.findBy(t.username))
       //explictly set the Authorization header because it could be inside of a cookie
       //which isn't used when extracting user informations
       request.authorization = token
-      val respF = service(request)
-      for {
-        response <- respF
-        user <- userF.flatMap(errors.notFoundExc("web-token contains invalid user informations!"))
-        token = gen.newToken(user)
-      } yield {
-        response.authorization = token
-        response
-      }
+      service(request)
     }
     resultOpt.getOrElse {
         warn(s"provided token invalid!")
