@@ -44,7 +44,8 @@ services:
       - ../private/data:/home/openmodelica/data
       - ./config/mope.conf:/home/openmodelica/.config/mope/mope.conf
   user-svc:
-    image: thmmote/webmodelica-user-svc:0.1.2
+    #image: thmmote/webmodelica-user-svc:0.1.3-1
+    image: hobbypunk90/mt-services-user:0.0.1
     restart: on-failure
     ports:
       - 9012:3000
@@ -54,13 +55,16 @@ services:
       - RAILS_MASTER_KEY=ee58f8f3dfb3b3fd40391087bfd38c4e
       - MONGO_HOST=mongo
       - MONGO_PORT=27017
+    volumes:
+      - ./config/user-svc.settings.yml:/config.yml
     labels:
       - "traefik.frontend.rule=PathPrefix:/api/v{[0-9]+}/users"
       - "traefik.backend=webmodelica-user-svc"
       - "traefik.port=3000"
       - "de.thm.webmodelica.name=webmodelica-user-svc"
   auth-svc:
-    image: thmmote/webmodelica-auth-svc:0.0.3.1
+    #image: thmmote/webmodelica-auth-svc:0.0.4
+    image: hobbypunk90/mt-services-auth:0.0.1
     restart: on-failure
     ports:
       - 9013:3000
@@ -69,19 +73,20 @@ services:
       - user-svc
     environment:
       - RAILS_MASTER_KEY=f84a1e93cf144b98ded39b233d03b60f
+      - RAILS_ENV=development
       - MONGO_HOST=mongo
       - MONGO_PORT=27017
       - USER_SERVICE_HOST=user-svc
       - USER_SERVICE_PORT=3000
+      - USER_SERVICE_PROTOCOL=http
       #- LOGIN_REDIRECT_URI=http://localhost:9000/
     volumes:
-      - ./config/auth-svc.settings.yml:/application/config/settings.yml
+      - ./config/auth-svc.settings.yml:/config.yml
     labels:
       - "traefik.frontend.rule=PathPrefix:/api/v{[0-9]+}/auths"
       - "traefik.backend=webmodelica-auth-svc"
       - "traefik.port=3000"
       - "de.thm.webmodelica.name=webmodelica-auth-svc"
-
 volumes:
   webmodelica_data:
   webmodelica_db:

@@ -1,0 +1,6 @@
+whitelisted_hostnames:
+  - localhost
+  - staging-webmodelica.mni.thm.de
+  - user-svc
+rabbitmq:
+  enabled: false

@@ -10,9 +10,11 @@ package webmodelica.services
 
 import com.twitter.util.Future
 import pdi.jwt.exceptions.{JwtException, JwtValidationException}
+import webmodelica.models.User
 
 trait TokenValidator {
   def decode(token:String): Future[UserToken]
+  def decodeToUser(token:String): Future[Option[User]]
   def isValid(token:String): Boolean
 }
 
@@ -23,8 +25,12 @@ object TokenValidator {
       a.decode(token).rescue {
         case _:JwtException => b.decode(token)
       }
+    override def decodeToUser(token:String): Future[Option[User]] = {
+      a.decodeToUser(token).rescue {
+        case _:JwtException => b.decodeToUser(token)
+      }
+    }
     override def isValid(token: String): Boolean = a.isValid(token) || b.isValid(token)
-
     override def toString: String = s"CombinedValidator($a, $b)"
   }
 }

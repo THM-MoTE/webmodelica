@@ -51,8 +51,8 @@ class LoginComponentCon extends React.Component<Props, State> {
 
   componentDidMount() {
     //check if auth-service redireted us here and gave us a cookie
-    if(cookies.Authentication) {
-      this.props.updateToken(cookies.Authentication)
+    if(cookies.token) {
+      this.props.updateToken(cookies.token)
     } else if(!userIsAuthenticated(this.props.authentication)) {
       this.props.api.getAuthenticationProviders()
         .then(providers => this.setState({providers}))

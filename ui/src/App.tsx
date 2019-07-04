@@ -33,8 +33,7 @@ function persistedStore() {
 /** Performs logout by clearing localStorage and reloading base path.*/
 export function destroySession() {
   localStorage.clear()
-  delete cookies.Authentication
-  delete cookies.Authorization
+  delete cookies.token
   window.location.replace("/")
   return (<span>logging out ...</span>)
 }
