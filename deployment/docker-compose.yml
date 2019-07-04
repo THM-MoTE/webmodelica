@@ -55,6 +55,8 @@ services:
       - RAILS_MASTER_KEY=ee58f8f3dfb3b3fd40391087bfd38c4e
       - MONGO_HOST=mongo
       - MONGO_PORT=27017
+    volumes:
+      - ./config/user-svc.settings.yml:/config.yml
     labels:
       - "traefik.frontend.rule=PathPrefix:/api/v{[0-9]+}/users"
       - "traefik.backend=webmodelica-user-svc"
