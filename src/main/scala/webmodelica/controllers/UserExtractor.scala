@@ -16,18 +16,30 @@ import webmodelica.services.{TokenValidator, UserToken}
 import webmodelica.models.{User, errors}
 
 trait UserExtractor {
+  this: com.twitter.inject.Logging =>
   def userStore: UserStore
   def gen: TokenValidator
 
   def extractToken(req:Request): Future[UserToken] =
     errors.notFoundExc("no web-token provided!")(req.authorization).flatMap(gen.decode)
 
-  def extractUser(req:Request): Future[User] =
-    for {
+  def extractUser(req:Request): Future[User] = {
+    val fetchFromStore = for {
       token <- extractToken(req)
       userOpt <- userStore.findBy(token.username)
       user <- errors.notFoundExc("web-token contains invalid user informations!")(userOpt)
-  } yield user
+    } yield user
+
+    val fetchFromToken = errors.notFoundExc("no web-token provided!")(req.authorization).flatMap(gen.decodeToUser)
+    fetchFromToken.flatMap {
+      case Some(user) =>
+        debug(s"got user informatoins from token: $user")
+        Future.value(user)
+      case None =>
+        warn(s"didn't find user informations in token; try using the UserStore")
+        fetchFromStore
+    }
+  }
 
   def extractUsername(req:Request): Future[String] =
     extractToken(req).map(_.username)
