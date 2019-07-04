@@ -1,2 +1,5 @@
+whitelisted_hostnames:
+  - localhost
+  - staging-webmodelica.mni.thm.de
 rabbitmq:
   enabled: false

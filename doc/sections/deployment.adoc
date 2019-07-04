@@ -10,6 +10,7 @@ The compose files are in _deployment_:
 deployment/
 ├── config/ #contains container's configuration files
 │   ├── auth-svc.settings.yml #OAuth provider configs for auth-svc
+│   ├── user-svc.settings.yml #configs for user-svc
 │   ├── mope.conf #configuration for MoPE
 │   ├── traefik-dev.toml #traefik's development proxy settings
 │   └── traefik-prod.toml #traefik's production proxy settings

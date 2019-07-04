@@ -1,3 +1,6 @@
+whitelisted_hostnames:
+  - localhost
+  - staging-webmodelica.mni.thm.de
 
 omniauth:
   providers:
@@ -14,7 +17,7 @@ omniauth:
         - email
         # - first_name
         # - last_name
-        - username    
+        - username
     # cas3:
     #   name: ''
     #   color: ''
