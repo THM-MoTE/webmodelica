@@ -43,15 +43,19 @@ object Dependencies {
     "com.github.pathikrit" %% "better-files" % "3.7.+",
     "io.scalaland" %% "chimney" % "0.3.+",
     "com.pauldijou" %% "jwt-core" % "1.1.+",
+    "ch.qos.logback" % "logback-classic" % "1.2.3",
   )
 
   val deps = Seq(
     "com.twitter"   %% "finatra-http"    % finatraVersion,
     "com.twitter" %% "finagle-redis" % finatraVersion,
-    "ch.qos.logback" % "logback-classic" % "1.2.3",
     "org.mongodb.scala" %% "mongo-scala-driver" % "2.5.+",
     "org.scalatest" %% "scalatest" % "3.0.+" % "test",
     "org.scalacheck" %% "scalacheck" % "1.14.+" % "test",
     "io.github.finagle" %% "featherbed" % "0.3.+",
+  ) ++ utils
+
+  val generatorDeps = Seq(
+    "com.sksamuel.avro4s" %% "avro4s-core" % "3.0.0-RC2"
   ) ++ utils
 }
