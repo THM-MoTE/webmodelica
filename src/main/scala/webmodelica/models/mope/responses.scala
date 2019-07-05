@@ -28,9 +28,9 @@ object responses {
   @JsonCodec
   case class Suggestion(kind: String,
     name: String,
-    parameters: Option[Seq[String]]=None,
-    classComment: Option[String]=None,
-    `type`: Option[String]=None) {
+    parameters: Option[Seq[String]],
+    classComment: Option[String],
+    `type`: Option[String]) {
     def displayString: String =
       s"$kind - $name"
   }
