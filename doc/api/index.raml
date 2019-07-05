@@ -1,0 +1,43 @@
+#%RAML 1.0
+---
+title: Webmodelica Backend API
+version: 1
+mediaType: application/json
+baseUri: https://staging-webmodelica.mni.thm.de/api/v{version}/webmodelica
+
+/projects:
+  get:
+    description: Get all projects for the current user.
+    # responses:
+    #   200:
+    #     body:
+  post:
+    description: Creates a new (private) project for the current user.
+  /{:projectId}:
+    get:
+      description: Get the project with id={:projectId}.
+    delete:
+      description: Delete the project with id={:projectId}.
+      responses:
+        204:
+          description: Project deleted. Note that this is returned even if the project doesn't exist.
+# POST    /projects/:id/copy
+# PUT     /projects/:id/visibility
+# GET     /projects/:id/files
+# GET     /projects/:id/files/download
+# GET     /projects/:id/files/:path
+# GET     /projects
+# POST    /projects/:id/sessions/new
+# DELETE  /sessions/:sessionId
+# POST    /sessions/:sessionId/files/update
+# POST    /sessions/:sessionId/files/upload
+# DELETE  /sessions/:sessionId/files/:path
+# PUT     /sessions/:sessionId/files/rename
+# POST    /sessions/:sessionId/compile
+# POST    /sessions/:sessionId/complete
+# POST    /sessions/:sessionId/simulate
+# GET     /sessions/:sessionId/simulate
+# GET     /info
+# POST    /users/register
+# POST    /users/login
+# POST    /users/refresh
