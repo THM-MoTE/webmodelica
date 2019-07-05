@@ -1,0 +1,18 @@
+{
+  "type" : "record",
+  "name" : "AuthUser",
+  "namespace" : "webmodelica.models",
+  "fields" : [ {
+    "name" : "username",
+    "type" : "string"
+  }, {
+    "name" : "email",
+    "type" : [ "null", "string" ]
+  }, {
+    "name" : "first_name",
+    "type" : [ "null", "string" ]
+  }, {
+    "name" : "last_name",
+    "type" : [ "null", "string" ]
+  } ]
+}

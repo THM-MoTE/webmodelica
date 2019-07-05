@@ -1,33 +1,94 @@
 #%RAML 1.0
 ---
 title: Webmodelica Backend API
-version: 1
+version: v1
 mediaType: application/json
-baseUri: https://staging-webmodelica.mni.thm.de/api/v{version}/webmodelica
+baseUri: https://staging-webmodelica.mni.thm.de/api/{version}/webmodelica
+types: !include types.raml
 
+/info:
+  get:
+    description: Gets application specific informations, like version, license and commit hash.
+    responses:
+      200:
+        body:
+          type: infos
 /projects:
   get:
     description: Get all projects for the current user.
-    # responses:
-    #   200:
-    #     body:
+    responses:
+      200:
+        body:
+          type: project[]
   post:
     description: Creates a new (private) project for the current user.
-  /{:projectId}:
+    body:
+      type: createProject
+  /{projectId}:
     get:
-      description: Get the project with id={:projectId}.
+      description: Get the project with id={projectId}.
+      responses:
+        200:
+          body:
+            type: project
     delete:
-      description: Delete the project with id={:projectId}.
+      description: Delete the project with id={projectId}.
       responses:
         204:
           description: Project deleted. Note that this is returned even if the project doesn't exist.
-# POST    /projects/:id/copy
-# PUT     /projects/:id/visibility
-# GET     /projects/:id/files
-# GET     /projects/:id/files/download
-# GET     /projects/:id/files/:path
-# GET     /projects
-# POST    /projects/:id/sessions/new
+    /copy:
+      post:
+        description: Copies a project.
+        body:
+          type: object
+          properties:
+            name:
+              type: string
+              required: false
+        responses:
+          200:
+            body:
+              type: project
+    /visibility:
+      put:
+        description: Updates the visibility of the project.
+        body:
+          type: object
+          properties:
+            visibility:
+              description: the visibility of the project, either 'public' or 'private'.
+              type: string
+        responses:
+          200:
+            body:
+              type: project
+          400:
+            description: if provided visibility isn't allowed.
+    /files:
+      /download:
+        get:
+          description: Returns a zip archive with the project files.
+          responses:
+            200:
+              application/zip:
+                description: the zip archive
+      /{path}:
+        get:
+          description: Get the file with the given {path}.
+          responses:
+            200:
+              body:
+                type: file
+            404:
+              description: if {path} not found.
+    /sessions/new:
+      post:
+        description: creates a new session based on this project.
+        responses:
+            200:
+              body:
+                type: session
+
 # DELETE  /sessions/:sessionId
 # POST    /sessions/:sessionId/files/update
 # POST    /sessions/:sessionId/files/upload
@@ -37,7 +98,6 @@ baseUri: https://staging-webmodelica.mni.thm.de/api/v{version}/webmodelica
 # POST    /sessions/:sessionId/complete
 # POST    /sessions/:sessionId/simulate
 # GET     /sessions/:sessionId/simulate
-# GET     /info
 # POST    /users/register
 # POST    /users/login
 # POST    /users/refresh
