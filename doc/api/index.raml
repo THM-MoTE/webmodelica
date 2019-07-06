@@ -22,8 +22,7 @@ types: !include types.raml
   post:
     description: Creates a new (private) project for the current user.
     body:
-      type: createProject
-      example: !include examples/webmodelica.models.ProjectRequest-example.json
+      type: ProjectRequest
   /{projectId}:
     get:
       description: Get the project with id={projectId}.
