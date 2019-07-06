@@ -27,13 +27,28 @@ object SchemaGenerator
     with Schemas {
   val log = LoggerFactory.getLogger("SchemaGenerator")
   log.info(s"schema generator started..")
-  val schemaDirectory = File("./doc/api/schemas")
+  val apiDirectory = File("./doc/api")
+  val schemaDirectory = apiDirectory / "schemas"
   schemaDirectory.createDirectoryIfNotExists()
 
-  def writeToFile(schema:Schema): Unit = {
+  def writeToFile(schema:Schema): File = {
     val file = schemaDirectory / (schema.getFullName+".json")
     log.info(s"writing ${schema.getName} -> ${file}")
     file.overwrite(schema.toString(true))
+    file
+  }
+
+  def generateRaml(schemas: Seq[(Schema, File)]): File = {
+    val file = apiDirectory / "types.raml"
+    val line = for((schema, schemaFile) <- schemas) yield {
+      val path = apiDirectory relativize schemaFile
+      s"${schema.getName}: !include ${path}"
+    }
+    log.info(s"generating $file")
+    val content = line.mkString("\n")
+    log.debug(s"$file content: $content")
+    file.overwrite(content)
+    file
   }
 
   val schemas = Seq(
@@ -47,5 +62,6 @@ object SchemaGenerator
     AvroSchema[SimulationResult],
   )
 
-  schemas.foreach(writeToFile)
+  val files = schemas.map(schema => (schema, writeToFile(schema)))
+  generateRaml(files)
 }
