@@ -12,93 +12,9 @@ types: !include types.raml
       200:
         body:
           type: Infos
-/projects:
-  get:
-    description: Get all projects for the current user.
-    responses:
-      200:
-        body:
-          type: JSProject[]
-  post:
-    description: Creates a new (private) project for the current user.
-    body:
-      type: ProjectRequest
-  /{projectId}:
-    get:
-      description: Get the project with id={projectId}.
-      responses:
-        200:
-          body:
-            type: JSProject
-    delete:
-      description: Delete the project with id={projectId}.
-      responses:
-        204:
-          description: Project deleted. Note that this is returned even if the project doesn't exist.
-    /copy:
-      post:
-        description: Copies a project.
-        body:
-          type: object
-          properties:
-            name:
-              type: string
-              required: false
-        responses:
-          200:
-            body:
-              type: JSProject
-    /visibility:
-      put:
-        description: Updates the visibility of the project.
-        body:
-          type: object
-          properties:
-            visibility:
-              description: the visibility of the project, either 'public' or 'private'.
-              type: string
-        responses:
-          200:
-            body:
-              type: JSProject
-          400:
-            description: if provided visibility isn't allowed.
-    /files:
-      /download:
-        get:
-          description: Returns a zip archive with the project files.
-          responses:
-            200:
-              binary/octet-stream:
-                type: file
-                fileTypes: ['application/zip']
-                description: the zip archive
-      /{path}:
-        get:
-          description: Get the file with the given {path}.
-          responses:
-            200:
-              body:
-                type: ModelicaFile
-            404:
-              description: if {path} not found.
-    /sessions/new:
-      post:
-        description: creates a new session based on this project.
-        responses:
-            200:
-              body:
-                type: JSSession
+/projects: !include projects.raml
+/sessions: !include sessions.raml
 
-# DELETE  /sessions/:sessionId
-# POST    /sessions/:sessionId/files/update
-# POST    /sessions/:sessionId/files/upload
-# DELETE  /sessions/:sessionId/files/:path
-# PUT     /sessions/:sessionId/files/rename
-# POST    /sessions/:sessionId/compile
-# POST    /sessions/:sessionId/complete
-# POST    /sessions/:sessionId/simulate
-# GET     /sessions/:sessionId/simulate
 # POST    /users/register
 # POST    /users/login
 # POST    /users/refresh

@@ -1,0 +1,60 @@
+# DELETE  /sessions/:sessionId
+# POST    /sessions/:sessionId/files/update
+# POST    /sessions/:sessionId/files/upload
+# DELETE  /sessions/:sessionId/files/:path
+# PUT     /sessions/:sessionId/files/rename
+# POST    /sessions/:sessionId/compile
+# POST    /sessions/:sessionId/complete
+# POST    /sessions/:sessionId/simulate
+# GET     /sessions/:sessionId/simulate
+/{sessionId}:
+  delete:
+    description: Deletes/Closes the session with id={sessionId}.
+    204:
+      description: Session deleted. Note that this is returned even if the session doesn't exist.
+  /compile:
+    post:
+      description: Compiles this session.
+      body:
+        type: FilePath
+      responses:
+        200:
+          description: List of compiler errors.
+          type: CompilerError
+  /complete:
+    post:
+      description: Completes the given symbol.
+      body:
+        type: Complete
+      responses:
+        200:
+          description: List of completions.
+          type: Suggestion
+  /simulate:
+    get:
+      description: Returns the simulation data.
+      queryParameters:
+        format:
+          type: string
+          required: false
+          pattern: (default)|(csv)|(chartjs)
+        addr:
+          type: string
+      responses:
+        200:
+          type: SimulationResult | TableFormat
+        409:
+          description: Simulation not finished yet. Try again later.
+        404:
+          description: If there are no results and the location isn't valid.
+    post:
+      description: Simulates the given model with the given options.
+      body:
+        type: SimulateRequest
+      responses:
+        200:
+          headers:
+            Location:
+              description: Location that contains the simulation results one's the simulation finished.
+        400:
+          description: If provided model or parameters aren't valid.
