@@ -115,5 +115,5 @@ object SchemaGenerator
   )
 
   val exampleFiles = models.map(model => (model, generateExample(model)))
-  generateExampleRaml(exampleFiles)
+  // generateExampleRaml(exampleFiles)
 }

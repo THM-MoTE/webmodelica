@@ -5,32 +5,35 @@ version: v1
 mediaType: application/json
 baseUri: https://staging-webmodelica.mni.thm.de/api/{version}/webmodelica
 types: !include types.raml
-
 /info:
   get:
     description: Gets application specific informations, like version, license and commit hash.
     responses:
       200:
         body:
-          type: infos
+          type: Infos
+          example: !include examples/webmodelica.controllers.Infos-example.json
 /projects:
   get:
     description: Get all projects for the current user.
     responses:
       200:
         body:
-          type: project[]
+          type: JSProject[]
+          example: !include examples/webmodelica.models.JSProject-example.json
   post:
     description: Creates a new (private) project for the current user.
     body:
       type: createProject
+      example: !include examples/webmodelica.models.ProjectRequest-example.json
   /{projectId}:
     get:
       description: Get the project with id={projectId}.
       responses:
         200:
           body:
-            type: project
+            type: JSProject
+            example: !include examples/webmodelica.models.JSProject-example.json
     delete:
       description: Delete the project with id={projectId}.
       responses:
@@ -48,7 +51,8 @@ types: !include types.raml
         responses:
           200:
             body:
-              type: project
+              type: JSProject
+              example: !include examples/webmodelica.models.JSProject-example.json
     /visibility:
       put:
         description: Updates the visibility of the project.
@@ -61,7 +65,8 @@ types: !include types.raml
         responses:
           200:
             body:
-              type: project
+              type: JSProject
+              example: !include examples/webmodelica.models.JSProject-example.json
           400:
             description: if provided visibility isn't allowed.
     /files:
@@ -78,7 +83,8 @@ types: !include types.raml
           responses:
             200:
               body:
-                type: file
+                type: ModelicaFile
+                example: !include examples/webmodelica.models.ModelicaFile-example.json
             404:
               description: if {path} not found.
     /sessions/new:
@@ -87,7 +93,8 @@ types: !include types.raml
         responses:
             200:
               body:
-                type: session
+                type: JSSession
+                example: !include examples/webmodelica.models.JSSession-example.json
 
 # DELETE  /sessions/:sessionId
 # POST    /sessions/:sessionId/files/update

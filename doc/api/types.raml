@@ -1,7 +1,9 @@
-project: !include schemas/webmodelica.models.JSProject.json
-createProject: !include schemas/webmodelica.models.ProjectRequest.json
-infos: !include schemas/webmodelica.controllers.Infos.json
-user: !include schemas/webmodelica.models.AuthUser.json
-session: !include schemas/webmodelica.models.JSSession.json
-file: !include schemas/webmodelica.models.ModelicaFile.json
-# filePath: !includeb
+Infos: !include schemas/webmodelica.controllers.Infos.json
+AuthUser: !include schemas/webmodelica.models.AuthUser.json
+ModelicaFile: !include schemas/webmodelica.models.ModelicaFile.json
+ModelicaPath: !include schemas/webmodelica.models.ModelicaPath.json
+ProjectRequest: !include schemas/webmodelica.models.ProjectRequest.json
+JSProject: !include schemas/webmodelica.models.JSProject.json
+JSSession: !include schemas/webmodelica.models.JSSession.json
+Suggestion: !include schemas/webmodelica.models.mope.responses.Suggestion.json
+SimulationResult: !include schemas/webmodelica.models.mope.responses.SimulationResult.json
