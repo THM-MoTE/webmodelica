@@ -1,0 +1,32 @@
+{
+  "type" : "record",
+  "name" : "CompilerError",
+  "namespace" : "webmodelica.models.mope.responses",
+  "fields" : [ {
+    "name" : "type",
+    "type" : "string"
+  }, {
+    "name" : "file",
+    "type" : "string"
+  }, {
+    "name" : "start",
+    "type" : {
+      "type" : "record",
+      "name" : "FilePosition",
+      "namespace" : "webmodelica.models.mope",
+      "fields" : [ {
+        "name" : "line",
+        "type" : "int"
+      }, {
+        "name" : "column",
+        "type" : "int"
+      } ]
+    }
+  }, {
+    "name" : "end",
+    "type" : "webmodelica.models.mope.FilePosition"
+  }, {
+    "name" : "message",
+    "type" : "string"
+  } ]
+}

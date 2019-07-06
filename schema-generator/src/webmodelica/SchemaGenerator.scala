@@ -14,8 +14,9 @@ import better.files.File
 import better.files.File.OpenOptions
 import com.twitter.finagle.http.Request
 import webmodelica.controllers._
-import webmodelica.models.mope.requests.SimulateRequest
-import webmodelica.models.mope.responses.{SimulationResult, Suggestion}
+import webmodelica.models.mope._
+import webmodelica.models.mope.requests._
+import webmodelica.models.mope.responses._
 
 trait Schemas {
   implicit object pathSchema extends SchemaFor[Path] {
@@ -98,6 +99,10 @@ object SchemaGenerator
     AvroSchema[JSSession],
     AvroSchema[Suggestion],
     AvroSchema[SimulationResult],
+    AvroSchema[FilePath],
+    AvroSchema[FilePosition],
+    AvroSchema[CompilerError],
+    AvroSchema[Complete],
   )
 
   log.info("generating types..")

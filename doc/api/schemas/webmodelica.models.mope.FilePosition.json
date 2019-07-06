@@ -1,0 +1,12 @@
+{
+  "type" : "record",
+  "name" : "FilePosition",
+  "namespace" : "webmodelica.models.mope",
+  "fields" : [ {
+    "name" : "line",
+    "type" : "int"
+  }, {
+    "name" : "column",
+    "type" : "int"
+  } ]
+}
