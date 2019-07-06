@@ -12,7 +12,6 @@ types: !include types.raml
       200:
         body:
           type: Infos
-          example: !include examples/webmodelica.controllers.Infos-example.json
 /projects:
   get:
     description: Get all projects for the current user.
@@ -20,7 +19,6 @@ types: !include types.raml
       200:
         body:
           type: JSProject[]
-          example: !include examples/webmodelica.models.JSProject-example.json
   post:
     description: Creates a new (private) project for the current user.
     body:
@@ -33,7 +31,6 @@ types: !include types.raml
         200:
           body:
             type: JSProject
-            example: !include examples/webmodelica.models.JSProject-example.json
     delete:
       description: Delete the project with id={projectId}.
       responses:
@@ -52,7 +49,6 @@ types: !include types.raml
           200:
             body:
               type: JSProject
-              example: !include examples/webmodelica.models.JSProject-example.json
     /visibility:
       put:
         description: Updates the visibility of the project.
@@ -66,7 +62,6 @@ types: !include types.raml
           200:
             body:
               type: JSProject
-              example: !include examples/webmodelica.models.JSProject-example.json
           400:
             description: if provided visibility isn't allowed.
     /files:
@@ -75,7 +70,9 @@ types: !include types.raml
           description: Returns a zip archive with the project files.
           responses:
             200:
-              application/zip:
+              binary/octet-stream:
+                type: file
+                fileTypes: ['application/zip']
                 description: the zip archive
       /{path}:
         get:
@@ -84,7 +81,6 @@ types: !include types.raml
             200:
               body:
                 type: ModelicaFile
-                example: !include examples/webmodelica.models.ModelicaFile-example.json
             404:
               description: if {path} not found.
     /sessions/new:
@@ -94,7 +90,6 @@ types: !include types.raml
             200:
               body:
                 type: JSSession
-                example: !include examples/webmodelica.models.JSSession-example.json
 
 # DELETE  /sessions/:sessionId
 # POST    /sessions/:sessionId/files/update

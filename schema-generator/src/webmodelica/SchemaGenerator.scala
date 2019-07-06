@@ -50,11 +50,18 @@ object SchemaGenerator
     file
   }
 
-  def generateRaml(schemas: Seq[(Schema, File)]): File = {
+  def generateRaml(schemas: Seq[(Schema, File)], examples:Map[String, File]): File = {
     val file = apiDirectory / "types.raml"
     val line = for((schema, schemaFile) <- schemas) yield {
       val path = apiDirectory relativize schemaFile
-      s"${schema.getName}: !include ${path}"
+      val typeStr = s"type: !include ${path}"
+      val exampleStr = examples.get(schema.getName)
+        .map(apiDirectory.relativize)
+        .map(path => s"example: !include ${path}")
+      .getOrElse("")
+      s"""${schema.getName}:
+|  ${typeStr}
+|  ${exampleStr}""".stripMargin
     }
     log.info(s"generating $file")
     val content = line.mkString("\n")
@@ -95,7 +102,6 @@ object SchemaGenerator
 
   log.info("generating types..")
   val files = schemas.map(schema => (schema, writeToFile(schema)))
-  generateRaml(files)
 
   log.info("generating examples..")
   import _root_.io.circe._, _root_.io.circe.generic.semiauto._
@@ -114,6 +120,7 @@ object SchemaGenerator
     TpeWrapper(file),
   )
 
-  val exampleFiles = models.map(model => (model, generateExample(model)))
+  val exampleFiles = models.map(model => (model.name, generateExample(model))).toMap
+  generateRaml(files, exampleFiles)
   // generateExampleRaml(exampleFiles)
 }

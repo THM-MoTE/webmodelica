@@ -1,9 +1,27 @@
-Infos: !include schemas/webmodelica.controllers.Infos.json
-AuthUser: !include schemas/webmodelica.models.AuthUser.json
-ModelicaFile: !include schemas/webmodelica.models.ModelicaFile.json
-ModelicaPath: !include schemas/webmodelica.models.ModelicaPath.json
-ProjectRequest: !include schemas/webmodelica.models.ProjectRequest.json
-JSProject: !include schemas/webmodelica.models.JSProject.json
-JSSession: !include schemas/webmodelica.models.JSSession.json
-Suggestion: !include schemas/webmodelica.models.mope.responses.Suggestion.json
-SimulationResult: !include schemas/webmodelica.models.mope.responses.SimulationResult.json
+Infos:
+  type: !include schemas/webmodelica.controllers.Infos.json
+  example: !include examples/webmodelica.controllers.Infos-example.json
+AuthUser:
+  type: !include schemas/webmodelica.models.AuthUser.json
+  example: !include examples/webmodelica.models.AuthUser-example.json
+ModelicaFile:
+  type: !include schemas/webmodelica.models.ModelicaFile.json
+  example: !include examples/webmodelica.models.ModelicaFile-example.json
+ModelicaPath:
+  type: !include schemas/webmodelica.models.ModelicaPath.json
+  example: !include examples/webmodelica.models.ModelicaPath-example.json
+ProjectRequest:
+  type: !include schemas/webmodelica.models.ProjectRequest.json
+  example: !include examples/webmodelica.models.ProjectRequest-example.json
+JSProject:
+  type: !include schemas/webmodelica.models.JSProject.json
+  example: !include examples/webmodelica.models.JSProject-example.json
+JSSession:
+  type: !include schemas/webmodelica.models.JSSession.json
+  example: !include examples/webmodelica.models.JSSession-example.json
+Suggestion:
+  type: !include schemas/webmodelica.models.mope.responses.Suggestion.json
+  
+SimulationResult:
+  type: !include schemas/webmodelica.models.mope.responses.SimulationResult.json
+  
