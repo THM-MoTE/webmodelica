@@ -18,6 +18,9 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
+TIP: The API documentation is available at  https://staging-webmodelica.mni.thm.de/api.html[API-Doc].
+      This document is available at https://staging-webmodelica.mni.thm.de/documentation.html[Documentation].
+
 == Setup
 
 Setting up a development machine requires a few steps:
