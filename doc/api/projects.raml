@@ -8,6 +8,13 @@ post:
   description: Creates a new (private) project for the current user.
   body:
     type: ProjectRequest
+  responses:
+    200:
+      description: the created project.
+      body:
+        type: JSProject
+    409:
+      description: the new project `name` already exists in the user's namespace.
 /{projectId}:
   get:
     description: Get the project with id={projectId}.
@@ -32,8 +39,11 @@ post:
             required: false
       responses:
         200:
+          description: the created project.
           body:
             type: JSProject
+        409:
+            description: the new project `name` already exists in the user's namespace.
     is: [rscNotFound: {id: projectId}]
   /visibility:
     put:
@@ -57,10 +67,11 @@ post:
         description: Returns a zip archive with the project files.
         responses:
           200:
-            binary/octet-stream:
-              type: file
-              fileTypes: ['application/zip']
-              description: the zip archive
+            body:
+              application/zip:
+                type: file
+                fileTypes: ['application/zip']
+                description: the zip archive
       is: [rscNotFound: {id: projectId}]
     /{path}:
       get:

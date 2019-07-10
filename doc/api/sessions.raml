@@ -36,6 +36,7 @@
   /simulate:
     get:
       description: Returns the simulation data.
+      # This route is usually returned by starting the simulation via a POST request onto `/simulate`. Its not built manually by the api users.
       queryParameters:
         format:
           type: string
@@ -61,3 +62,65 @@
         400:
           description: If provided model or parameters aren't valid.
       is: [rscNotFound: {id: sessionId}]
+  /files:
+    /update:
+      post:
+        description: Creates or updates the given `ModelicaFile`.
+        body: ModelicaFile
+        is: [rscNotFound: {id: sessionId}]
+        responses:
+          200:
+    /upload:
+      post:
+        description: Uploads a zip archive containing Modelica files.
+        body:
+          multipart/form-data:
+            formParameters:
+              archive:
+                type: file
+        responses:
+          200:
+            description: list of uploaded files.
+            body: ModelicaPath
+          400:
+            description: archive is missing.
+        is: [rscNotFound: {id: sessionId}]
+    /{path}:
+      delete:
+        description: |
+          Deletes the file with the given {path}.
+          The path must be [URL encoded](https://en.wikipedia.org/wiki/Percent-encoding).
+        responses:
+          204:
+            description: File deleted. Note that this is returned even if the file doesn't exist.
+        is: [rscNotFound: {id: sessionId}]
+    /rename:
+      put:
+        description: Renames a file.
+        body:
+          properties:
+            oldPath:
+              type: string
+              description: the *old path* to the file.
+            newPath:
+              type: string
+              description: the *new path* to the file.
+          example: |
+            {
+              "oldPath": "a/BouncingBall.mo",
+              "newPath": "a/BouncingBallnew.mo"
+            }
+        responses:
+          200:
+            description: The new path to the file.
+            body:
+              type: ModelicaPath
+          404:
+            description: oldPath not found. The origin file doesn't exist!
+          409:
+            description: newPath already exists.
+
+# POST    /sessions/:sessionId/files/update
+# POST    /sessions/:sessionId/files/upload
+# DELETE  /sessions/:sessionId/files/:path
+# PUT     /sessions/:sessionId/files/rename
