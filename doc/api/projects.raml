@@ -15,6 +15,7 @@ post:
       200:
         body:
           type: JSProject
+  is: [rscNotFound: {id: projectId}]
   delete:
     description: Delete the project with id={projectId}.
     responses:
@@ -33,6 +34,7 @@ post:
         200:
           body:
             type: JSProject
+    is: [rscNotFound: {id: projectId}]
   /visibility:
     put:
       description: Updates the visibility of the project.
@@ -48,6 +50,7 @@ post:
             type: JSProject
         400:
           description: if provided visibility isn't allowed.
+    is: [rscNotFound: {id: projectId}]
   /files:
     /download:
       get:
@@ -58,6 +61,7 @@ post:
               type: file
               fileTypes: ['application/zip']
               description: the zip archive
+      is: [rscNotFound: {id: projectId}]
     /{path}:
       get:
         description: Get the file with the given {path}.
@@ -67,6 +71,7 @@ post:
               type: ModelicaFile
           404:
             description: if {path} not found.
+      is: [rscNotFound: {id: projectId}]
   /sessions/new:
     post:
       description: creates a new session based on this project.
@@ -74,3 +79,4 @@ post:
           200:
             body:
               type: JSSession
+    is: [rscNotFound: {id: projectId}]

@@ -10,8 +10,9 @@
 /{sessionId}:
   delete:
     description: Deletes/Closes the session with id={sessionId}.
-    204:
-      description: Session deleted. Note that this is returned even if the session doesn't exist.
+    responses:
+      204:
+        description: Session deleted. Note that this is returned even if the session doesn't exist.
   /compile:
     post:
       description: Compiles this session.
@@ -20,8 +21,8 @@
       responses:
         200:
           description: List of compiler errors.
-          body:
-            type: CompilerError
+          body: CompilerError
+    is: [rscNotFound: {id: sessionId}]
   /complete:
     post:
       description: Completes the given symbol.
@@ -30,8 +31,8 @@
       responses:
         200:
           description: List of completions.
-          body:
-            type: Suggestion
+          body: Suggestion
+    is: [rscNotFound: {id: sessionId}]
   /simulate:
     get:
       description: Returns the simulation data.
@@ -44,16 +45,14 @@
           type: string
       responses:
         200:
-          body:
-            type: SimulationResult | TableFormat
+          body: SimulationResult | TableFormat
         409:
           description: Simulation not finished yet. Try again later.
         404:
           description: If there are no results and the location isn't valid.
     post:
       description: Simulates the given model with the given options.
-      body:
-        type: SimulateRequest
+      body: SimulateRequest
       responses:
         200:
           headers:
@@ -61,3 +60,4 @@
               description: Location that contains the simulation results one's the simulation finished.
         400:
           description: If provided model or parameters aren't valid.
+      is: [rscNotFound: {id: sessionId}]

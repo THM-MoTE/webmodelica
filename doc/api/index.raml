@@ -5,6 +5,7 @@ version: v1
 mediaType: application/json
 baseUri: https://staging-webmodelica.mni.thm.de/api/{version}/webmodelica
 types: !include types.raml
+traits: !include traits.raml
 /info:
   get:
     description: Gets application specific informations, like version, license and commit hash.
