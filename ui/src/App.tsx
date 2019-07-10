@@ -64,7 +64,7 @@ class App extends Component {
             <AuthenticatedRoute exact path="/projects/:projectId/preview" component={withApi(client, ProjectPreview)} />
             <AuthenticatedRoute exact path="/session/:sessionId/simulate" component={withApi(client, SimulationPane)} />
             <AuthenticatedRoute exact path="/session/:sessionId" component={withApi(client, SessionPane)} />
-            <Route path="*" component={NotFound} />
+            <Route component={NotFound} />
           </Switch>
         </Router>
       </Provider>
