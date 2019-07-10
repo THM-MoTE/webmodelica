@@ -6,6 +6,28 @@ mediaType: application/json
 baseUri: https://staging-webmodelica.mni.thm.de/api/{version}/webmodelica
 types: !include types.raml
 traits: !include traits.raml
+securitySchemes:
+  oauth:
+    type: OAuth 2.0
+    description: |
+      OAuth 2.0 authentication provided by the authentication service.
+      *Either* provide the `Authorization` header or the `Cookie` token.
+      Both is returned when the user logged in.
+    describedBy:
+      headers:
+        Authorization:
+          description: |
+            Used to send a valid OAuth 2 access token.
+            Do not use in conjunction with the cookie parameter.
+          type: string
+          required: false
+        Cookie:
+          description: |
+            Contains the OAuth token.
+            Do not use in conjunction with the header parameter.
+          type: string
+          required: false
+securedBy: [oauth]
 /info:
   get:
     description: Gets application specific informations, like version, license and commit hash.
@@ -13,6 +35,7 @@ traits: !include traits.raml
       200:
         body:
           type: Infos
+    securedBy: []
 /projects: !include projects.raml
 /sessions: !include sessions.raml
 
