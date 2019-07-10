@@ -20,7 +20,8 @@
       responses:
         200:
           description: List of compiler errors.
-          type: CompilerError
+          body:
+            type: CompilerError
   /complete:
     post:
       description: Completes the given symbol.
@@ -29,7 +30,8 @@
       responses:
         200:
           description: List of completions.
-          type: Suggestion
+          body:
+            type: Suggestion
   /simulate:
     get:
       description: Returns the simulation data.
@@ -42,7 +44,8 @@
           type: string
       responses:
         200:
-          type: SimulationResult | TableFormat
+          body:
+            type: SimulationResult | TableFormat
         409:
           description: Simulation not finished yet. Try again later.
         404:

@@ -123,6 +123,19 @@ object SchemaGenerator
     TpeWrapper(JSSession(Session(project), List(path))),
     TpeWrapper(path),
     TpeWrapper(file),
+    TpeWrapper(FilePosition(2,0)),
+    TpeWrapper(FilePath("a/b/random.mo")),
+    TpeWrapper(Suggestion("function",
+      "random",
+      Some(Seq("start", "end")),
+      Some("generates random numbers between start & end."),
+      Some("real"))),
+    TpeWrapper(CompilerError("Error",
+      "a/b/random.mo",
+      FilePosition(1,5),
+      FilePosition(2,0),
+      "incompatible types, expected real found string")),
+    TpeWrapper(Complete("a/b/random.mo", FilePosition(2,0), "Modelica.Elec")),
   )
 
   val exampleFiles = models.map(model => (model.name, generateExample(model))).toMap
