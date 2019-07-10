@@ -62,6 +62,20 @@ post:
           description: if provided visibility isn't allowed.
     is: [rscNotFound: {id: projectId}]
   /files:
+    get:
+      description: Returns all files of this project.
+      queryParameters:
+        format:
+          type: string
+          required: false
+          default: "list"
+          enum: ["list", "tree"]
+      responses:
+        200:
+         description: Either a list of ModelicaFile's or a FileTree that represents the project directory.
+         body:
+           type: ModelicaFile | FileTree
+    is: [rscNotFound: {id: projectId}]
     /download:
       get:
         description: Returns a zip archive with the project files.

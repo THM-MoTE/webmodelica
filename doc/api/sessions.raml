@@ -41,7 +41,8 @@
         format:
           type: string
           required: false
-          pattern: (default)|(csv)|(chartjs)
+          default: "default"
+          enum: ["default", "csv", "chartjs"]
         addr:
           type: string
       responses:
