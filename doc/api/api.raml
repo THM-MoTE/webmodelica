@@ -20,12 +20,14 @@ securitySchemes:
             Used to send a valid OAuth 2 access token.
             Do not use in conjunction with the cookie parameter.
           type: string
+          example: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJ...
           required: false
         Cookie:
           description: |
             Contains the OAuth token.
             Do not use in conjunction with the header parameter.
           type: string
+          example: token=eyJ0eXAiOiJKV1QiLCJhbGciOiJ...
           required: false
 securedBy: [oauth]
 /webmodelica/info:
