@@ -41,6 +41,58 @@ securedBy: [oauth]
 /webmodelica/projects: !include projects.raml
 /webmodelica/sessions: !include sessions.raml
 
+/users:
+  /{username}:
+    get:
+      description: |
+        Returns the user informations for this user.
+        You can only retrieve user informations for the logged in user.
+      responses:
+        200:
+          body:
+            example: !include examples/user-example.json
+/auths:
+  get:
+    description: Returns all available login providers.
+    responses:
+      200:
+        body:
+          example: !include examples/auths-example.json
+    securedBy: []
+  /{provider}:
+    get:
+      description: |
+        Returns the login page for the given provider.
+        - if {provider}=github the user is redirected to GitHub
+        - if {provider}=cas3 the user is redirected to CAS
+        - ...
+      securedBy: []
+  /developer/callback:
+    post:
+      description: |
+        Authenticates the user through developer login.
+        This is only enabled in production and requires that the user already  exists in the user service.
+      body:
+        multipart/form-data:
+          properties:
+            username:
+              description: the username to login.
+              type: string
+              required: true
+      responses:
+        302:
+          description: redirect to frontend with authentication cookie set.
+          headers:
+            Authorization:
+              description: the authentication token.
+              type: string
+              example: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJ...
+            Cookie:
+              description: the authentication token.
+              type: string
+              example: token=eyJ0eXAiOiJKV1QiLCJhbGciOiJ...
+      securedBy: []
+
 # POST    /users/register
 # POST    /users/login
 # POST    /users/refresh

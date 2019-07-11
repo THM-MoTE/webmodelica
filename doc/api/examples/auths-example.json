@@ -1,0 +1,28 @@
+{
+  "data": [
+    {
+      "color": "#666",
+      "icon": "database",
+      "name": "Developer",
+      "provider": "developer"
+    },
+    {
+      "color": "#00796b",
+      "icon": "database",
+      "name": "Database login",
+      "provider": "identity"
+    },
+    {
+      "color": "#80ba24",
+      "icon": "mortar-board",
+      "name": "THM CAS",
+      "provider": "cas3"
+    },
+    {
+      "color": "f5f5f5",
+      "icon": "mark-github",
+      "name": "GitHub",
+      "provider": "github"
+    }
+  ]
+}
