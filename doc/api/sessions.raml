@@ -76,9 +76,11 @@
         description: Uploads a zip archive containing Modelica files.
         body:
           multipart/form-data:
-            formParameters:
+            properties:
               archive:
+                description: file to upload.
                 type: file
+                fileTypes: ['aplication/zip']
         responses:
           200:
             description: list of uploaded files.
