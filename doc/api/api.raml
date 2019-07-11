@@ -30,27 +30,7 @@ securitySchemes:
           example: token=eyJ0eXAiOiJKV1QiLCJhbGciOiJ...
           required: false
 securedBy: [oauth]
-/webmodelica/info:
-  get:
-    description: Gets application specific informations, like version, license and commit hash.
-    responses:
-      200:
-        body:
-          type: Infos
-    securedBy: []
-/webmodelica/projects: !include projects.raml
-/webmodelica/sessions: !include sessions.raml
 
-/users:
-  /{username}:
-    get:
-      description: |
-        Returns the user informations for this user.
-        You can only retrieve user informations for the logged in user.
-      responses:
-        200:
-          body:
-            example: !include examples/user-example.json
 /auths:
   get:
     description: Returns all available login providers.
@@ -92,6 +72,27 @@ securedBy: [oauth]
               type: string
               example: token=eyJ0eXAiOiJKV1QiLCJhbGciOiJ...
       securedBy: []
+/users:
+  /{username}:
+    get:
+      description: |
+        Returns the user informations for this user.
+        You can only retrieve user informations for the logged in user.
+      responses:
+        200:
+          body:
+            example: !include examples/user-example.json
+
+/webmodelica/info:
+  get:
+    description: Gets application specific informations, like version, license and commit hash.
+    responses:
+      200:
+        body:
+          type: Infos
+    securedBy: []
+/webmodelica/projects: !include projects.raml
+/webmodelica/sessions: !include sessions.raml
 
 # POST    /users/register
 # POST    /users/login
