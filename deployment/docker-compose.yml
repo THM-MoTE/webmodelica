@@ -44,8 +44,7 @@ services:
       - ../private/data:/home/openmodelica/data
       - ./config/mope.conf:/home/openmodelica/.config/mope/mope.conf
   user-svc:
-    #image: thmmote/webmodelica-user-svc:0.1.3-1
-    image: hobbypunk90/mt-services-user:0.0.1
+    image: hobbypunk90/mt-services-user:fa26b3d
     restart: on-failure
     ports:
       - 9012:3000
@@ -63,8 +62,7 @@ services:
       - "traefik.port=3000"
       - "de.thm.webmodelica.name=webmodelica-user-svc"
   auth-svc:
-    #image: thmmote/webmodelica-auth-svc:0.0.4
-    image: hobbypunk90/mt-services-auth:0.0.1
+    image: hobbypunk90/mt-services-auth:e3e9aab
     restart: on-failure
     ports:
       - 9013:3000
