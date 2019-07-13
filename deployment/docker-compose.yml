@@ -62,7 +62,7 @@ services:
       - "traefik.port=3000"
       - "de.thm.webmodelica.name=webmodelica-user-svc"
   auth-svc:
-    image: hobbypunk90/mt-services-auth:e3e9aab
+    image: hobbypunk90/mt-services-auth:0.0.3
     restart: on-failure
     ports:
       - 9013:3000
