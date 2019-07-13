@@ -51,11 +51,11 @@ class WmContainerCon extends React.Component<any, any> {
       <Navbar>
         <Navbar.Brand href="#home">{this.appName} {this.props.title}</Navbar.Brand>
         <Navbar.Toggle />
-        {this.props.username && (
+            {this.props.displayName && (
           <div className="collapse navbar-collapse justify-content-end">
             {this.simLink()}
             <Nav.Item><Nav.Link href="/projects"><Octicon name="repo" /> Projects</Nav.Link></Nav.Item>
-            <NavDropdown title={this.props.username} id="nav-profile-dropwdown">
+              <NavDropdown title={this.props.displayName} id="nav-profile-dropwdown">
               <NavDropdown.Item href="/logout"><Octicon name="sign-out" /> Logout</NavDropdown.Item>
             </NavDropdown>
           </div>
@@ -85,7 +85,7 @@ class WmContainerCon extends React.Component<any, any> {
 }
 
 function mapProps(state: AppState) {
-  return { username: oc(state).authentication.username(), notifications: state.notifications }
+  return { displayName: oc(state).authentication.displayName(), notifications: state.notifications }
 }
 
 export const WmContainer = connect(mapProps, null)(WmContainerCon)

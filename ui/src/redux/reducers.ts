@@ -5,6 +5,7 @@ import { Action, ActionTypes } from './actions'
 import * as utils from '../utils'
 import * as R from 'ramda'
 import { CompilerError, AuthServiceToken, WebmodelicaToken } from '../models/index';
+import { oc } from 'ts-optchain';
 
 const reducerMap = {
   [ActionTypes.SetProjects.toString()]: (state: AppState, data: Project[]) => { return { ...state, projects: data } },
@@ -20,10 +21,17 @@ const reducerMap = {
   [ActionTypes.UpdateWsToken.toString()]: (state: AppState, token: string) => {
     //if the token came from auth-service it has a different structure than our token
     let payload: AuthServiceToken | WebmodelicaToken = JSON.parse(atob(token.split('.')[1]))
+
     let obj = { ...state }
     if ('data' in payload) { //payload is a AuthServiceToken
+      //if there is either a first_name, last_name or both use it as displayName. if not use the 'username'
+      let firstName = payload.data.first_name || ""
+      let lastName =  payload.data.last_name || ""
+      let displayName = (firstName+" "+lastName).trim()
+      displayName = (R.isEmpty(displayName)) ? payload.data.username : displayName
       obj.authentication = {
         username: payload.data.username,
+        displayName: displayName,
         token: {
           username: payload.data.username,
           //exp are in seconds, JS-Dates take miliseconds => *1000
@@ -34,6 +42,7 @@ const reducerMap = {
     } else {
       obj.authentication = { //payload is WebmodelicaToken
         username: payload.username,
+        displayName: payload.username,
         token: {
           username: payload.username,
           //exp are in seconds, JS-Dates take miliseconds => *1000
