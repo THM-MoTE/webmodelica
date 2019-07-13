@@ -1,18 +1,6 @@
 
-import { CompilerError, File, FilePath, FileNode, Project, TableFormat } from './index'
+import { CompilerError, File, FilePath, FileNode, Project, TableFormat, UserAuth } from './index'
 import {isFuture} from 'date-fns'
-
-export interface UserAuth {
-  username: string
-  token: JwtToken
-}
-
-/** the authentication token. */
-export interface JwtToken {
-  username: string
-  expires: Date
-  raw: string
-}
 
 export interface Session {
   project: Project //the underlying project
