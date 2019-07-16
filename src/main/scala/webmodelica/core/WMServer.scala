@@ -8,9 +8,19 @@
 
 package webmodelica.core
 
+import webmodelica.controllers._
+import webmodelica.models._
+import com.typesafe.scalalogging.LazyLogging
+import com.softwaremill.macwire._
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
+import akka.http.scaladsl.server._
+import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.Http
+
 object WMServerMain extends WMServer
 
-class WMServer {
+class WMServer extends LazyLogging {
   def main(mainArgs: Array[String]) = {
     val module = new WebmodelicaModule {
       override def arguments:Seq[String] = mainArgs
@@ -21,5 +31,28 @@ class WMServer {
 
   def bootstrap(module:WebmodelicaModule): Unit = {
     import module._
+    val ctrl = wire[AkkaProjectController]
+    val routes:Route = ctrl.routes
+    val bindingFuture = Http().bindAndHandle(routes, args.interface(), args.port())
+
+    val token = tokenGenerator.newToken(User("nico", "nico@xample.org", None, None, hashedPassword="abcdef12345"))
+    logger.debug(s"test token is $token")
+
+    bindingFuture onComplete {
+      case scala.util.Success(_) =>
+        logger.info("Server running at {}:{}", args.interface(), args.port())
+      case scala.util.Failure(ex) =>
+        logger.error("Failed to start server at {}:{} - {}", args.interface(), args.port(), ex.getMessage)
+        actorSystem.terminate()
+    }
+
+    scala.sys.addShutdownHook {
+      bindingFuture
+        .flatMap(_.unbind())
+        .onComplete { _ =>
+          actorSystem.terminate()
+        }
+      Await.ready(actorSystem.whenTerminated, 60.seconds)
+    }
   }
 }
