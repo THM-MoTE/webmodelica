@@ -1,0 +1,14 @@
+{
+  "project" : {
+    "id" : "tim_awesomeProject",
+    "owner" : "tim",
+    "name" : "awesomeProject",
+    "visibility" : "private"
+  },
+  "id" : "ffcfc36b-b122-4b49-aacb-9d9120fc8b4a",
+  "files" : [
+    {
+      "relativePath" : "a/b/fac.mo"
+    }
+  ]
+}

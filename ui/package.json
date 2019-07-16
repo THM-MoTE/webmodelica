@@ -32,7 +32,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "generate-doc": "asciidoctorjs -o public/documentation.html ../doc/readme.adoc && cp -r ../doc/images public/ && raml2html ../doc/api/api.raml > public/api.html"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -47,6 +48,10 @@
   "devDependencies": {
     "@types/ramda": "^0.25.50",
     "@types/react-redux": "^7.0.1",
-    "@types/react-router-dom": "^4.3.1"
+    "@types/react-router-dom": "^4.3.1",
+    "asciidoctor": "^2.0.3",
+    "asciidoctor.js": "^1.5.9",
+    "raml2html": "^7.4.0",
+    "raml2html-slate-theme": "^2.4.0"
   }
 }

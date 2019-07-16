@@ -199,7 +199,7 @@ class SessionController@Inject()(
                   name,
                   tableData,
                   "time"::headers,
-                  if(originalVariablesSize>maxSimulationData.value) Some(s"The plot doesn't contain all variables ($originalVariablesSize). Variables stripped to ${maxSimulationData.value}. ")
+                  if(originalVariablesSize>maxSimulationData.value) Some(s"The plot doesn't contain all variables ($originalVariablesSize). Variables stripped to ${variables.values.head.size}. ")
                   else None
                 ))
               case results => Future.value(results)

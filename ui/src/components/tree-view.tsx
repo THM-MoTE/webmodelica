@@ -131,10 +131,13 @@ export class TreeViewCon extends React.Component<Props,State> {
     //if the node is a directory, there is no 'file' property, however we need it to rename or delete the directory
     node.file = (node.file) ? node.file : {relativePath: node.path, content: ""}
 
+    //only open file if it's a file. if it's a file the node is a leaf, therefore has no children
+    const onClickHandler = (!node.children) ? () => this.props.onFileClicked(node.file) : undefined
+
     const splitButton = () => (
       <SplitButton
         title={btnTitle}
-        onClick={() => this.props.onFileClicked(node.file) }
+        onClick={onClickHandler}
         key={node.path+"/"+node.path}
         size="sm"
         id={`file-view-dropdown-${node.name}`}

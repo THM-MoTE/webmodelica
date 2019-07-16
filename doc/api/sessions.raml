@@ -1,0 +1,129 @@
+# DELETE  /sessions/:sessionId
+# POST    /sessions/:sessionId/files/update
+# POST    /sessions/:sessionId/files/upload
+# DELETE  /sessions/:sessionId/files/:path
+# PUT     /sessions/:sessionId/files/rename
+# POST    /sessions/:sessionId/compile
+# POST    /sessions/:sessionId/complete
+# POST    /sessions/:sessionId/simulate
+# GET     /sessions/:sessionId/simulate
+/{sessionId}:
+  delete:
+    description: Deletes/Closes the session with id={sessionId}.
+    responses:
+      204:
+        description: Session deleted. Note that this is returned even if the session doesn't exist.
+  /compile:
+    post:
+      description: Compiles this session.
+      body:
+        type: FilePath
+      responses:
+        200:
+          description: List of compiler errors.
+          body: CompilerError
+    is: [rscNotFound: {id: sessionId}]
+  /complete:
+    post:
+      description: Completes the given symbol.
+      body:
+        type: Complete
+      responses:
+        200:
+          description: List of completions.
+          body: Suggestion
+    is: [rscNotFound: {id: sessionId}]
+  /simulate:
+    get:
+      description: Returns the simulation data.
+      # This route is usually returned by starting the simulation via a POST request onto `/simulate`. Its not built manually by the api users.
+      queryParameters:
+        format:
+          type: string
+          required: false
+          default: "default"
+          enum: ["default", "csv", "chartjs"]
+        addr:
+          type: string
+      responses:
+        200:
+          body: SimulationResult | TableFormat
+        409:
+          description: Simulation not finished yet. Try again later.
+        404:
+          description: If there are no results and the location isn't valid.
+    post:
+      description: Simulates the given model with the given options.
+      body: SimulateRequest
+      responses:
+        200:
+          headers:
+            Location:
+              description: Location that contains the simulation results one's the simulation finished.
+        400:
+          description: If provided model or parameters aren't valid.
+      is: [rscNotFound: {id: sessionId}]
+  /files:
+    /update:
+      post:
+        description: Creates or updates the given `ModelicaFile`.
+        body: ModelicaFile
+        is: [rscNotFound: {id: sessionId}]
+        responses:
+          200:
+    /upload:
+      post:
+        description: Uploads a zip archive containing Modelica files.
+        body:
+          multipart/form-data:
+            properties:
+              archive:
+                description: file to upload.
+                type: file
+                fileTypes: ['aplication/zip']
+        responses:
+          200:
+            description: list of uploaded files.
+            body: ModelicaPath
+          400:
+            description: archive is missing.
+        is: [rscNotFound: {id: sessionId}]
+    /{path}:
+      delete:
+        description: |
+          Deletes the file with the given {path}.
+          The path must be [URL encoded](https://en.wikipedia.org/wiki/Percent-encoding).
+        responses:
+          204:
+            description: File deleted. Note that this is returned even if the file doesn't exist.
+        is: [rscNotFound: {id: sessionId}]
+    /rename:
+      put:
+        description: Renames a file.
+        body:
+          properties:
+            oldPath:
+              type: string
+              description: the *old path* to the file.
+            newPath:
+              type: string
+              description: the *new path* to the file.
+          example: |
+            {
+              "oldPath": "a/BouncingBall.mo",
+              "newPath": "a/BouncingBallnew.mo"
+            }
+        responses:
+          200:
+            description: The new path to the file.
+            body:
+              type: ModelicaPath
+          404:
+            description: oldPath not found. The origin file doesn't exist!
+          409:
+            description: newPath already exists.
+
+# POST    /sessions/:sessionId/files/update
+# POST    /sessions/:sessionId/files/upload
+# DELETE  /sessions/:sessionId/files/:path
+# PUT     /sessions/:sessionId/files/rename

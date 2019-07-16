@@ -19,6 +19,42 @@ NOTE: The preferred authentication method is through the _Authentication header_
       This header is set by the frontend and used in each ajax call.
       The inital login uses a cookie instead, because redirects don't allow any headers.
 
+The generated JWT has the following structure:
+
+[source, json]
+----
+{
+  "iss": "auth", <1>
+  "iat": 1562851232, <2>
+  "sub": "test",
+  "data": { <3>
+    "username": "test",
+    "first_name": "Test",
+    "last_name": null,
+    "email": "test@xample.com",
+    "role": "student",
+    "created_at": "2019-07-10T14:41:35.164+02:00",
+    "updated_at": "2019-07-10T14:41:35.164+02:00",
+    "avatar_type": "generator",
+    "avatar_url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAABlBMVEVymc3///+7AkCtAAAAkElEQVR4nO3YSwqAIBSFYZPAaTtoKS0t2llLaQlNHYRxA7EXOLyi/x1pfMgZiR0bMmNNZgAAJRC65/QKGQAAAKBa4OVmfcPjum8/J0zyYtgUQgIAAEDdwKXfslU+jWlfTkgAAAAAAAAAQMvAx6LAmEVWg6z8f3ugFhIAAACaAbNUBrtuBkDpwMVm6T6urrrpBLXfUOFSQqWQAAAAAElFTkSuQmCC",
+    "avatar_gravatar_url": "https://www.gravatar.com/avatar/a5ff9a6a16910c9a873916f859bb9223",
+    "avatar_generator_url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAABlBMVEVymc3///+7AkCtAAAAkElEQVR4nO3YSwqAIBSFYZPAaTtoKS0t2llLaQlNHYRxA7EXOLyi/x1pfMgZiR0bMmNNZgAAJRC65/QKGQAAAKBa4OVmfcPjum8/J0zyYtgUQgIAAEDdwKXfslU+jWlfTkgAAAAAAAAAQMvAx6LAmEVWg6z8f3ugFhIAAACaAbNUBrtuBkDpwMVm6T6urrrpBLXfUOFSQqWQAAAAAElFTkSuQmCC",
+    "identities": [
+      {
+        "provider": "developer",
+        "username": "test"
+      }
+    ]
+  },
+  "exp": 1562937632 <4>
+}
+----
+
+<1> is the _issuer_ of the token. this is always `auth`.
+<2> is the _issuedAt_ timestamp in seconds since UNIX-epoch
+<3> is the _user information payload_. The payload contains all user informations.
+<4> is the _expiresAt_ timestamp in seconds since UNIX-epoch
+
 === Notes
 * AuthSvc refers to the `thmmote/webmodelica-auth-svc` docker image configured in the auth-svc service definition
 * UserSvc refers to the `thmmote/webmodelica-user-svc` docker image configured in the user-svc service definition

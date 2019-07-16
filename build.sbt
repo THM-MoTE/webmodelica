@@ -38,3 +38,10 @@ lazy val root = (project in file("."))
     //   "com.google.guava"         % "guava"  % "19.0"
     // ),
   )
+
+lazy val schemaGenerator = (project in file("./schema-generator"))
+  .settings(Common.settings)
+  .settings(
+    scalaSource in Compile := baseDirectory.value / "src",
+    libraryDependencies ++= Dependencies.generatorDeps)
+  .dependsOn(root)

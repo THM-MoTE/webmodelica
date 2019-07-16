@@ -54,12 +54,31 @@ TIP: setting up a development environment is described here:
       link:doc/sections/dependencies.adoc[Development Setup]
 
 The developer documentation is available in _doc/_.
-You can generate a html file:
+You can generate a html file using asciidoctor.js:
 
 [source, sh]
 ----
-$ make deps #install dependencies
-$ make #generate html file
+$ cd ui
+$ npm run generate-doc
 ----
 
-NOTE: you need _bundler_ to install the dependencies.
+The resulting documentation is available at `ui/public/documentation.html`.
+
+TIP: the documentation is also generated during deployment and available at https://staging-webmodelica.mni.thm.de/documentation.html[staging-webmodelica].
+
+== API Documentation
+
+The API documentation is written using https://raml.org/developers/raml-100-tutorial[RAML] and available in _doc/api/api.raml_.
+You can generate a html file by running:
+
+[source, sh]
+----
+$ cd ui
+$ npm run generate-doc
+----
+
+The resulting documentation is available at `ui/public/api.html`.
+
+Type declarations and examples - available in `doc/api/types.raml` - are generated in the subproject _schema-generator/_.
+This project uses Avro4s to generate https://json-schema.org/[JSON Schema] definitions from the provided Scala case classes.
+The generator is in `schema-generator/src/webmodelica/SchemaGenerator.scala`, you can execute it using: `$ sbt run schemaGenerator/run`.

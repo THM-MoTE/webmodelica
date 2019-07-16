@@ -35,7 +35,7 @@ object Common {
 }
 
 object Dependencies {
-  val finatraVersion = "19.1.0"
+  val finatraVersion = "19.6.0"
 
   val utils = Seq(
     "com.github.pureconfig" %% "pureconfig" % "0.10.1",
@@ -43,6 +43,7 @@ object Dependencies {
     "com.github.pathikrit" %% "better-files" % "3.7.+",
     "io.scalaland" %% "chimney" % "0.3.+",
     "com.pauldijou" %% "jwt-core" % "1.1.+",
+    "ch.qos.logback" % "logback-classic" % "1.2.3",
     "com.softwaremill.macwire" %% "macros" % "2.3.+",
     "org.rogach" %% "scallop" % "3.3.+",
     "com.typesafe.scala-logging" %% "scala-logging" % "3.9.+",
@@ -50,17 +51,18 @@ object Dependencies {
 
   val akka = Seq(
     "com.typesafe.akka" %% "akka-http"   % "10.1.8",
-    "com.typesafe.akka" %% "akka-stream" % "2.5.23"
-  )
+    "com.typesafe.akka" %% "akka-stream" % "2.5.23")
 
   val deps = Seq(
     "com.twitter"   %% "finatra-http"    % finatraVersion,
     "com.twitter" %% "finagle-redis" % finatraVersion,
-    "ch.qos.logback" % "logback-classic" % "1.2.3",
-    "javax.activation" % "activation" % "1.1.1", //java EE package needed for finagle because it's not provided anymore since java 11
     "org.mongodb.scala" %% "mongo-scala-driver" % "2.5.+",
     "org.scalatest" %% "scalatest" % "3.0.+" % "test",
     "org.scalacheck" %% "scalacheck" % "1.14.+" % "test",
     "io.github.finagle" %% "featherbed" % "0.3.+",
   ) ++ utils ++ akka
+
+  val generatorDeps = Seq(
+    "com.sksamuel.avro4s" %% "avro4s-core" % "3.0.0-RC2"
+  ) ++ utils
 }

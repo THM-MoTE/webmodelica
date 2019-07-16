@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { WmContainer } from '../partials/container'
-import { Button, ButtonGroup, Form, Alert } from 'react-bootstrap'
+import { Button, ButtonGroup, Form, Alert, Row, Col } from 'react-bootstrap'
 //@ts-ignore
 import Octicon from 'react-octicon'
-import { ApiClient } from '../services/api-client'
+import { ApiClient, baseApiPrefix } from '../services/api-client'
 import { Redirect } from 'react-router'
 import { defaultMapDispatchToProps, mapAuthenticationToProps } from '../redux'
 import { Action, updateToken, notifyError } from '../redux/index'
@@ -26,7 +26,10 @@ interface Props {
 interface State {
   providers: AuthProvider[]
   errors: string[]
+  developerUsers: string[]
 }
+
+const isDeveloperProvider =(p:AuthProvider) => p.provider === 'developer'
 
 class LoginComponentCon extends React.Component<Props, State> {
   private username: string = ''
@@ -34,7 +37,7 @@ class LoginComponentCon extends React.Component<Props, State> {
 
   constructor(p:Props) {
     super(p)
-    this.state = { errors: [], providers: [] }
+    this.state = { errors: [], providers: [], developerUsers: [] }
   }
 
   private handleSubmit(ev: any) {
@@ -51,12 +54,39 @@ class LoginComponentCon extends React.Component<Props, State> {
 
   componentDidMount() {
     //check if auth-service redireted us here and gave us a cookie
-    if(cookies.Authentication) {
-      this.props.updateToken(cookies.Authentication)
+    if(cookies.token) {
+      this.props.updateToken(cookies.token)
     } else if(!userIsAuthenticated(this.props.authentication)) {
       this.props.api.getAuthenticationProviders()
-        .then(providers => this.setState({providers}))
+        .then(providers => {
+          if (providers.find(isDeveloperProvider)) {
+            return this.props.api.getDeveloperUsers()
+              .then(users => [providers, users])
+          } else { return Promise.resolve([providers, [] as string[]])}
+        })
+        .then(([providers, developerUsers]) => this.setState({providers: providers as AuthProvider[], developerUsers: developerUsers as string[]}))
         .catch((err:ApiError) => this.props.notifyError("couldn't fetch OAuth providers: "+err.statusText))
+    }
+  }
+
+  developerLogin() {
+    const users = this.state.developerUsers
+    if (!R.isEmpty(users)) {
+      return (<>
+        <Form action={`api/v1/auths/developer/callback`} style={{marginTop: '4em'}}>
+          <Form.Row>
+          <Form.Group as={Col}>
+              <Form.Label>Developer Login</Form.Label>
+              <Form.Control as="select" id="username" name="username">
+              {users.map(username => <option key={username}>{username}</option>)}
+            </Form.Control>
+          </Form.Group>
+          </Form.Row>
+          <Button type="submit" variant="secondary">Developer Login</Button>
+        </Form>
+      </>)
+    } else {
+      return (<></>)
     }
   }
 
@@ -81,7 +111,7 @@ class LoginComponentCon extends React.Component<Props, State> {
               </Form.Group>
               {renderErrors(this.state.errors)}
               <ButtonGroup>
-                {this.state.providers.map(p =>
+                {this.state.providers.filter(p => !isDeveloperProvider(p)).map(p =>
                   (<Button variant="secondary" href={p.uri} key={p.name} style={ {backgroundColor: p.color, borderColor: p.color} }>
                     {p.icon && (<Octicon name={p.icon}/>)}&nbsp;
                     {p.name}
@@ -92,8 +122,9 @@ class LoginComponentCon extends React.Component<Props, State> {
                 </Button>
               </ButtonGroup>
             </Form>
+            {this.developerLogin()}
           </div>
-        </div>
+          </div>
       )
     }
   }

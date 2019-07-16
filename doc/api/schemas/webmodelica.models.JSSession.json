@@ -1,0 +1,41 @@
+{
+  "type" : "record",
+  "name" : "JSSession",
+  "namespace" : "webmodelica.models",
+  "fields" : [ {
+    "name" : "project",
+    "type" : {
+      "type" : "record",
+      "name" : "JSProject",
+      "fields" : [ {
+        "name" : "id",
+        "type" : "string"
+      }, {
+        "name" : "owner",
+        "type" : "string"
+      }, {
+        "name" : "name",
+        "type" : "string"
+      }, {
+        "name" : "visibility",
+        "type" : "string"
+      } ]
+    }
+  }, {
+    "name" : "id",
+    "type" : "string"
+  }, {
+    "name" : "files",
+    "type" : {
+      "type" : "array",
+      "items" : {
+        "type" : "record",
+        "name" : "ModelicaPath",
+        "fields" : [ {
+          "name" : "relativePath",
+          "type" : "string"
+        } ]
+      }
+    }
+  } ]
+}

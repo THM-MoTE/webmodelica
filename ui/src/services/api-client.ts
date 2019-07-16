@@ -20,7 +20,7 @@ function rejectError(res: Response): Promise<Response> {
 }
 
 const authHeader = "Authorization"
-const baseApiPrefix = "/api/v1/"
+export const baseApiPrefix = "/api/v1/"
 const apiPrefix = baseApiPrefix + "webmodelica/"
 
 function backendUri(baseApi: string = apiPrefix): string {
@@ -65,7 +65,7 @@ export class ApiClient {
   private updateWSToken(res: Response): Response {
     const headerOpt = res.headers.get(authHeader)
     if (headerOpt) {
-      document.cookie = `Authorization=${headerOpt}; path=/;`
+      document.cookie = `token=${headerOpt}; path=/;`
       this.store.dispatch(updateToken(headerOpt))
     }
     return res
@@ -89,7 +89,13 @@ export class ApiClient {
     return fetch(this.authUri())
       .then(rejectError)
       .then(res => res.json())
-      .then((obj:any) => parseAuthPayload(this.authUri(), obj))
+      .then((obj: any) => parseAuthPayload(this.authUri(), obj))
+  }
+  public getDeveloperUsers(): Promise<string[]> {
+    return fetch(this.authUri()+'/developer/usernames')
+        .then(rejectError)
+        .then(res => res.json())
+        .then(pl => pl.data)
   }
 
   public login(user: string, pw: string): Promise<TokenWrapper> {
@@ -303,16 +309,13 @@ export class ApiClient {
 
   public getFile(project: string | Project, path: string): Promise<File> {
     const pid = (typeof project === "string") ? project : project.id
-    return this.withSession("can't fetch file without session!")
-      .then(session => {
-        const url = new URL(this.projectUri() + `/${pid}/files/${encodeURIComponent(path)}`)
-        return fetch(url.toString(), {
-          headers: {
-            [authHeader]: this.token(),
-            'Accept': 'application/json'
-          }
-        })
-      })
+    const url = new URL(this.projectUri() + `/${pid}/files/${encodeURIComponent(path)}`)
+    return fetch(url.toString(), {
+      headers: {
+        [authHeader]: this.token(),
+        'Accept': 'application/json'
+      }
+    })
       .then(rejectError)
       .then(this.updateWSToken.bind(this))
       .then(res => res.json())

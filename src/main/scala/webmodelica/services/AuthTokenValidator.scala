@@ -15,7 +15,10 @@ import java.nio.file.{Files, Path}
 import io.circe.generic.JsonCodec
 import webmodelica.constants
 import webmodelica.conversions.futures
-import webmodelica.models.AuthUser
+import webmodelica.models.{
+  AuthUser,
+  User
+}
 import io.scalaland.chimney.dsl._
 
 sealed trait PublicKey {
@@ -27,11 +30,11 @@ case class KeyFile(file:Path) extends PublicKey {
 case class KeyString(override val key:String) extends PublicKey
 
 @JsonCodec
-case class AuthTokenPayload(user: AuthUser, exp:Long) {
+case class AuthTokenPayload(data: AuthUser, iat:Long, exp:Long) {
+  def toUser:User = data.toUser
   def toUserToken:UserToken =
     this.into[UserToken]
-      .withFieldComputed(_.username, _.user.username)
-      .withFieldConst(_.iat, None)
+      .withFieldComputed(_.username, _.data.username)
       .transform
 }
 
@@ -42,15 +45,16 @@ trait AuthTokenValidator extends TokenValidator {
   private val secret = publicKey.key
   private val algorithm = Seq(JwtAlgorithm.RS256)
 
-  override def isValid(token:String): Boolean = Jwt.isValid(token, secret, algorithm)
-  override def decode(token:String): Future[UserToken] = {
+  private def decodeTokenPayload(token:String):Future[AuthTokenPayload] = {
     val tokenTry = Jwt.decodeAll(token,secret, algorithm).toEither
       .flatMap { case (_, payload, _) => parser.parse(payload) }
       .flatMap(_.as[AuthTokenPayload])
-      .map(_.toUserToken)
-
     futures.eitherToFuture(tokenTry)
   }
+
+  override def isValid(token:String): Boolean = Jwt.isValid(token, secret, algorithm)
+  override def decode(token:String): Future[UserToken] = decodeTokenPayload(token).map(_.toUserToken)
+  override def decodeToUser(token:String): Future[Option[User]] = decodeTokenPayload(token).map(a => Some(a.toUser))
 
   override def toString: String = s"AuthTokenValidator($publicKey)"
 }

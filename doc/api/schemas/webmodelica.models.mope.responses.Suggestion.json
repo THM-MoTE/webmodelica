@@ -1,0 +1,24 @@
+{
+  "type" : "record",
+  "name" : "Suggestion",
+  "namespace" : "webmodelica.models.mope.responses",
+  "fields" : [ {
+    "name" : "kind",
+    "type" : "string"
+  }, {
+    "name" : "name",
+    "type" : "string"
+  }, {
+    "name" : "parameters",
+    "type" : [ "null", {
+      "type" : "array",
+      "items" : "string"
+    } ]
+  }, {
+    "name" : "classComment",
+    "type" : [ "null", "string" ]
+  }, {
+    "name" : "type",
+    "type" : [ "null", "string" ]
+  } ]
+}

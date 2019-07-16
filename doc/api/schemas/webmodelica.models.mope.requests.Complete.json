@@ -1,0 +1,26 @@
+{
+  "type" : "record",
+  "name" : "Complete",
+  "namespace" : "webmodelica.models.mope.requests",
+  "fields" : [ {
+    "name" : "file",
+    "type" : "string"
+  }, {
+    "name" : "position",
+    "type" : {
+      "type" : "record",
+      "name" : "FilePosition",
+      "namespace" : "webmodelica.models.mope",
+      "fields" : [ {
+        "name" : "line",
+        "type" : "int"
+      }, {
+        "name" : "column",
+        "type" : "int"
+      } ]
+    }
+  }, {
+    "name" : "word",
+    "type" : "string"
+  } ]
+}

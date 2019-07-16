@@ -31,6 +31,9 @@ node "webmodelica" {
   [SessionService] --> [MopeService]
 }
 
+[Static File Server] -[hidden]-> wm_http
+[AuthSvc] -[hidden]-> [Routes]
+
 node "mope" {
   () "HTTP" as mope_http
   [MopeService] --> mope_http

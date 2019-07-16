@@ -51,22 +51,24 @@ class WmContainerCon extends React.Component<any, any> {
       <Navbar>
         <Navbar.Brand href="#home">{this.appName} {this.props.title}</Navbar.Brand>
         <Navbar.Toggle />
-        {this.props.username && (
+            {this.props.displayName && (
           <div className="collapse navbar-collapse justify-content-end">
             {this.simLink()}
             <Nav.Item><Nav.Link href="/projects"><Octicon name="repo" /> Projects</Nav.Link></Nav.Item>
-            <NavDropdown title={this.props.username} id="nav-profile-dropwdown">
+              <NavDropdown title={this.props.displayName} id="nav-profile-dropwdown">
               <NavDropdown.Item href="/logout"><Octicon name="sign-out" /> Logout</NavDropdown.Item>
             </NavDropdown>
           </div>
         )}
       </Navbar>
-      <div className="position-absolute w-100 d-flex flex-row-reverse p-4 fixed-bottom" style={{zIndex:100}}>
-        <div className="d-flex flex-column">
-            { /** all info notifications are displayed bottom-right as toasts */
-              this.props.notifications.filter((n: Notification) => n.type === NotificationType.Info).map((n: Notification, idx: number) => (<NotificationComponent key={idx} notification={n} />))}
-          </div>
-      </div>
+      { !R.isEmpty(this.props.notifications) && (
+        <div className="position-absolute w-100 d-flex flex-row-reverse p-4 fixed-bottom" style={{zIndex:100}}>
+          <div className="d-flex flex-column">
+              { /** all info notifications are displayed bottom-right as toasts */
+                this.props.notifications.filter((n: Notification) => n.type === NotificationType.Info).map((n: Notification, idx: number) => (<NotificationComponent key={idx} notification={n} />))}
+            </div>
+        </div>
+      )}
       <div className="container-fluid py-2">
         <Row><Col xs='12'>
           { /** all other notifications are displayed as Alerts on-top of all children */
@@ -83,7 +85,7 @@ class WmContainerCon extends React.Component<any, any> {
 }
 
 function mapProps(state: AppState) {
-  return { username: oc(state).authentication.username(), notifications: state.notifications }
+  return { displayName: oc(state).authentication.displayName(), notifications: state.notifications }
 }
 
 export const WmContainer = connect(mapProps, null)(WmContainerCon)

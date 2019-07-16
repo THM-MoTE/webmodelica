@@ -43,6 +43,7 @@ class TokenGenerator(secret:String, exp:Duration=(15 minutes)) extends TokenVali
     }
     futures.eitherToFuture(decodedEither)
   }
+  override def decodeToUser(token:String): Future[Option[User]] = Future.value(None)
   override def isValid(token:String): Boolean = Jwt.isValid(token, secret, Seq(algorithm))
   def validate(token:String): Unit = Jwt.validate(token, secret, Seq(algorithm))
 

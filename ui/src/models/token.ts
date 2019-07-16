@@ -5,9 +5,11 @@ export interface TokenWrapper {
 
 /** a JWT created by the auth-service. */
 export interface AuthServiceToken {
-  user: {
+  data: {
     username: string
     email: string
+    first_name?: string
+    last_name?: string
   }
   exp: number
 }
@@ -16,4 +18,10 @@ export interface WebmodelicaToken {
   username: string
   exp: number
   iss: number
+}
+/** the authentication token. */
+export interface JwtToken {
+  username: string
+  expires: Date
+  raw: string
 }

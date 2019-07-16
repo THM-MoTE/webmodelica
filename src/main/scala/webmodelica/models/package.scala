@@ -9,6 +9,7 @@
 package webmodelica
 
 import io.circe._
+import io.circe.syntax._
 import java.nio.file.{Path, Paths}
 import java.util.UUID
 
@@ -27,5 +28,8 @@ package object models {
   implicit val decodeUUID = new Decoder[UUID] {
     final def apply(c: HCursor): Decoder.Result[UUID] =
       c.as[String].map(UUID.fromString)
+  }
+  implicit val encodeRequest = new Encoder[ProjectRequest] {
+    final def apply(proj:ProjectRequest): Json = JSProject(Project(proj)).asJson
   }
 }

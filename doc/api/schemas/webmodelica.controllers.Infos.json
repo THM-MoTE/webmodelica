@@ -1,0 +1,24 @@
+{
+  "type" : "record",
+  "name" : "Infos",
+  "namespace" : "webmodelica.controllers",
+  "fields" : [ {
+    "name" : "appName",
+    "type" : "string"
+  }, {
+    "name" : "version",
+    "type" : "string"
+  }, {
+    "name" : "copyright",
+    "type" : "string"
+  }, {
+    "name" : "license",
+    "type" : "string"
+  }, {
+    "name" : "licenseUri",
+    "type" : "string"
+  }, {
+    "name" : "commitHash",
+    "type" : "string"
+  } ]
+}

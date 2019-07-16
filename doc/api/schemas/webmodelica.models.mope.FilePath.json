@@ -1,0 +1,9 @@
+{
+  "type" : "record",
+  "name" : "FilePath",
+  "namespace" : "webmodelica.models.mope",
+  "fields" : [ {
+    "name" : "path",
+    "type" : "string"
+  } ]
+}

@@ -14,7 +14,6 @@ object constants {
   val projectCollection = "projects"
   val userCollection = "users"
   val authorizationHeader = "Authorization"
-  val authenticationHeader = "Authentication"
 
   val cacheRootSuffix = "wm:"
   val userCacheSuffix = cacheRootSuffix+"users"
