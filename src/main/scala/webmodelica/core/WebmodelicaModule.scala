@@ -12,7 +12,7 @@ import webmodelica.stores._
 trait ConfigModule
     extends LazyLogging {
   def arguments:Seq[String]
-  lazy val args = new ArgsParser(arguments)
+  lazy val args = wire[ArgsParser]
   lazy val config:WMConfig = {
     import com.typesafe.config.ConfigFactory
     import webmodelica.models.config.WMConfig
@@ -31,6 +31,8 @@ trait ConfigModule
   def mopeConfig: MopeClientConfig = config.mope
   def jwtConf: JwtConf = config.jwtConf
   def maxSimulationData: MaxSimulationData = config.maxSimulationData
+  def userConf: UserServiceConf = config.userService
+  def redisConf:RedisConfig = config.redis
 }
 
 trait MongoDBModule
@@ -44,10 +46,9 @@ trait MongoDBModule
 }
 
 trait AkkaModule {
-  import com.typesafe.config.ConfigFactory
-  val config = ConfigFactroy.load("akka.conf")
-  implicit lazy val system = ActorSystem(s"${buildinfo.BuildInfo.name}-system", config)
-  implicit lazy val materializer = ActorMaterializer()
+  private val akkaConfig = com.typesafe.config.ConfigFactory.load("akka.conf")
+  implicit lazy val system = akka.actor.ActorSystem(s"${buildinfo.BuildInfo.name}-system", akkaConfig)
+  implicit lazy val materializer = akka.stream.ActorMaterializer()
 }
 
 trait WebmodelicaModule
@@ -58,24 +59,24 @@ trait WebmodelicaModule
   def prefixProvider: ApiPrefix = ApiPrefix("/api/v1/webmodelica")
 
   def userStore = {
-    val store = new UserServiceProxy(config.userService)
+    val store = wire[UserServiceProxy]
     if(config.cacheUsers) {
       logger.info(s"caching users enabled")
-      new UserService(config.redis, noOpReceiver, store)
+      wire[UserService]
     } else {
       logger.info(s"caching users disabled")
       store
     }
   }
-  def projectStore:ProjectStore = new ProjectStore(mongoDB)
+  def projectStore:ProjectStore = wire[ProjectStore]
 
   lazy val sessionRegistry:SessionRegistry = {
     if(config.redisSessions) {
       logger.info(s"save sessions into redis")
-      new RedisSessionRegistry(config, noOpReceiver)
+      wire[RedisSessionRegistry]
     } else {
       logger.info(s"save sessions inmemory")
-      new InMemorySessionRegistry(config, noOpReceiver)
+      wire[InMemorySessionRegistry]
     }
   }
   def tokenGenerator: TokenGenerator =
