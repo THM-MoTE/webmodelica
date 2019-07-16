@@ -1,0 +1,99 @@
+#%RAML 1.0
+---
+title: Webmodelica Backend
+version: v1
+mediaType: application/json
+baseUri: https://staging-webmodelica.mni.thm.de/api/{version}
+types: !include types.raml
+traits: !include traits.raml
+securitySchemes:
+  oauth:
+    type: OAuth 2.0
+    description: |
+      OAuth 2.0 authentication provided by the authentication service.
+      *Either* provide the `Authorization` header or the `Cookie` token.
+      Both is returned when the user logged in.
+    describedBy:
+      headers:
+        Authorization:
+          description: |
+            Used to send a valid OAuth 2 access token.
+            Do not use in conjunction with the cookie parameter.
+          type: string
+          example: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJ...
+          required: false
+        Cookie:
+          description: |
+            Contains the OAuth token.
+            Do not use in conjunction with the header parameter.
+          type: string
+          example: token=eyJ0eXAiOiJKV1QiLCJhbGciOiJ...
+          required: false
+securedBy: [oauth]
+
+/auths:
+  get:
+    description: Returns all available login providers.
+    responses:
+      200:
+        body:
+          example: !include examples/auths-example.json
+    securedBy: []
+  /{provider}:
+    get:
+      description: |
+        Returns the login page for the given provider.
+        - if {provider}=github the user is redirected to GitHub
+        - if {provider}=cas3 the user is redirected to CAS
+        - ...
+      securedBy: []
+  /developer/callback:
+    post:
+      description: |
+        Authenticates the user through developer login.
+        This is only enabled in production and requires that the user already  exists in the user service.
+      body:
+        multipart/form-data:
+          properties:
+            username:
+              description: the username to login.
+              type: string
+              required: true
+      responses:
+        302:
+          description: redirect to frontend with authentication cookie set.
+          headers:
+            Authorization:
+              description: the authentication token.
+              type: string
+              example: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJ...
+            Cookie:
+              description: the authentication token.
+              type: string
+              example: token=eyJ0eXAiOiJKV1QiLCJhbGciOiJ...
+      securedBy: []
+/users:
+  /{username}:
+    get:
+      description: |
+        Returns the user informations for this user.
+        You can only retrieve user informations for the logged in user.
+      responses:
+        200:
+          body:
+            example: !include examples/user-example.json
+
+/webmodelica/info:
+  get:
+    description: Gets application specific informations, like version, license and commit hash.
+    responses:
+      200:
+        body:
+          type: Infos
+    securedBy: []
+/webmodelica/projects: !include projects.raml
+/webmodelica/sessions: !include sessions.raml
+
+# POST    /users/register
+# POST    /users/login
+# POST    /users/refresh

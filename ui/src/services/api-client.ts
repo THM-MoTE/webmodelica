@@ -20,7 +20,7 @@ function rejectError(res: Response): Promise<Response> {
 }
 
 const authHeader = "Authorization"
-const baseApiPrefix = "/api/v1/"
+export const baseApiPrefix = "/api/v1/"
 const apiPrefix = baseApiPrefix + "webmodelica/"
 
 function backendUri(baseApi: string = apiPrefix): string {
@@ -90,6 +90,12 @@ export class ApiClient {
       .then(rejectError)
       .then(res => res.json())
       .then((obj: any) => parseAuthPayload(this.authUri(), obj))
+  }
+  public getDeveloperUsers(): Promise<string[]> {
+    return fetch(this.authUri()+'/developer/usernames')
+        .then(rejectError)
+        .then(res => res.json())
+        .then(pl => pl.data)
   }
 
   public login(user: string, pw: string): Promise<TokenWrapper> {

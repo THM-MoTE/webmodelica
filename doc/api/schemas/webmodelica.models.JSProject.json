@@ -1,0 +1,18 @@
+{
+  "type" : "record",
+  "name" : "JSProject",
+  "namespace" : "webmodelica.models",
+  "fields" : [ {
+    "name" : "id",
+    "type" : "string"
+  }, {
+    "name" : "owner",
+    "type" : "string"
+  }, {
+    "name" : "name",
+    "type" : "string"
+  }, {
+    "name" : "visibility",
+    "type" : "string"
+  } ]
+}

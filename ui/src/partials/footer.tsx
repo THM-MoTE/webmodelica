@@ -38,7 +38,7 @@ export class Footer extends React.Component<any, State> {
               <small>
                 <a target="_blank" href="https://github.com/thm-mote/webmodelica"><Octicon name="mark-github" />&nbsp;Repository</a>&nbsp;&nbsp;
                 <a target="_blank" href="https://github.com/thm-mote/webmodelica/issues"><Octicon name="issue-opened" />&nbsp; Issues</a>&nbsp;&nbsp;
-                <a target="_blank" href="documentation.html"><Octicon name="book" />&nbsp; Doc</a>
+                <a target="_blank" href="/documentation.html"><Octicon name="book" />&nbsp; Doc</a>
               </small>
             </Col>
           </Row>

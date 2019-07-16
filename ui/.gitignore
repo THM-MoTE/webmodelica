@@ -24,3 +24,5 @@ yarn-error.log*
 
 #generated documentation file
 public/documentation.html
+public/api.html
+public/images

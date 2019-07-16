@@ -1,0 +1,107 @@
+get:
+  description: Get all projects for the current user.
+  responses:
+    200:
+      body:
+        type: JSProject[]
+post:
+  description: Creates a new (private) project for the current user.
+  body:
+    type: ProjectRequest
+  responses:
+    200:
+      description: the created project.
+      body:
+        type: JSProject
+    409:
+      description: the new project `name` already exists in the user's namespace.
+/{projectId}:
+  get:
+    description: Get the project with id={projectId}.
+    responses:
+      200:
+        body:
+          type: JSProject
+  is: [rscNotFound: {id: projectId}]
+  delete:
+    description: Delete the project with id={projectId}.
+    responses:
+      204:
+        description: Project deleted. Note that this is returned even if the project doesn't exist.
+  /copy:
+    post:
+      description: Copies a project.
+      body:
+        type: object
+        properties:
+          name:
+            type: string
+            required: false
+      responses:
+        200:
+          description: the created project.
+          body:
+            type: JSProject
+        409:
+            description: the new project `name` already exists in the user's namespace.
+    is: [rscNotFound: {id: projectId}]
+  /visibility:
+    put:
+      description: Updates the visibility of the project.
+      body:
+        type: object
+        properties:
+          visibility:
+            description: the visibility of the project, either 'public' or 'private'.
+            type: string
+      responses:
+        200:
+          body:
+            type: JSProject
+        400:
+          description: if provided visibility isn't allowed.
+    is: [rscNotFound: {id: projectId}]
+  /files:
+    get:
+      description: Returns all files of this project.
+      queryParameters:
+        format:
+          type: string
+          required: false
+          default: "list"
+          enum: ["list", "tree"]
+      responses:
+        200:
+         description: Either a list of ModelicaFile's or a FileTree that represents the project directory.
+         body:
+           type: ModelicaFile | FileTree
+    is: [rscNotFound: {id: projectId}]
+    /download:
+      get:
+        description: Returns a zip archive with the project files.
+        responses:
+          200:
+            body:
+              application/zip:
+                type: file
+                fileTypes: ['application/zip']
+                description: the zip archive
+      is: [rscNotFound: {id: projectId}]
+    /{path}:
+      get:
+        description: Get the file with the given {path}.
+        responses:
+          200:
+            body:
+              type: ModelicaFile
+          404:
+            description: if {path} not found.
+      is: [rscNotFound: {id: projectId}]
+  /sessions/new:
+    post:
+      description: creates a new session based on this project.
+      responses:
+          200:
+            body:
+              type: JSSession
+    is: [rscNotFound: {id: projectId}]

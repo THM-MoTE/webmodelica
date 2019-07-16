@@ -18,6 +18,9 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
+TIP: The API documentation is available at  https://staging-webmodelica.mni.thm.de/api.html[API-Doc].
+      This document is available at https://staging-webmodelica.mni.thm.de/documentation.html[Documentation].
+
 == Setup
 
 Setting up a development machine requires a few steps:
@@ -45,6 +48,33 @@ WARNING: in development mode, the traefik proxy - that is available at `localhos
   Update the URL of `backends.webmodelica-backend-dev.servers.s0` and `backends.webmodelica-ui-dev.servers.s0`.
   That's the case when running docker on OSX.
   PLEASE DON'T COMMIT THIS CHANGE!
+
+
+== Creating users for development
+IMPORTANT: Don't do this in production!
+
+You can create a user by directly POSTing to the user-svc container.
+One's the containers are started, the user-svc is available at `localhost:9012/api/v1/users`.
+Using this route, you can create a user through https://httpie.org/[HTTPie]:
+
+[source,bash]
+----
+http --json -v\
+  POST localhost:9012/api/v1/users\
+  Service:auth\
+  user:='{"username":"test", "first_name":"Test", "email":"test@xample.com"}'
+----
+
+Then you can login using `username=test` in the developer login. Either through the wb interface at: `http://localhost:9000/api/v1/auths/developer` or using HTTPie:
+
+[source,bash]
+----
+http -v --form\
+  POST localhost:9000/api/v1/auths/developer/callback\
+  username=test
+----
+
+NOTE: In production at https://staging-webmodelica.mni.thm.de[staging-webmodelica] use either CAS or GitHub login.
 
 == Release new versions
 

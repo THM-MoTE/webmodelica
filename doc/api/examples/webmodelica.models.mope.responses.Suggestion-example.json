@@ -1,0 +1,10 @@
+{
+  "kind" : "function",
+  "name" : "random",
+  "parameters" : [
+    "start",
+    "end"
+  ],
+  "classComment" : "generates random numbers between start & end.",
+  "type" : "real"
+}

@@ -1,0 +1,13 @@
+{
+  "type" : "Error",
+  "file" : "a/b/random.mo",
+  "start" : {
+    "line" : 1,
+    "column" : 5
+  },
+  "end" : {
+    "line" : 2,
+    "column" : 0
+  },
+  "message" : "incompatible types, expected real found string"
+}
