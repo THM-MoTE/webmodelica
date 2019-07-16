@@ -47,8 +47,9 @@ trait MongoDBModule
 
 trait AkkaModule {
   private val akkaConfig = com.typesafe.config.ConfigFactory.load("akka.conf")
-  implicit lazy val system = akka.actor.ActorSystem(s"${buildinfo.BuildInfo.name}-system", akkaConfig)
+  implicit lazy val actorSystem = akka.actor.ActorSystem(s"${buildinfo.BuildInfo.name}-system", akkaConfig)
   implicit lazy val materializer = akka.stream.ActorMaterializer()
+  implicit def execContext = actorSystem.dispatcher
 }
 
 trait WebmodelicaModule
@@ -81,6 +82,6 @@ trait WebmodelicaModule
   }
   def tokenGenerator: TokenGenerator =
     new TokenGenerator(jwtConf.secret, jwtConf.tokenExpiration)
-  def tokenValidator: TokenValidator =
+  def tokenValidator: CombinedTokenValidator =
     TokenValidator.combine(tokenGenerator, AuthTokenValidator(KeyFile(jwtConf.authSvcPublicKey)))
 }
