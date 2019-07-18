@@ -29,8 +29,7 @@ trait AkkaUserExtractor
   def userStore: UserStore
   def gen: TokenValidator
   def extractUser:Directive1[User] = jwt.flatMap { rawJwt =>
-    logger.debug(s"jwt is $rawJwt")
-    val fetchFromStore = for {
+    lazy val fetchFromStore = for {
       token <- gen.decode(rawJwt)
       userOpt <- userStore.findBy(token.username)
       user <- errors.notFoundExc("web-token contains invalid user informations!")(userOpt)

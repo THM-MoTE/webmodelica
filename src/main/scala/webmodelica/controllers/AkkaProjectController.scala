@@ -22,7 +22,7 @@ class AkkaProjectController(
 
   logger.debug(s"validator is $gen")
 
-  val routes:Route = (extractUser & path("projects")) { user =>
+  val routes:Route = (extractUser & path("projects") & pathEnd & get) { user =>
     logger.debug(s"searching projects for $user")
     val projects = projectStore.byUsername(user.username).map(_.map(JSProject.apply)).asScala
     complete(projects)
