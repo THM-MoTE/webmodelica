@@ -27,9 +27,14 @@ object TokenValidator {
         case _:JwtException => b.decode(token)
       }
     override def decodeToUser(token:String): Future[Option[User]] = {
-      a.decodeToUser(token).rescue {
-        case _:JwtException => b.decodeToUser(token)
-      }
+      a.decodeToUser(token)
+        .flatMap {
+          case None => b.decodeToUser(token)
+          case opt:Some[User] => Future.value(opt)
+        }
+        .rescue {
+          case _:JwtException => b.decodeToUser(token)
+        }
     }
     override def isValid(token: String): Boolean = a.isValid(token) || b.isValid(token)
     override def toString: String = s"CombinedValidator($a, $b)"
