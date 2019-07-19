@@ -19,12 +19,19 @@ class AkkaProjectController(
     with com.typesafe.scalalogging.LazyLogging
     with de.heikoseeberger.akkahttpcirce.FailFastCirceSupport {
 
+  //TODO: map options to 404 errors; currently result is 200 with empty body
 
-  logger.debug(s"validator is $gen")
-
-  val routes:Route = (extractUser & path("projects") & pathEnd & get) { user =>
-    logger.debug(s"searching projects for $user")
-    val projects = projectStore.byUsername(user.username).map(_.map(JSProject.apply)).asScala
-    complete(projects)
-  }
-}
+  val routes:Route = logRequest("/projects") {
+    (extractUser & pathPrefix("projects")) { (user:User) =>
+      (get & pathEnd) { //secured route: /projects
+        logger.debug(s"searching projects for $user")
+        val projects = projectStore.byUsername(user.username).map(_.map(JSProject.apply)).asScala
+        complete(projects)
+      } ~
+        (get & path(Segment)) { (id:String) => //secured route: /projects/:id
+        logger.debug(s"lookup project $id")
+        val project = projectStore.findBy(id, user.username).map(_.map(JSProject.apply)).asScala
+        complete(project)
+      }
+    }
+  }}
