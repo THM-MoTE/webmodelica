@@ -80,7 +80,7 @@ class LoginComponentCon extends React.Component<Props, State> {
             </Form.Control>
           </Form.Group>
           </Form.Row>
-          <Button type="submit" variant="secondary">Developer Login</Button>
+          <Button type="submit" variant="secondary" className="w-100">Developer Login</Button>
         </Form>
       </>)
     } else {
@@ -108,7 +108,7 @@ class LoginComponentCon extends React.Component<Props, State> {
                 <Form.Control required type="password" placeholder="Password" name="password" onChange={passwordChanged}/>
               </Form.Group>
               {renderErrors(this.state.errors)}
-              <ButtonGroup>
+              <ButtonGroup className="d-flex">
                 {this.state.providers.filter(p => !isDeveloperProvider(p) && !isDatabaseProvider(p)).map(p =>
                   (<Button variant="secondary" href={p.uri} key={p.name} style={ {backgroundColor: p.color, borderColor: p.color} }>
                     {p.icon && (<Octicon name={p.icon}/>)}&nbsp;
