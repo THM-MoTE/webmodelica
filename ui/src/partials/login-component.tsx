@@ -29,10 +29,11 @@ interface State {
   developerUsers: string[]
 }
 
-const isDeveloperProvider =(p:AuthProvider) => p.provider === 'developer'
+const isDeveloperProvider = (p:AuthProvider) => p.provider === 'developer'
+const isDatabaseProvider = (p: AuthProvider) => p.provider === 'identity'
 
 class LoginComponentCon extends React.Component<Props, State> {
-  private username: string = ''
+  private email: string = ''
   private password: string = ''
 
   constructor(p:Props) {
@@ -41,13 +42,10 @@ class LoginComponentCon extends React.Component<Props, State> {
   }
 
   private handleSubmit(ev: any) {
-    const props = this.props
-    const username = this.username
-    const pw = this.password
-    props.api.login(username, pw)
-      .then(() => props.history.push('/projects'))
-      .catch(err => {
-        this.setState({ errors: [err] })
+    this.props.api.login(this.email, this.password)
+      .then(() => this.props.history.push('/projects'))
+      .catch((err:ApiError) => {
+        this.setState({ errors: (err.isBadRequest) ? ["wrong username or password provided!"] : err.errors })
       })
     ev.preventDefault()
   }
@@ -91,7 +89,7 @@ class LoginComponentCon extends React.Component<Props, State> {
   }
 
   render() {
-    const usernameChanged = (ev: any) => this.username = ev.target.value
+    const emailChanged = (ev: any) => this.email = ev.target.value
     const passwordChanged = (ev: any) => this.password = ev.target.value
     if (userIsAuthenticated(this.props.authentication)) {
       return (<Redirect to="/projects" />)
@@ -101,23 +99,23 @@ class LoginComponentCon extends React.Component<Props, State> {
           <h5 className="card-title">Login</h5>
           <div className="card-body">
             <Form onSubmit={this.handleSubmit.bind(this)}>
-              <Form.Group controlId="formUsername">
-                <Form.Label>Username</Form.Label>
-                <Form.Control required placeholder="Enter username" onChange={usernameChanged} disabled/>
+              <Form.Group controlId="formEmail">
+                <Form.Label>Email</Form.Label>
+                <Form.Control required placeholder="user@example.me" name="email" onChange={emailChanged}/>
               </Form.Group>
               <Form.Group controlId="formPassword">
                 <Form.Label>Password</Form.Label>
-                <Form.Control required type="password" placeholder="Password" onChange={passwordChanged} disabled/>
+                <Form.Control required type="password" placeholder="Password" name="password" onChange={passwordChanged}/>
               </Form.Group>
               {renderErrors(this.state.errors)}
               <ButtonGroup>
-                {this.state.providers.filter(p => !isDeveloperProvider(p)).map(p =>
+                {this.state.providers.filter(p => !isDeveloperProvider(p) && !isDatabaseProvider(p)).map(p =>
                   (<Button variant="secondary" href={p.uri} key={p.name} style={ {backgroundColor: p.color, borderColor: p.color} }>
                     {p.icon && (<Octicon name={p.icon}/>)}&nbsp;
                     {p.name}
                   </Button>)
                 )}
-                <Button variant="primary" type="submit" disabled>
+                <Button variant="primary" type="submit">
                   <Octicon name="sign-in" /> Submit
                 </Button>
               </ButtonGroup>

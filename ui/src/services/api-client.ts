@@ -98,21 +98,21 @@ export class ApiClient {
         .then(pl => pl.data)
   }
 
-  public login(user: string, pw: string): Promise<TokenWrapper> {
-    return fetch(this.userUri() + "/login", {
+  public login(email: string, pw: string): Promise<void> {
+    const data = new FormData()
+    data.append('email', email)
+    data.append('password', pw)
+    return fetch(this.authUri() + "/identity/callback", {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        "Accept": 'application/json'
-      },
-      body: JSON.stringify({ username: user, password: pw })
+      body: data
     })
       .then(rejectError)
-      .then(res => res.json())
-      .then((t: TokenWrapper) => {
-        this.store.dispatch(updateToken(t.token))
-        return t
-      })
+      .then(res => undefined)
+      // .then(res => res.json())
+      // .then((t: TokenWrapper) => {
+      //   this.store.dispatch(updateToken(t.token))
+      //   return t
+      // })
   }
 
   public projects(): Promise<Project[]> {
