@@ -23,15 +23,22 @@ class AkkaProjectController(
 
   val routes:Route = logRequest("/projects") {
     (extractUser & pathPrefix("projects")) { (user:User) =>
-      (get & pathEnd) { //secured route: /projects
+      (get & pathEnd) { //secured route: GET /projects
         logger.debug(s"searching projects for $user")
         val projects = projectStore.byUsername(user.username).map(_.map(JSProject.apply)).asScala
         complete(projects)
       } ~
-        (get & path(Segment)) { (id:String) => //secured route: /projects/:id
+      path(Segment) { (id:String) =>
+        get { //secured route: GET /projects/:id
         logger.debug(s"lookup project $id")
         val project = projectStore.findBy(id, user.username).map(_.map(JSProject.apply)).asScala
-        complete(project)
+          complete(project)
+        } ~
+        delete { //secured route: DELETE /projects/:id
+          logger.debug(s"deleting project $id")
+          val noContent = projectStore.delete(id).map { _ => HttpResponse(StatusCodes.NoContent) }.asScala
+          complete(noContent)
+        }
       }
     }
   }}
