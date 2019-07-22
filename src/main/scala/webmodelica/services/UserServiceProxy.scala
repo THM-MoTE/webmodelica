@@ -9,22 +9,31 @@
 package webmodelica.services
 
 import com.google.inject.Inject
-import com.twitter.finagle.http
+import com.twitter.finagle.http.Status
 import com.twitter.util.Future
 import webmodelica.models.{AuthUser, User}
 import webmodelica.models.config.UserServiceConf
 import webmodelica.stores.UserStore
 import featherbed._
 import webmodelica.models.errors.UserServiceError
+import io.circe.generic.JsonCodec
+
+@JsonCodec
+private[services] case class UserWrapper(data:AuthUser)
 
 /** A UserService that talks to the UserSvc. */
 class UserServiceProxy@Inject()(conf:UserServiceConf)
   extends UserStore
     with com.twitter.inject.Logging {
   import featherbed.circe._
+  import io.circe.Json
   import io.circe.generic.auto._
+  import io.circe.syntax._
 
   val url = new java.net.URL(conf.address+ "/"+ conf.resource+"/")
+  val headers = Seq(
+    "Service" -> "auth"
+  )
   def clientProvider() = new featherbed.Client(url)
 
   info("UserServiceProxy started.")
@@ -43,11 +52,13 @@ class UserServiceProxy@Inject()(conf:UserServiceConf)
     debug(s"adding $u")
     withClient { client =>
       val req = client.post("")
-        .withContent(u, "application/json")
+        .withHeaders(headers:_*)
+        .withContent(Json.obj("user" -> u.asJson), "application/json")
         .accept("application/json")
 
-      req.send[AuthUser]().map(_ => ())
+      req.send[UserWrapper]().map(_ => ())
         .handle {
+          case request.ErrorResponse(req, resp) if resp.status == Status.Conflict => ()
           case request.ErrorResponse(req, resp) =>
             val str = s"Error in 'add' $resp to request $req"
             throw UserServiceError(str)
@@ -59,11 +70,12 @@ class UserServiceProxy@Inject()(conf:UserServiceConf)
     debug(s"searching $username")
     withClient { client =>
       val req = client.get(s"$username")
+        .withHeaders(headers:_*)
         .accept("application/json")
 
-      req.send[AuthUser]().map(u => Some(u.toUser))
+      req.send[UserWrapper]().map(wrapper => Some(wrapper.data.toUser))
         .handle {
-          case request.ErrorResponse(req,resp) if resp.status == http.Status.NotFound => None
+          case request.ErrorResponse(req,resp) if resp.status == Status.NotFound => None
           case request.ErrorResponse(req,resp) =>
             val str = s"Error in 'findBy' $resp to request $req"
             throw UserServiceError(str)
