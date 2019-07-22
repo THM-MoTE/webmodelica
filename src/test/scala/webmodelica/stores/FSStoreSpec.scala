@@ -22,8 +22,27 @@ class FSStoreSpec extends WMSpec {
     "a/b/simple.mo",
     "a/s.mo"
   ).map(Paths.get(_))
-
   val modelicaFiles = paths.map(ModelicaFile(_, textStream()))
+  //the tree represenation of 'paths'
+  val projectTree = Node(
+    Paths.get("awesomeProject"),
+    List(
+      Node("a".asPath,List(
+        Node(Paths.get("b"),
+          List(
+            Node("c".asPath,
+              List(
+                Leaf("t.mo".asPath, "a/b/c/t.mo".asModelicaPath),
+                Leaf("test.mo".asPath, "a/b/c/test.mo".asModelicaPath),
+              )
+            ),
+            Leaf("simple.mo".asPath, "a/b/simple.mo".asModelicaPath)
+          )
+        ),
+        Leaf("s.mo".asPath, "a/s.mo".asModelicaPath)
+      ))
+    )
+  )
 
   val store = new FSStore(Paths.get(root.toString))
 
@@ -49,7 +68,22 @@ class FSStoreSpec extends WMSpec {
     Await.result(store.update(newFile))
     newFile.content == (root/file.relativePath.toString).contentAsString
   }
-
+  it should "create a zip archive containing the files" in {
+    //NOTE: this test must be run BEFORE renaming 1 file!
+    val archive = File(Await.result(store.packageProjectArchive("anAwesomeArchive")).toPath)
+    archive.name shouldBe "anAwesomeArchive.zip"
+    val fileNames = archive.newZipInputStream.mapEntries(_.getName).toSet
+    forAll(paths) { path =>
+      //at least 1 ZipEntry must contain the current path
+      //ZipEntries start with a random number as root directory, so we can't check for equality here
+      fileNames.exists(s => s.endsWith(path.toString)) shouldBe (true)
+    }
+  }
+  it should "generate a tree from the directory" in {
+    //NOTE: this test must be run BEFORE renaming 1 file!
+    val storeTree = Await.result(store.fileTree(Some("awesomeProject")))
+    storeTree shouldBe (projectTree)
+  }
   it should "rename a file" in {
     val oldFile = modelicaFiles.head
     val newPath = Paths.get("a/b/c/test-new.mo")
@@ -65,5 +99,22 @@ class FSStoreSpec extends WMSpec {
       _ <- store.update(oldFile)
       _ <- store.delete(oldFile.relativePath)
     } yield (root/oldFile.relativePath.toString).notExists shouldBe true)
+  }
+  it should "find a file by relative path" in {
+    val path = Paths.get("a/s.mo")
+    val option = Await.result(store.findByPath(path))
+    option shouldBe a [Some[_]]
+    option.get.relativePath shouldBe (path)
+  }
+  it should "copy a project into another directory" in {
+    val originFiles = store.files
+    File.usingTemporaryDirectory() { dir =>
+      Await.result(store.copyTo(dir.path))
+      val store2 = new FSStore(dir.path)
+      val targetPaths = Await.result(store2.files).map(_.relativePath).toSet
+      val originPaths = Await.result(originFiles).map(_.relativePath).toSet
+      //both path's are relative, so they should be equal
+      targetPaths shouldBe (originPaths)
+    }
   }
 }
