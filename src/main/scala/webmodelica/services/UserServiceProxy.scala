@@ -15,7 +15,10 @@ import webmodelica.models.{AuthUser, User}
 import webmodelica.models.config.UserServiceConf
 import webmodelica.stores.UserStore
 import featherbed._
-import webmodelica.models.errors.UserServiceError
+import webmodelica.models.errors.{
+  UserServiceError,
+  UserAlreadyInUse
+}
 import io.circe.generic.JsonCodec
 
 @JsonCodec
@@ -58,7 +61,7 @@ class UserServiceProxy@Inject()(conf:UserServiceConf)
 
       req.send[UserWrapper]().map(_ => ())
         .handle {
-          case request.ErrorResponse(req, resp) if resp.status == Status.Conflict => ()
+          case request.ErrorResponse(req, resp) if resp.status == Status.Conflict => throw UserAlreadyInUse
           case request.ErrorResponse(req, resp) =>
             val str = s"Error in 'add' $resp to request $req"
             throw UserServiceError(str)

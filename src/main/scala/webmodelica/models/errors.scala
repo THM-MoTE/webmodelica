@@ -36,6 +36,10 @@ object errors {
     override def getMessage: String = s"$resource `$name` already assigned"
   }
 
+  case object UserAlreadyInUse extends AlreadyInUse {
+    override def name:String = "username or email"
+    override def resource:String = "User:"
+  }
   case class UsernameAlreadyInUse(override val name:String) extends AlreadyInUse {
     override def resource:String = "Username"
   }
