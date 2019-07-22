@@ -66,13 +66,15 @@ class SimulationOptionsCon extends React.Component<Props, State> {
               R.isEmpty(values) && (<Form.Control placeholder="value" value={opt.value.toString()} onChange={(ev:any) => this.updateValue(idx, ev.target.value)}/>)
             }
             </Col>
-            <Col sm={1}><Button variant="outline-danger" onClick={() => this.deleteOptionField(idx)}><Octicon name="x" /></Button></Col>
+            <ButtonGroup className="col-sm-1">
+                <Button variant="outline-danger" onClick={() => this.deleteOptionField(idx)}><Octicon name="x" /></Button>
+            </ButtonGroup>
           </Form.Row>
         )
         })
       }
       <Row className="justify-content-center">
-        <ButtonGroup className="col-sm-6">
+        <ButtonGroup className="col-sm-4">
           <Button onClick={this.addOptionField.bind(this)}><Octicon name="plus" /></Button>
           <Button variant="outline-success" onClick={this.props.simulateClicked}><Octicon name="rocket" /> Simulate</Button>
         </ButtonGroup>
