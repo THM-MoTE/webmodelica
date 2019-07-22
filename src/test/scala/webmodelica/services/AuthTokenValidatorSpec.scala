@@ -23,12 +23,13 @@ class AuthTokenValidatorSpec extends WMSpec  {
 
   val validator = AuthTokenValidator(KeyString(publicKey))
 
+  val iatSeconds = Instant.now().toEpochMilli
   val expSeconds = Instant.now().plusSeconds((1 hour).toSeconds).toEpochMilli
 
   val payload =
     s"""
       |{
-      |  "user": {
+      |  "data": {
       |    "id": {
       |      "oid": "abcdferölkjasdf"
       |    },
@@ -46,7 +47,8 @@ class AuthTokenValidatorSpec extends WMSpec  {
       |      "username": "test-1"
       |    }
       |  },
-      |  "exp": $expSeconds
+      |  "exp": $expSeconds,
+      |  "iat": $iatSeconds
       |}
     """.stripMargin
 
