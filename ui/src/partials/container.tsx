@@ -48,17 +48,17 @@ class WmContainerCon extends React.Component<any, any> {
 
   render() {
     return (<>
-      <Navbar>
+      <Navbar collapseOnSelect expand="md">
         <Navbar.Brand href="#home">{this.appName} {this.props.title}</Navbar.Brand>
-        <Navbar.Toggle />
+        <Navbar.Toggle aria-controls="webmodelica-navbar-nav"/>
             {this.props.displayName && (
-          <div className="collapse navbar-collapse justify-content-end">
+          <Navbar.Collapse id="webmodelica-navbar-nav" className="justify-content-end">
             {this.simLink()}
             <Nav.Item><Nav.Link href="/projects"><Octicon name="repo" /> Projects</Nav.Link></Nav.Item>
               <NavDropdown title={this.props.displayName} id="nav-profile-dropwdown">
               <NavDropdown.Item href="/logout"><Octicon name="sign-out" /> Logout</NavDropdown.Item>
             </NavDropdown>
-          </div>
+          </Navbar.Collapse>
         )}
       </Navbar>
       { !R.isEmpty(this.props.notifications) && (
