@@ -8,16 +8,18 @@ omniauth:
       name: 'Developer'
       icon: 'database'
       color: '#666'
+      enabled: true
     identity:
       name: 'Database login'
       color: '#00796b'
-      icon: 'login'
+      icon: 'database'
       uid_field: 'username'
       fields:
         - email
         # - first_name
         # - last_name
         - username
+      enabled: true
     # cas3:
     #   name: ''
     #   color: ''
