@@ -22,6 +22,11 @@ class SimulationPlotCon extends React.Component<Props, State> {
     this.chartOptions = {
       //display edges as soft curves, not hard edges
       //curveType: 'function'
+      explorer: {
+        axis: 'horizontal',
+        keepInBounds: true,
+        maxZoomIn: 10.0
+      }
     }
   }
 
@@ -36,6 +41,7 @@ class SimulationPlotCon extends React.Component<Props, State> {
       <Col>
         <h5 className="text-secondary">Plot Actions</h5>
         <Button variant="outline-primary" href={csvUrl.toString()}>Download CSV</Button>
+        <p className="text-info" style={{ marginTop: '15px' }}>You can zoom the plot using the mouse wheel.</p>
         {this.props.data.dataManipulated && (
           <p className="text-warning" style={{marginTop: '15px'}}>{this.props.data.dataManipulated}</p>
         )}
