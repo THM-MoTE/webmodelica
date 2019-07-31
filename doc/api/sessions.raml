@@ -1,12 +1,5 @@
-# DELETE  /sessions/:sessionId
-# POST    /sessions/:sessionId/files/update
-# POST    /sessions/:sessionId/files/upload
-# DELETE  /sessions/:sessionId/files/:path
-# PUT     /sessions/:sessionId/files/rename
-# POST    /sessions/:sessionId/compile
-# POST    /sessions/:sessionId/complete
-# POST    /sessions/:sessionId/simulate
-# GET     /sessions/:sessionId/simulate
+#%RAML 1.0
+---
 /{sessionId}:
   delete:
     description: Deletes/Closes the session with id={sessionId}.
