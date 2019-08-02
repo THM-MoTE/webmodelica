@@ -46,7 +46,7 @@ class SimulationSetupCon extends React.Component<Props, State> {
       const opts = R.fromPairs(
         this.props.options
           .filter(o => !R.empty(o.name.trim()))
-          .map(o => R.pair(o.name, o.value))
+          .map(o => R.pair(o.name, utils.convertFloat(o.value)))
         )
       this.props.simulate({modelName: this.state.modelName, options: opts})
     }
