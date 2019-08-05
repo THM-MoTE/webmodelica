@@ -70,7 +70,7 @@ export class ApiClient {
     }
     return res
   }
-  private token(): string { return this.store.getState().authentication!.token.raw }
+  private token(): string { return "Bearer "+this.store.getState().authentication!.token.raw }
 
   private withSession<A>(err: string): Promise<Session> {
     const session = this.store.getState().session
