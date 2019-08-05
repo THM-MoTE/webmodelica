@@ -189,7 +189,7 @@ class SessionController@Inject()(
                 case Nil => results
                 case lst =>
                   val set = lst.toSet
-                  val filtered = results.variables.filter { case (name,_) => set(name) }
+                  val filtered = results.variables.filter { case (name,_) => name=="time" || set(name) }
                   results.copy(variables = filtered)
               }
             }
