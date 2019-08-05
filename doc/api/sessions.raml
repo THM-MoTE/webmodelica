@@ -32,12 +32,19 @@
       # This route is usually returned by starting the simulation via a POST request onto `/simulate`. Its not built manually by the api users.
       queryParameters:
         format:
+          description: Format of response.
           type: string
           required: false
           default: "default"
           enum: ["default", "csv", "chartjs"]
         addr:
+          description: The address of the simulation data. That's the address inside of MoPE and normally returned when starting a simulation.
           type: string
+        filter:
+          description: Filters the included variables.
+          type: comma separated list of variable names
+          required: false
+          example: ?filter=h,time,der(h)
       responses:
         200:
           body: SimulationResult | TableFormat

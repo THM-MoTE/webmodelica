@@ -84,7 +84,8 @@ case class SimulationResponse(location: java.net.URI)
 case class FSimulateStatusRequest(
   @RouteParam() sessionId: String,
   @QueryParam format:String="default",
-  @QueryParam addr:java.net.URI
+  @QueryParam addr:java.net.URI,
+  @QueryParam(commaSeparatedList = true) filter:Seq[String]=Seq()
 )
 case class TableFormat(
   modelName: String,
@@ -183,6 +184,15 @@ class SessionController@Inject()(
         withSession(req.sessionId) { service =>
           service
             .simulationResults(req.addr)
+            .map { results => //apply possible filter
+              req.filter match {
+                case Nil => results
+                case lst =>
+                  val set = lst.toSet
+                  val filtered = results.variables.filter { case (name,_) => set(name) }
+                  results.copy(variables = filtered)
+              }
+            }
             .flatMap {
               case SimulationResult(name, variables) if req.format=="csv" =>
                 service.locateSimulationCsv(name)
