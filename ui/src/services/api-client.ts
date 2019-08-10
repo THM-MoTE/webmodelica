@@ -185,7 +185,8 @@ export class ApiClient {
             { name: "stopTime", value: 5 },
             { name: "numberOfIntervals", value: 500 }
           ],
-          data: []
+          data: [],
+          variables: []
         }
       }))
   }

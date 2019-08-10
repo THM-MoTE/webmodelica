@@ -15,6 +15,7 @@ export enum ActionTypes {
   DeleteSimulationOption,
   ParseSimulationOptions,
   AddSimulationData,
+  SetSimulationVariables,
   SetProjectPreview,
   NewNotification,
   RemoveNotifications,
@@ -46,3 +47,4 @@ export const notifyError = (msg:string) => addNotification({type: NotificationTy
 export const notifyWarning = (msg:string) => addNotification({type: NotificationType.Warning, message: msg})
 export const removeNotifications = (n: Notification[]) => ({ type: ActionTypes.RemoveNotifications, payload: n })
 export const setBackgroundJobInfo = (running: boolean, msg: string | undefined) => ({ type: ActionTypes.SetBackgroundJobInfo, payload: { message: msg, running: running}})
+export const setSimulationVariables = (values:string[]) => ({type: ActionTypes.SetSimulationVariables, payload: values})

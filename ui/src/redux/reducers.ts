@@ -73,6 +73,8 @@ const reducerMap = {
   },
   [ActionTypes.AddSimulationData.toString()]: (state: AppState, data: SimulationData) =>
     R.assocPath(["session", "simulation", "data"], [data], state),
+  [ActionTypes.SetSimulationVariables.toString()]: (state: AppState, variables: string[]) =>
+    R.assocPath(["session", "simulation", "variables"], variables, state),
   [ActionTypes.NewNotification.toString()]: (state: AppState, data: Notification) =>
     R.assoc("notifications", R.append(data, state.notifications), state),
   [ActionTypes.RemoveNotifications.toString()]: (state: AppState, data: Notification[]) =>
