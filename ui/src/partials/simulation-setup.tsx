@@ -6,7 +6,7 @@ import { Row, Col, Button, Form, ButtonGroup } from 'react-bootstrap'
 import Octicon from 'react-octicon'
 import { AppState, Session, File, TableFormat, SimulateRequest, SimulationOption, availableSimulationOptions } from '../models/index'
 import { ApiClient } from '../services/api-client'
-import { Action, parseSimulationOptions, setSimulationVariables } from '../redux/actions'
+import { Action, parseSimulationOptions, setSimulationVariables, notifyInfo } from '../redux/actions'
 import * as utils from '../utils'
 import * as R from 'ramda';
 import SimulationOptions from './simulation-options'
@@ -18,14 +18,16 @@ interface Props {
   openFile?: File
   simulate(sr: SimulateRequest):void
   options: SimulationOption[]
+  variables: string[]
   parseSimulationOptions(options:SimulationOption[]):void
   setSimulationVariables(variables: string[]): void
+  notifyInfo(msg:string):void
 }
 
 interface State {
   validated?:boolean
   modelName: string
-  rawVariableFilter?: string
+  rawVariableFilter: string
 }
 
 const withinPackagePattern = /within\s+([\w\.]+)/m //extracts 'within a.b.c.examples'
@@ -37,7 +39,7 @@ class SimulationSetupCon extends React.Component<Props, State> {
 
   constructor(p:Props) {
     super(p)
-    this.state = { modelName: this.openedModelName() || ''}
+    this.state = { modelName: this.openedModelName() || '', rawVariableFilter: p.variables.join(' ')}
     this.experimentOptions()
   }
 
@@ -87,13 +89,15 @@ class SimulationSetupCon extends React.Component<Props, State> {
   }
 
   private clearVariableFilter() {
-    this.setState({rawVariableFilter: undefined})
+    this.setState({rawVariableFilter: ''})
     this.props.setSimulationVariables([])
+    this.props.notifyInfo("Variable filter cleared.")
   }
   private setVariableFilter() {
-    if (this.state.rawVariableFilter && !R.isEmpty(this.state.rawVariableFilter)) {
+    if (!R.isEmpty(this.state.rawVariableFilter)) {
       const variables = R.map(s => s.trim(), R.split(/\s+/, this.state.rawVariableFilter))
       this.props.setSimulationVariables(variables)
+      this.props.notifyInfo(`variable filter applied. Only include: ${variables.join(',')} in results.`)
     } else {
       console.warn("can't update variable filter if input empty!")
     }
@@ -115,7 +119,7 @@ class SimulationSetupCon extends React.Component<Props, State> {
       </Form.Row>
       <Form.Row>
         <Col sm={11}>
-            <Form.Control placeholder="space-separated list of variables to include. Leave empty for all variables." defaultValue={this.state.rawVariableFilter} onChange={variableFilterChanged} />
+            <Form.Control placeholder="space-separated list of variables to include. Leave empty for all variables." value={this.state.rawVariableFilter} onChange={variableFilterChanged} />
         </Col><Col sm={1} as={ButtonGroup}>
           <Button variant="outline-success" onClick={() => this.setVariableFilter()}><Octicon name='check' /></Button>
           <Button variant="outline-danger" onClick={() => this.clearVariableFilter()}><Octicon name='x' /></Button>
@@ -133,7 +137,7 @@ function mapProps(state: AppState) {
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({ parseSimulationOptions, setSimulationVariables }, dispatch)
+  return bindActionCreators({ parseSimulationOptions, setSimulationVariables, notifyInfo }, dispatch)
 }
 
 const SimulationSetup = connect(mapProps, dispatchToProps)(SimulationSetupCon)
