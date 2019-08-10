@@ -71,6 +71,7 @@ class SimulationOptionsCon extends React.Component<Props, State> {
         const values = simulationValuesFor(opt.name)
         return (
           <Form.Row key={idx}>
+            <Form.Label column sm={1}>Option</Form.Label>
             <InputGroup as={Col} sm={5}>
               <InputGroup.Prepend><Button variant="secondary" onClick={() => switchBoxTypeClicked(idx)}><Octicon name={(this.isTextBoxType(idx)) ? 'three-bars' : 'pencil'} /></Button></InputGroup.Prepend>
               { this.isTextBoxType(idx) && (
@@ -81,7 +82,7 @@ class SimulationOptionsCon extends React.Component<Props, State> {
                   {availableSimulationOptions.map(o => (<option key={o.key}>{o.key}</option>))}
                 </Form.Control>)}
             </InputGroup>
-            <Col sm={6}>
+            <Col sm={5}>
             { //if there are suggestions, provide a selector
               !R.isEmpty(values) &&
               (<Form.Control as="select" placeholder="value" value={opt.value.toString()} onChange={(ev: any) => this.updateValue(idx, ev.target.value)}>
@@ -92,9 +93,9 @@ class SimulationOptionsCon extends React.Component<Props, State> {
               R.isEmpty(values) && (<Form.Control placeholder="value" value={opt.value.toString()} onChange={(ev:any) => this.updateValue(idx, ev.target.value)}/>)
             }
             </Col>
-            <ButtonGroup className="col-sm-1">
+            <Col as={ButtonGroup} sm={1}>
                 <Button variant="outline-danger" onClick={() => this.deleteOptionField(idx)}><Octicon name="x" /></Button>
-            </ButtonGroup>
+            </Col>
           </Form.Row>
         )
         })

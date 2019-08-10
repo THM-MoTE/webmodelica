@@ -109,7 +109,8 @@ class SimulationSetupCon extends React.Component<Props, State> {
     return (<>
       <Form validated={this.state.validated}>
       <Form.Row>
-        <Col sm={11}>
+        <Form.Label column sm={1}>Model</Form.Label>
+        <Col sm={10}>
             <Form.Control placeholder="model to simulate" defaultValue={this.openedModelName()} onChange={modelNameChanged} required/>
           <Form.Control.Feedback type="invalid">
             Provide a modelname!
@@ -118,7 +119,8 @@ class SimulationSetupCon extends React.Component<Props, State> {
         <Col sm={1}></Col>
       </Form.Row>
       <Form.Row>
-        <Col sm={11}>
+          <Form.Label column sm={1}>Variables</Form.Label>
+        <Col sm={10}>
             <Form.Control placeholder="space-separated list of variables to include. Leave empty for all variables." value={this.state.rawVariableFilter} onChange={variableFilterChanged} />
         </Col><Col sm={1} as={ButtonGroup}>
           <Button variant="outline-success" onClick={() => this.setVariableFilter()}><Octicon name='check' /></Button>
