@@ -12,14 +12,12 @@ import * as R from 'ramda';
 import SimulationOptions from './simulation-options'
 import { strictEqual } from 'assert';
 import { EditorsPane } from '../components';
-import SimulationVariables from './simulation-variable-filter';
 
 interface Props {
   api: ApiClient
   openFile?: File
   simulate(sr: SimulateRequest):void
   options: SimulationOption[]
-  variables: string[]
   parseSimulationOptions(options:SimulationOption[]):void
   setSimulationVariables(variables: string[]): void
 }
@@ -64,7 +62,6 @@ class SimulationSetupCon extends React.Component<Props, State> {
       const modelMatch = modelNamePattern.exec(content)
       const withinPrefix = (withinMatch) ? withinMatch[1]+'.' : ''
       const modelName = (modelMatch) ? withinPrefix+modelMatch[1] : ''
-      console.log("within match: ", withinMatch, "modelMatch ", modelMatch)
       return modelName
     } else {
       return undefined
@@ -118,7 +115,7 @@ class SimulationSetupCon extends React.Component<Props, State> {
       </Form.Row>
       <Form.Row>
         <Col sm={11}>
-        <Form.Control placeholder="space-separated list of variables to include. Leave empty for all variables." onChange={variableFilterChanged} />
+            <Form.Control placeholder="space-separated list of variables to include. Leave empty for all variables." defaultValue={this.state.rawVariableFilter} onChange={variableFilterChanged} />
         </Col><Col sm={1} as={ButtonGroup}>
           <Button variant="outline-success" onClick={() => this.setVariableFilter()}><Octicon name='check' /></Button>
           <Button variant="outline-danger" onClick={() => this.clearVariableFilter()}><Octicon name='x' /></Button>

@@ -380,9 +380,12 @@ export class ApiClient {
     }
   }
 
-  public getSimulationResults(addr: URL, format: string = "chartjs"): Promise<SimulationResult | TableFormat> {
+  public getSimulationResults(addr: URL, format: string = "chartjs", variables?: string[]): Promise<SimulationResult | TableFormat> {
     const session = this.store.getState().session
     if (session) {
+      if (variables && !R.isEmpty(variables)) {
+        addr.searchParams.set('filter', variables.join(','))
+      }
       addr.searchParams.set("format", format)
       return fetch(addr.toString(), {
         method: 'GET',
