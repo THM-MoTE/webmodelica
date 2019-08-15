@@ -33,7 +33,7 @@ services:
       - "de.thm.webmodelica.name=redis-cache"
       - "traefik.enable=false"
   mope:
-    image: "thmmote/mope-server:0.7.0"
+    image: "thmmote/mope-server:0.7.1"
     restart: on-failure
     user: openmodelica:openmodelica
     ports:
