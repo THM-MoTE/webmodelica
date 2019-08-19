@@ -175,7 +175,7 @@ trait MopeService {
         val req = client.post(s"project/$id/disconnect")
           .withContent((), "application/json")
         req.send[Response]()
-          .map(_ => ())
+          .unit
           .handle {
             case request.ErrorResponse(req, resp) =>
               val str = s"Error response $resp to request $req"
