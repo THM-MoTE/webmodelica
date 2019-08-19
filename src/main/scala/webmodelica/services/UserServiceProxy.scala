@@ -59,7 +59,7 @@ class UserServiceProxy@Inject()(conf:UserServiceConf)
         .withContent(Json.obj("user" -> u.asJson), "application/json")
         .accept("application/json")
 
-      req.send[UserWrapper]().map(_ => ())
+      req.send[UserWrapper]().unit
         .handle {
           case request.ErrorResponse(req, resp) if resp.status == Status.Conflict => throw UserAlreadyInUse
           case request.ErrorResponse(req, resp) =>
