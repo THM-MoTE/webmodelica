@@ -97,16 +97,16 @@ trait MopeService {
     val fp = FilePath(pathMapper.toBindPath(path).toString)
     projectId.flatMap { id =>
       transformError(s"compiling $fp") {
-      withClient { client =>
-        val req = client.post(s"project/$id/compile")
-          .withContent(fp, "application/json")
-          .accept("application/json")
-        req.send[Seq[CompilerError]]()
-          .map { xs =>
-            debug(s"compiling returned $xs")
-            xs.map { error => error.copy(file = pathMapper.relativize(error.file).toString) }
-          }
-      }
+        withClient { client =>
+          val req = client.post(s"project/$id/compile")
+            .withContent(fp, "application/json")
+            .accept("application/json")
+          req.send[Seq[CompilerError]]()
+            .map { xs =>
+              debug(s"compiling returned $xs")
+              xs.map { error => error.copy(file = pathMapper.relativize(error.file).toString) }
+            }
+        }
       }
     }
   }
@@ -115,12 +115,12 @@ trait MopeService {
     val cNew = c.copy(file=pathMapper.toBindPath(Paths.get(c.file)).toString)
     projectId.flatMap { id =>
       transformError(s"complete $cNew") {
-      withClient { client =>
-        val req = client.post(s"project/$id/completion")
-          .withContent(cNew, "application/json")
-          .accept("application/json")
-        req.send[Seq[Suggestion]]()
-      }
+        withClient { client =>
+          val req = client.post(s"project/$id/completion")
+            .withContent(cNew, "application/json")
+            .accept("application/json")
+          req.send[Seq[Suggestion]]()
+        }
       }
     }
   }
@@ -131,22 +131,22 @@ trait MopeService {
       debug(s"converting stepSize returned $sim")
       projectId.flatMap { id =>
         transformError(s"simulating project:$id", Set(classOf[SimulationSetupError])) {
-        withClient { client =>
-          val req = client.post(s"project/$id/simulate")
-            .withContent(sim, "application/json")
-          req.send[Response]()
-            .map(r => r.headerMap.get("Location"))
-            .flatMap {
-              case Some(l) => Future.value(new URI(l))
-              case None =>
-                error(s"/simulate $req didn't return a Location header!")
-                Future.exception(MopeServiceError(s"POST /simulate didn't return a Location header!"))
-            }
-            .handle {
-              case request.ErrorResponse(req, resp) if resp.status == Status.BadRequest =>
-                throw SimulationSetupError(resp.contentString)
-            }
-        }
+          withClient { client =>
+            val req = client.post(s"project/$id/simulate")
+              .withContent(sim, "application/json")
+            req.send[Response]()
+              .map(r => r.headerMap.get("Location"))
+              .flatMap {
+                case Some(l) => Future.value(new URI(l))
+                case None =>
+                  error(s"/simulate $req didn't return a Location header!")
+                  Future.exception(MopeServiceError(s"POST /simulate didn't return a Location header!"))
+              }
+              .handle {
+                case request.ErrorResponse(req, resp) if resp.status == Status.BadRequest =>
+                  throw SimulationSetupError(resp.contentString)
+              }
+          }
         }
       }
     }
@@ -155,17 +155,17 @@ trait MopeService {
   def simulationResults(addr:URI): Future[SimulationResult] = {
     projectId.flatMap {id =>
       transformError("retrieving simulation results", Set(SimulationNotFinished.getClass, classOf[SimulationSetupError])) {
-      withClient { client =>
-        val req = client.get(addr.toString)
-          .accept("application/json")
-        req.send[SimulationResult]()
-          .handle {
-            case request.ErrorResponse(req, resp) if resp.status == Status.Conflict =>
-              throw SimulationNotFinished
-            case request.ErrorResponse(req, resp) if resp.status == Status.BadRequest =>
-              throw SimulationSetupError(resp.contentString)
-          }
-      }
+        withClient { client =>
+          val req = client.get(addr.toString)
+            .accept("application/json")
+          req.send[SimulationResult]()
+            .handle {
+              case request.ErrorResponse(req, resp) if resp.status == Status.Conflict =>
+                throw SimulationNotFinished
+              case request.ErrorResponse(req, resp) if resp.status == Status.BadRequest =>
+                throw SimulationSetupError(resp.contentString)
+            }
+        }
       }
     }
   }
@@ -177,8 +177,8 @@ trait MopeService {
         val req = client.post(s"project/$id/disconnect")
           .withContent((), "application/json")
         transformError("disconnecting") {
-        req.send[Response]()
-          .unit
+          req.send[Response]()
+            .unit
         }
       }
     }
@@ -202,8 +202,8 @@ object MopeService {
     private val stripPath = (from:Path, other:Path) => from.subpath(other.getNameCount, from.getNameCount)
     override def projectDirectory: Path = bindPath
     override def relativize(p:Path): Path =
-        if (p.startsWith(hostPath)) hostPath.relativize(p)
-        else bindPath.relativize(p)
+      if (p.startsWith(hostPath)) hostPath.relativize(p)
+      else bindPath.relativize(p)
     override def toBindPath(p:Path): Path = {
       if(p.isAbsolute) bindPath.resolve(stripPath(p, hostPath))
       else bindPath.resolve(p)
