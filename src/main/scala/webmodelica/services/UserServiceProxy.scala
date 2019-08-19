@@ -76,9 +76,14 @@ class UserServiceProxy@Inject()(conf:UserServiceConf)
         .withHeaders(headers:_*)
         .accept("application/json")
 
-      req.send[UserWrapper]().map(wrapper => Some(wrapper.data.toUser))
+      req.send[UserWrapper]().map { wrapper =>
+        debug(s"searching $username returned ${wrapper.data}")
+        Some(wrapper.data.toUser)
+      }
         .handle {
-          case request.ErrorResponse(req,resp) if resp.status == Status.NotFound => None
+          case request.ErrorResponse(req,resp) if resp.status == Status.NotFound =>
+            debug(s"searching $username returned NotFound")
+            None
           case request.ErrorResponse(req,resp) =>
             val str = s"Error in 'findBy' $resp to request $req"
             throw UserServiceError(str)
