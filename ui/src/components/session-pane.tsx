@@ -107,11 +107,10 @@ class SessionPaneCon extends React.Component<Props, State> {
     if(!this.currentFile()) {
       this.props.notifyWarning("Please open a file before compilation!");
     } else {
-      console.log("compiling .. ")
-      this.setState({compiling: true})
       this.handleSaveClicked()
         .catch(er => /** no open file; ignore error */ undefined)
-        .then(files => this.api.compile(this.currentFile()!))
+        .then(file => {this.setState({ compiling: true }); return file!})
+        .then(file => this.api.compile(file))
         .then(errors => {
           console.log("errors:", errors)
           if(R.isEmpty(errors)) {
