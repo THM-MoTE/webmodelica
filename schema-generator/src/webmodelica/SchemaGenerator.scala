@@ -24,6 +24,10 @@ trait Schemas {
   implicit object requestSchema extends SchemaFor[Request] {
     override def schema(implicit naming: NamingStrategy = DefaultNamingStrategy): Schema = SchemaBuilder.builder.nullType()
   }
+  implicit def traversableSchema[A:SchemaFor] = new SchemaFor[Traversable[A]]() {
+    override def schema(implicit namingStrategy: NamingStrategy): Schema =
+      SchemaBuilder.builder.array().items(AvroSchema[A])
+  }
 }
 
 object SchemaGenerator
@@ -84,7 +88,9 @@ object SchemaGenerator
       "incompatible types, expected real found string")),
     TpeWrapper(AvroSchema[Complete], Complete("a/b/random.mo", FilePosition(2,0), "Modelica.Elec")),
     TpeWrapper[String](AvroSchema[SimulationResult], None, None),
-    TpeWrapper(AvroSchema[Either[ModelicaFile, ModelicaPath]], "FileOrPath")
+    TpeWrapper[String](AvroSchema[TableFormat], None, None),
+    TpeWrapper(AvroSchema[Either[ModelicaFile, ModelicaPath]], "FileOrPath"),
+    TpeWrapper(AvroSchema[Either[SimulationResult, TableFormat]], "SimulationResultOrTableFormat")
   )
 
   val buf = scala.collection.mutable.ArrayBuffer(

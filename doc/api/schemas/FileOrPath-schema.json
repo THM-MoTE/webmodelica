@@ -1,0 +1,20 @@
+[ {
+  "type" : "record",
+  "name" : "ModelicaFile",
+  "namespace" : "webmodelica.models",
+  "fields" : [ {
+    "name" : "relativePath",
+    "type" : "string"
+  }, {
+    "name" : "content",
+    "type" : "string"
+  } ]
+}, {
+  "type" : "record",
+  "name" : "ModelicaPath",
+  "namespace" : "webmodelica.models",
+  "fields" : [ {
+    "name" : "relativePath",
+    "type" : "string"
+  } ]
+} ]

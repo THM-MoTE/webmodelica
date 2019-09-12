@@ -1,0 +1,44 @@
+[ {
+  "type" : "record",
+  "name" : "SimulationResult",
+  "namespace" : "webmodelica.models.mope.responses",
+  "fields" : [ {
+    "name" : "modelName",
+    "type" : "string"
+  }, {
+    "name" : "variables",
+    "type" : {
+      "type" : "map",
+      "values" : {
+        "type" : "array",
+        "items" : "double"
+      }
+    }
+  } ]
+}, {
+  "type" : "record",
+  "name" : "TableFormat",
+  "namespace" : "webmodelica.controllers",
+  "fields" : [ {
+    "name" : "modelName",
+    "type" : "string"
+  }, {
+    "name" : "data",
+    "type" : {
+      "type" : "array",
+      "items" : {
+        "type" : "array",
+        "items" : "double"
+      }
+    }
+  }, {
+    "name" : "header",
+    "type" : {
+      "type" : "array",
+      "items" : "string"
+    }
+  }, {
+    "name" : "dataManipulated",
+    "type" : [ "null", "string" ]
+  } ]
+} ]
