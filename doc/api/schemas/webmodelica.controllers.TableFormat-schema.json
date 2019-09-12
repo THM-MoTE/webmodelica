@@ -1,0 +1,27 @@
+{
+  "type" : "record",
+  "name" : "TableFormat",
+  "namespace" : "webmodelica.controllers",
+  "fields" : [ {
+    "name" : "modelName",
+    "type" : "string"
+  }, {
+    "name" : "data",
+    "type" : {
+      "type" : "array",
+      "items" : {
+        "type" : "array",
+        "items" : "double"
+      }
+    }
+  }, {
+    "name" : "header",
+    "type" : {
+      "type" : "array",
+      "items" : "string"
+    }
+  }, {
+    "name" : "dataManipulated",
+    "type" : [ "null", "string" ]
+  } ]
+}

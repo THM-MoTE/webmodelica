@@ -1,0 +1,8 @@
+{
+  "file" : "a/b/random.mo",
+  "position" : {
+    "line" : 2,
+    "column" : 0
+  },
+  "word" : "Modelica.Elec"
+}
