@@ -63,6 +63,7 @@ class AkkaProjectController(
         }
       } ~
       pathPrefix(Segment) { (id:String) =>
+        def projectFinder(): Future[Project] = extractProject(id, user.username)
         get { //secured route: GET /projects/:id
         logger.debug(s"lookup project $id")
         val project = projectStore.findBy(id, user.username).map(_.map(JSProject.apply)).asScala
@@ -72,6 +73,17 @@ class AkkaProjectController(
           logger.debug(s"deleting project $id")
           val noContent = projectStore.delete(id).map { _ => HttpResponse(StatusCodes.NoContent) }.asScala
           complete(noContent)
+        } ~
+        (path("copy") & post & entity(as[AkkaProjectController.CopyProjectRequest])) { case copyReq =>
+          //secured route: POST /projects/:id/copy
+          complete(
+            for {
+              project <- projectFinder()
+              newProject = copyReq.newProject(project, user.username)
+              _ <- (projectStore add newProject).asScala
+              _ <- (fileStore(project) copyTo fileStore(newProject).rootDir).asScala
+            } yield JSProject(newProject)
+          )
         }
       }
     }
