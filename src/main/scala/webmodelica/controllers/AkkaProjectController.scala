@@ -66,13 +66,14 @@ class AkkaProjectController(
         }
       } ~
       pathPrefix(Segment) { (id:String) =>
+        /** Searches for the project, that is referenced by the id contained in the route. */
         def projectFinder(): Future[Project] = extractProject(id, user.username)
-        get { //secured route: GET /projects/:id
-        logger.debug(s"lookup project $id")
-        val project = projectStore.findBy(id, user.username).map(_.map(JSProject.apply)).asScala
+        (get & pathEnd) { //secured route: GET /projects/:id
+          logger.debug(s"lookup project $id")
+          val project = projectStore.findBy(id, user.username).map(_.map(JSProject.apply)).asScala
           complete(project)
         } ~
-        delete { //secured route: DELETE /projects/:id
+        (delete & pathEnd) { //secured route: DELETE /projects/:id
           logger.debug(s"deleting project $id")
           val noContent = projectStore.delete(id).map { _ => HttpResponse(StatusCodes.NoContent) }.asScala
           complete(noContent)
@@ -95,6 +96,13 @@ class AkkaProjectController(
                 .map(JSProject.apply)
                 .asScala
             )
+        } ~
+        pathPrefix("files") {
+          (get & pathEnd & parameter("format" ? "list")) {
+            //secured route: GET /projects/:id/files?format=[tree|list]
+            case "tree" => complete(projectFinder().flatMap(projectFileTree))
+            case _ => complete(projectFinder().flatMap(projectFiles))
+          }
         }
       }
     }
