@@ -27,6 +27,9 @@ object AkkaProjectController {
   case class CopyProjectRequest(name: Option[String]) {
     def newProject(p: Project, owner: String): Project = Project(owner, name.getOrElse(p.name))
   }
+
+  @JsonCodec
+  case class VisibilityRequest(visibility:String) extends AnyVal
 }
 
 class AkkaProjectController(
@@ -74,7 +77,7 @@ class AkkaProjectController(
           val noContent = projectStore.delete(id).map { _ => HttpResponse(StatusCodes.NoContent) }.asScala
           complete(noContent)
         } ~
-        (path("copy") & post & entity(as[AkkaProjectController.CopyProjectRequest])) { case copyReq =>
+        (path("copy") & post & entity(as[AkkaProjectController.CopyProjectRequest])) { copyReq =>
           //secured route: POST /projects/:id/copy
           complete(
             for {
@@ -84,6 +87,14 @@ class AkkaProjectController(
               _ <- (fileStore(project) copyTo fileStore(newProject).rootDir).asScala
             } yield JSProject(newProject)
           )
+        } ~
+          (path("visibility") & put & entity(as[AkkaProjectController.VisibilityRequest])) { case AkkaProjectController.VisibilityRequest(visibility) =>
+            //secured route: PUT /projects/:id/visibility
+            complete(
+              projectStore.setVisiblity(id, visibility)
+                .map(JSProject.apply)
+                .asScala
+            )
         }
       }
     }
