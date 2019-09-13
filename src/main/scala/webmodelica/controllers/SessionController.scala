@@ -33,66 +33,77 @@ import java.net.URI
 
 import better.files._
 
-case class NewFileRequest(
-  @RouteParam() sessionId: String,
-  @JsonProperty() relativePath: java.nio.file.Path,
-  @JsonProperty() content: String,
-)
-case class DeleteRequest(
-  @RouteParam() sessionId: String,
-  @RouteParam() path:URI
-) {
-  def asPath: Path = Paths.get(path.getPath)
-}
-case class RenameRequest(
-  @RouteParam() sessionId: String,
-  @JsonProperty() oldPath:Path,
-  @JsonProperty() newPath:Path,
-)
-case class CompileRequest(
-  @RouteParam() sessionId: String,
-  @JsonProperty() path: java.nio.file.Path,
-)
-case class CompleteRequest(
-  @RouteParam() sessionId: String,
-  @JsonProperty() file: String,
-  @JsonProperty() position: FilePosition,
-  @JsonProperty() word: String
-) {
-  def toMopeRequest: Complete =
-    this.into[Complete].transform
-}
-case class FSimulateRequest(
-  @RouteParam() sessionId: String,
-  @JsonProperty() modelName: String,
-  @JsonProperty() options: Map[String, Any],
-  request: Request,
-) {
-  def toMopeRequest: SimulateRequest = {
-    import io.circe.syntax._
-    val opts = options.mapValues {
-      case v:Long => v.asJson
-      case v:Int => v.asJson
-      case v:Double => v.asJson
-      case v:String => v.asJson
-    }
-    this.into[SimulateRequest].withFieldComputed(_.options, _ => opts).transform
-  }
-}
+object SessionController {
 
-case class SimulationResponse(location: java.net.URI)
-case class FSimulateStatusRequest(
-  @RouteParam() sessionId: String,
-  @QueryParam format:String="default",
-  @QueryParam addr:java.net.URI,
-  @QueryParam(commaSeparatedList = true) filter:Seq[String]=Seq()
-)
-case class TableFormat(
-  modelName: String,
-  data: Traversable[Traversable[Double]],
-  header: Traversable[String],
-  dataManipulated: Option[String]
-)
+  case class NewFileRequest(
+                             @RouteParam() sessionId: String,
+                             @JsonProperty() relativePath: java.nio.file.Path,
+                             @JsonProperty() content: String,
+                           )
+
+  case class DeleteRequest(
+                            @RouteParam() sessionId: String,
+                            @RouteParam() path: URI
+                          ) {
+    def asPath: Path = Paths.get(path.getPath)
+  }
+
+  case class RenameRequest(
+                            @RouteParam() sessionId: String,
+                            @JsonProperty() oldPath: Path,
+                            @JsonProperty() newPath: Path,
+                          )
+
+  case class CompileRequest(
+                             @RouteParam() sessionId: String,
+                             @JsonProperty() path: java.nio.file.Path,
+                           )
+
+  case class CompleteRequest(
+                              @RouteParam() sessionId: String,
+                              @JsonProperty() file: String,
+                              @JsonProperty() position: FilePosition,
+                              @JsonProperty() word: String
+                            ) {
+    def toMopeRequest: Complete =
+      this.into[Complete].transform
+  }
+
+  case class FSimulateRequest(
+                               @RouteParam() sessionId: String,
+                               @JsonProperty() modelName: String,
+                               @JsonProperty() options: Map[String, Any],
+                               request: Request,
+                             ) {
+    def toMopeRequest: SimulateRequest = {
+      import io.circe.syntax._
+      val opts = options.mapValues {
+        case v: Long => v.asJson
+        case v: Int => v.asJson
+        case v: Double => v.asJson
+        case v: String => v.asJson
+      }
+      this.into[SimulateRequest].withFieldComputed(_.options, _ => opts).transform
+    }
+  }
+
+  case class SimulationResponse(location: java.net.URI)
+
+  case class FSimulateStatusRequest(
+                                     @RouteParam() sessionId: String,
+                                     @QueryParam format: String = "default",
+                                     @QueryParam addr: java.net.URI,
+                                     @QueryParam(commaSeparatedList = true) filter: Seq[String] = Seq()
+                                   )
+
+  case class TableFormat(
+                          modelName: String,
+                          data: Traversable[Traversable[Double]],
+                          header: Traversable[String],
+                          dataManipulated: Option[String]
+                        )
+
+}
 
 class SessionController@Inject()(
   projectStore:ProjectStore,
@@ -132,7 +143,7 @@ class SessionController@Inject()(
       delete("/sessions/:sessionId") { req: Request =>
         sessionRegistry.killSession(req.getParam("sessionId")).map(_ => response.noContent)
       }
-      post("/sessions/:sessionId/files/update") { req: NewFileRequest =>
+      post("/sessions/:sessionId/files/update") { req: SessionController.NewFileRequest =>
         withSession(req.sessionId) { service =>
           service.update(ModelicaFile(req.relativePath, req.content))
         }
@@ -149,38 +160,38 @@ class SessionController@Inject()(
             .getOrElse(Future.exception(BadRequestException("'archive' file expected!")))
         }
       }
-      delete("/sessions/:sessionId/files/:path") { req: DeleteRequest =>
+      delete("/sessions/:sessionId/files/:path") { req: SessionController.DeleteRequest =>
         withSession(req.sessionId) { service =>
           service.delete(req.asPath).map(_ => response.noContent)
         }
       }
-      put("/sessions/:sessionId/files/rename") { req: RenameRequest =>
+      put("/sessions/:sessionId/files/rename") { req: SessionController.RenameRequest =>
         withSession(req.sessionId) { service =>
           service.rename(req.oldPath, req.newPath)
         }
       }
 
-      post("/sessions/:sessionId/compile") { req: CompileRequest =>
+      post("/sessions/:sessionId/compile") { req: SessionController.CompileRequest =>
         withSession(req.sessionId) { service =>
           service.compile(req.path)
         }
       }
-      post("/sessions/:sessionId/complete") { req: CompleteRequest =>
+      post("/sessions/:sessionId/complete") { req: SessionController.CompleteRequest =>
         withSession(req.sessionId) { service =>
           service.complete(req.toMopeRequest)
         }
       }
-      post("/sessions/:sessionId/simulate") { req: FSimulateRequest =>
+      post("/sessions/:sessionId/simulate") { req: SessionController.FSimulateRequest =>
         withSession(req.sessionId) { service =>
           service.simulate(req.toMopeRequest).map { uri =>
             val location = req.request.uri.toString+s"?addr=${uri.toString}"
             response
-              .ok(SimulationResponse(new URI(location)))
+              .ok(SessionController.SimulationResponse(new URI(location)))
               .location(location)
           }
         }
       }
-      get("/sessions/:sessionId/simulate") { req: FSimulateStatusRequest =>
+      get("/sessions/:sessionId/simulate") { req: SessionController.FSimulateStatusRequest =>
         withSession(req.sessionId) { service =>
           service
             .simulationResults(req.addr)
@@ -205,7 +216,7 @@ class SessionController@Inject()(
                 val variables = result.trimmedVariables(maxSimulationData.value)
                 val headers = variables.keys.filterNot(k => k=="time").toList
                 val tableData = (variables("time")+:headers.map(k => variables(k)).toSeq).transpose
-                Future.value(TableFormat(
+                Future.value(SessionController.TableFormat(
                   name,
                   tableData,
                   "time"::headers,
