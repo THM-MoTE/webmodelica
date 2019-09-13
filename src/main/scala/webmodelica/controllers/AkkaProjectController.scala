@@ -102,6 +102,16 @@ class AkkaProjectController(
             //secured route: GET /projects/:id/files?format=[tree|list]
             case "tree" => complete(projectFinder().flatMap(projectFileTree))
             case _ => complete(projectFinder().flatMap(projectFiles))
+          } ~
+            (get & path("download")) {//secured route: GET /projects/:id/files/download
+            val future = (for {
+              project <- projectFinder()
+              fs = fileStore(project)
+              file <- fs.packageProjectArchive(project.name).asScala
+            } yield file)
+            onSuccess(future) { file =>
+              getFromFile(file.getPath)
+            }
           }
         }
       }
