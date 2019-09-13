@@ -28,6 +28,10 @@ import webmodelica.services.{TokenGenerator, TokenValidator, UserToken}
 import webmodelica.stores.{ProjectStore, UserStore}
 
 object ProjectController {
+  case class ProjectRequest(
+                             owner: String,
+                             name: String,
+                             request: com.twitter.finagle.http.Request)
   case class CopyProjectRequest(
                                  @RouteParam() id: String,
                                  @JsonProperty() name: Option[String],
@@ -51,7 +55,6 @@ object ProjectController {
                                ) {
     def asPath: Path = Paths.get(path.getPath)
   }
-
   case class ProjectFilesRequest(
                                   @RouteParam() id: String,
                                   @QueryParam() format: String = "list",
@@ -61,7 +64,6 @@ object ProjectController {
   case class VisibilityRequest(
                                 @RouteParam() id: String,
                                 @JsonProperty() visibility: String)
-
 }
 class ProjectController@Inject()(
     override val projectStore:ProjectStore,
@@ -79,7 +81,7 @@ class ProjectController@Inject()(
 
   filter[JwtFilter]
     .prefix(prefix.p) {
-      post("/projects") { project: ProjectRequest =>
+      post("/projects") { project: ProjectController.ProjectRequest =>
         extractUsername(project.request).flatMap {
           case username if username == project.owner =>
             val newProj = Project(project)

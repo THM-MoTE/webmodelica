@@ -11,6 +11,7 @@ package webmodelica.models
 import org.mongodb.scala.bson.BsonObjectId
 import io.scalaland.chimney.dsl._
 import io.circe.generic.JsonCodec
+import webmodelica.controllers.ProjectController.ProjectRequest
 
 @JsonCodec
 case class Project(
@@ -19,11 +20,6 @@ case class Project(
   name: String,
   visibility:String = Project.privateVisibility
 )
-
-case class ProjectRequest(
-  owner: String,
-  name: String,
-  request: com.twitter.finagle.http.Request)
 
 @JsonCodec
 case class JSProject(
