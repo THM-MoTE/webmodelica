@@ -58,7 +58,7 @@ const reducerMap = {
     const { idx, option } = payload
     const simulationOptions: SimulationOption[] = state.session!.simulation.options.map((opt, i) => {
       if (i === idx) {
-        return { name: option.name, value: utils.convertFloat(option.value) }
+        return option
       }
       else return opt
     })
@@ -69,13 +69,12 @@ const reducerMap = {
   [ActionTypes.DeleteSimulationOption.toString()]: (state: AppState, idx: number) =>
     R.assocPath(["session", "simulation", "options"], state.session!.simulation.options.filter((_, i) => i !== idx), state) as AppState,
   [ActionTypes.ParseSimulationOptions.toString()]: (state: AppState, options: SimulationOption[]) => {
-    const opts: SimulationOption[] = options.map(o => {
-      return { name: o.name, value: utils.convertFloat(o.value) }
-    })
-    return R.assocPath(["session", "simulation", "options"], opts, state)
+    return R.assocPath(["session", "simulation", "options"], options, state)
   },
   [ActionTypes.AddSimulationData.toString()]: (state: AppState, data: SimulationData) =>
     R.assocPath(["session", "simulation", "data"], [data], state),
+  [ActionTypes.SetSimulationVariables.toString()]: (state: AppState, variables: string[]) =>
+    R.assocPath(["session", "simulation", "variables"], variables, state),
   [ActionTypes.NewNotification.toString()]: (state: AppState, data: Notification) =>
     R.assoc("notifications", R.append(data, state.notifications), state),
   [ActionTypes.RemoveNotifications.toString()]: (state: AppState, data: Notification[]) =>

@@ -19,6 +19,7 @@ interface Props {
   api: ApiClient
   session: Session
   simulationData?: SimulationData
+  variables: string[]
   setBackgroundJobInfo(running:boolean, msg?: string):Action
   addSimulationData(data:SimulationData):void
   notifyError(msg:string): void
@@ -45,7 +46,7 @@ class SimulationPaneCon extends React.Component<Props, any> {
   private queryResults(location: URL): void {
     console.log("query results ...")
     this.props.api
-      .getSimulationResults(location)
+      .getSimulationResults(location, 'chartjs', this.props.variables)
       .then(rs => {
         //TODO: handle multiple simulation results
         //save the data into local state and not redux store to avoid overflowing browser's storage size limits
@@ -80,7 +81,7 @@ class SimulationPaneCon extends React.Component<Props, any> {
 
 function mapProps(state: AppState) {
   const results = state.session!.simulation.data
-  return { session: state.session!, simulationData: (results.length>0) ? results[0] : undefined }
+  return { session: state.session!, simulationData: (results.length>0) ? results[0] : undefined, variables: state.session!.simulation.variables }
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {

@@ -44,5 +44,10 @@ object responses {
         case timeSeries => timeSeries
       }
     }
+
+    override def toString:String = {
+      val vars = variables.keys.mkString(",")
+      s"SimulationResult(name: $modelName, variables: $vars)"
+    }
   }
 }

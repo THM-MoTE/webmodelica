@@ -49,6 +49,25 @@ trait MopeService {
     }
   }
 
+  private def transformError[A](msg: => String, ignore:Set[Class[_]]=Set.empty)(f: => Future[A]): Future[A] = {
+    import com.twitter.util.{Return, Throw}
+    f.transform {
+      case Return(r) =>
+        debug(s"$msg returned $r")
+        Future.value(r)
+      case Throw(e@request.ErrorResponse(req,resp)) =>
+        error(s"http error while $msg: ${e.getMessage}", e)
+        Future.exception(MopeServiceError(s"Error response $resp to request $req"))
+      case Throw(e:MopeServiceError) if !ignore(e.getClass) =>
+        error(s"mope error while $msg: ${e.getMessage}", e)
+        Future.exception(e)
+      case Throw(e) if !ignore(e.getClass) =>
+        error(s"unknown error while $msg", e)
+        Future.exception(e)
+      case Throw(e) => Future.exception(e)
+    }
+  }
+
   private lazy val projIdPromise: Promise[Int] = new Promise[Int]()
   def projectId: Future[Int] = projIdPromise
 
@@ -58,46 +77,36 @@ trait MopeService {
   def connect():Future[Int] = {
     val path = pathMapper.projectDirectory
     val descr = ProjectDescription(path.toString)
-    info(s"connecting with $descr")
-    withClient { client =>
-      val req = client.post("connect")
-        .withContent(descr, "application/json")
-        .accept("application/json")
 
-      req.send[Int]().map { id =>
+    transformError(s"connecting with $descr") {
+      withClient { client =>
+        val req = client.post("connect")
+          .withContent(descr, "application/json")
+          .accept("application/json")
+
+        req.send[Int]().map { id =>
           info(s"registered id $id")
           projIdPromise setValue id
           id
-      }
-        .handle {
-          case request.ErrorResponse(req,resp) =>
-            val str = s"Error response $resp to request $req"
-            throw MopeServiceError(str)
-          case e:Exception =>
-            error(s"error while connecting ${e.getMessage}")
-            throw e
         }
+      }
     }
   }
 
   def compile(path:Path): Future[Seq[CompilerError]] = {
     val fp = FilePath(pathMapper.toBindPath(path).toString)
     projectId.flatMap { id =>
-      info(s"compiling $fp")
-      withClient { client =>
-        val req = client.post(s"project/$id/compile")
-          .withContent(fp, "application/json")
-          .accept("application/json")
-        req.send[Seq[CompilerError]]()
-          .map { xs =>
-            info(s"compiling returned $xs")
-            xs.map { error => error.copy(file = pathMapper.relativize(error.file).toString) }
-          }
-          .handle {
-            case request.ErrorResponse(req, resp) =>
-              val str = s"Error response $resp to request $req"
-              throw MopeServiceError(str)
-          }
+      transformError(s"compiling $fp") {
+        withClient { client =>
+          val req = client.post(s"project/$id/compile")
+            .withContent(fp, "application/json")
+            .accept("application/json")
+          req.send[Seq[CompilerError]]()
+            .map { xs =>
+              debug(s"compiling returned $xs")
+              xs.map { error => error.copy(file = pathMapper.relativize(error.file).toString) }
+            }
+        }
       }
     }
   }
@@ -105,17 +114,13 @@ trait MopeService {
   def complete(c:Complete): Future[Seq[Suggestion]] = {
     val cNew = c.copy(file=pathMapper.toBindPath(Paths.get(c.file)).toString)
     projectId.flatMap { id =>
-      info(s"complete $cNew")
-      withClient { client =>
-        val req = client.post(s"project/$id/completion")
-          .withContent(cNew, "application/json")
-          .accept("application/json")
-        req.send[Seq[Suggestion]]()
-          .handle {
-            case request.ErrorResponse(req, resp) =>
-              val str = s"Error response $resp to request $req"
-              throw MopeServiceError(str)
-          }
+      transformError(s"complete $cNew") {
+        withClient { client =>
+          val req = client.post(s"project/$id/completion")
+            .withContent(cNew, "application/json")
+            .accept("application/json")
+          req.send[Seq[Suggestion]]()
+        }
       }
     }
   }
@@ -125,25 +130,23 @@ trait MopeService {
     scala.concurrent.Future.fromTry(simParam.convertStepSize).asTwitter.flatMap { sim =>
       debug(s"converting stepSize returned $sim")
       projectId.flatMap { id =>
-        info(s"simulating for $id")
-        withClient { client =>
-          val req = client.post(s"project/$id/simulate")
-            .withContent(sim, "application/json")
-          req.send[Response]()
-            .map(r => r.headerMap.get("Location"))
-            .flatMap {
-              case Some(l) => Future.value(new URI(l))
-              case None =>
-                error(s"/simulate $req didn't return a Location header!")
-                Future.exception(MopeServiceError(s"POST /simulate didn't return a Location header!"))
-            }
-            .handle {
-              case request.ErrorResponse(req, resp) if resp.status == Status.BadRequest =>
-                throw SimulationSetupError(resp.contentString)
-              case request.ErrorResponse(req, resp) =>
-                val str = s"Error response $resp to request $req"
-                throw MopeServiceError(str)
-            }
+        transformError(s"simulating project:$id", Set(classOf[SimulationSetupError])) {
+          withClient { client =>
+            val req = client.post(s"project/$id/simulate")
+              .withContent(sim, "application/json")
+            req.send[Response]()
+              .map(r => r.headerMap.get("Location"))
+              .flatMap {
+                case Some(l) => Future.value(new URI(l))
+                case None =>
+                  error(s"/simulate $req didn't return a Location header!")
+                  Future.exception(MopeServiceError(s"POST /simulate didn't return a Location header!"))
+              }
+              .handle {
+                case request.ErrorResponse(req, resp) if resp.status == Status.BadRequest =>
+                  throw SimulationSetupError(resp.contentString)
+              }
+          }
         }
       }
     }
@@ -151,19 +154,18 @@ trait MopeService {
 
   def simulationResults(addr:URI): Future[SimulationResult] = {
     projectId.flatMap {id =>
-      withClient { client =>
-        val req = client.get(addr.toString)
-          .accept("application/json")
-        req.send[SimulationResult]()
-          .handle {
-            case request.ErrorResponse(req, resp) if resp.status == Status.Conflict =>
-              throw SimulationNotFinished
-            case request.ErrorResponse(req, resp) if resp.status == Status.BadRequest =>
-              throw SimulationSetupError(resp.contentString)
-            case request.ErrorResponse(req, resp) =>
-              val str = s"Error response $resp to request $req"
-              throw MopeServiceError(str)
-          }
+      transformError("retrieving simulation results", Set(SimulationNotFinished.getClass, classOf[SimulationSetupError])) {
+        withClient { client =>
+          val req = client.get(addr.toString)
+            .accept("application/json")
+          req.send[SimulationResult]()
+            .handle {
+              case request.ErrorResponse(req, resp) if resp.status == Status.Conflict =>
+                throw SimulationNotFinished
+              case request.ErrorResponse(req, resp) if resp.status == Status.BadRequest =>
+                throw SimulationSetupError(resp.contentString)
+            }
+        }
       }
     }
   }
@@ -174,13 +176,10 @@ trait MopeService {
       withClient{ client =>
         val req = client.post(s"project/$id/disconnect")
           .withContent((), "application/json")
-        req.send[Response]()
-          .map(_ => ())
-          .handle {
-            case request.ErrorResponse(req, resp) =>
-              val str = s"Error response $resp to request $req"
-              throw MopeServiceError(str)
-          }
+        transformError("disconnecting") {
+          req.send[Response]()
+            .unit
+        }
       }
     }
   }
@@ -203,8 +202,8 @@ object MopeService {
     private val stripPath = (from:Path, other:Path) => from.subpath(other.getNameCount, from.getNameCount)
     override def projectDirectory: Path = bindPath
     override def relativize(p:Path): Path =
-        if (p.startsWith(hostPath)) hostPath.relativize(p)
-        else bindPath.relativize(p)
+      if (p.startsWith(hostPath)) hostPath.relativize(p)
+      else bindPath.relativize(p)
     override def toBindPath(p:Path): Path = {
       if(p.isAbsolute) bindPath.resolve(stripPath(p, hostPath))
       else bindPath.resolve(p)

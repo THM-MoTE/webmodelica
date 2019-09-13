@@ -32,4 +32,12 @@ package object models {
   implicit val encodeRequest = new Encoder[ProjectRequest] {
     final def apply(proj:ProjectRequest): Json = JSProject(Project(proj)).asJson
   }
+
+  implicit class RichPath(val p:Path) extends AnyVal {
+    def asModelicaPath: ModelicaPath = ModelicaPath(p)
+  }
+  implicit class RichString(val s:String) extends AnyVal {
+    def asModelicaPath: ModelicaPath = Paths.get(s).asModelicaPath
+    def asPath: Path = Paths.get(s)
+  }
 }

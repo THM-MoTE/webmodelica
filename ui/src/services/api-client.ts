@@ -70,7 +70,7 @@ export class ApiClient {
     }
     return res
   }
-  private token(): string { return this.store.getState().authentication!.token.raw }
+  private token(): string { return "Bearer "+this.store.getState().authentication!.token.raw }
 
   private withSession<A>(err: string): Promise<Session> {
     const session = this.store.getState().session
@@ -98,21 +98,21 @@ export class ApiClient {
         .then(pl => pl.data)
   }
 
-  public login(user: string, pw: string): Promise<TokenWrapper> {
-    return fetch(this.userUri() + "/login", {
+  public login(email: string, pw: string): Promise<void> {
+    const data = new FormData()
+    data.append('email', email)
+    data.append('password', pw)
+    return fetch(this.authUri() + "/identity/callback", {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        "Accept": 'application/json'
-      },
-      body: JSON.stringify({ username: user, password: pw })
+      body: data
     })
       .then(rejectError)
-      .then(res => res.json())
-      .then((t: TokenWrapper) => {
-        this.store.dispatch(updateToken(t.token))
-        return t
-      })
+      .then(res => undefined)
+      // .then(res => res.json())
+      // .then((t: TokenWrapper) => {
+      //   this.store.dispatch(updateToken(t.token))
+      //   return t
+      // })
   }
 
   public projects(): Promise<Project[]> {
@@ -185,7 +185,8 @@ export class ApiClient {
             { name: "stopTime", value: 5 },
             { name: "numberOfIntervals", value: 500 }
           ],
-          data: []
+          data: [],
+          variables: []
         }
       }))
   }
@@ -379,9 +380,12 @@ export class ApiClient {
     }
   }
 
-  public getSimulationResults(addr: URL, format: string = "chartjs"): Promise<SimulationResult | TableFormat> {
+  public getSimulationResults(addr: URL, format: string = "chartjs", variables?: string[]): Promise<SimulationResult | TableFormat> {
     const session = this.store.getState().session
     if (session) {
+      if (variables && !R.isEmpty(variables)) {
+        addr.searchParams.set('filter', variables.join(','))
+      }
       addr.searchParams.set("format", format)
       return fetch(addr.toString(), {
         method: 'GET',

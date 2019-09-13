@@ -1,6 +1,6 @@
 FROM openjdk:8-alpine
 
-RUN apk add bash &&\
+RUN apk add bash unzip zip &&\
   addgroup -g 1000 -S openmodelica &&\
   adduser -u 1000 -D -S -G openmodelica openmodelica
 

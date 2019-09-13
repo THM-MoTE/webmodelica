@@ -107,11 +107,10 @@ class SessionPaneCon extends React.Component<Props, State> {
     if(!this.currentFile()) {
       this.props.notifyWarning("Please open a file before compilation!");
     } else {
-      console.log("compiling .. ")
-      this.setState({compiling: true})
       this.handleSaveClicked()
         .catch(er => /** no open file; ignore error */ undefined)
-        .then(files => this.api.compile(this.currentFile()!))
+        .then(file => {this.setState({ compiling: true }); return file!})
+        .then(file => this.api.compile(file))
         .then(errors => {
           console.log("errors:", errors)
           if(R.isEmpty(errors)) {
@@ -146,7 +145,7 @@ class SessionPaneCon extends React.Component<Props, State> {
     return (
       <WmContainer title={"Session: " + this.props.session.project.name} active="session" sessionId={this.props.session.id}>
         <Row className="editor-row">
-          <Col sm="2">
+          <Col md="2">
             <FileView
               onSaveClicked={this.handleSaveClicked.bind(this)}
               onCompileClicked={this.handleCompileClicked.bind(this)}
@@ -154,7 +153,7 @@ class SessionPaneCon extends React.Component<Props, State> {
               api={this.api}
               activeFile={this.currentFile()} />
           </Col>
-          <Col sm={10}>
+          <Col md={10}>
           <EditorsPane
             file={(this.currentFile()) ? this.currentFile() : undefined}
             api={this.props.api}
@@ -163,7 +162,7 @@ class SessionPaneCon extends React.Component<Props, State> {
           </Col>
         </Row>
         <Row>
-          <Col lg="2"></Col>
+          <Col md="2"></Col>
           <Col>
             {this.props.compilerErrors.map(errorLine)}
           </Col>

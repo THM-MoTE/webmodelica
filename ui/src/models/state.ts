@@ -19,6 +19,7 @@ export interface SimulationData {
 export interface SimulationState {
   options: SimulationOption[]
   data: SimulationData[]
+  variables: string[]
 }
 
 export interface SimulationOption {

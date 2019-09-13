@@ -22,8 +22,16 @@ import webmodelica.models.{User, errors}
 class JwtFilter@Inject()(gen:TokenGenerator, store:UserStore)(validator:TokenValidator=gen) extends SimpleFilter[http.Request, http.Response]
   with com.twitter.inject.Logging {
 
+  //strips 'Bearer' from the authorization header (see: https://de.wikipedia.org/wiki/JSON_Web_Token#Header).
+  val bearerExtractor = """^Bearer\s+([\w\-.]+)$""".r
+
   override def apply(request: Request, service: Service[Request, Response]): Future[Response] = {
-    val headerField = request.headerMap.get(constants.authorizationHeader)
+    val headerField = request.headerMap
+      .get(constants.authorizationHeader)
+      .flatMap {
+        case bearerExtractor(token) => Some(token)
+        case _ => None
+      }
     lazy val cookie = request.cookies.get("token").map(_.value)
     val resultOpt = headerField.orElse(cookie).filter(validator.isValid).map { token =>
       //explictly set the Authorization header because it could be inside of a cookie
@@ -35,7 +43,10 @@ class JwtFilter@Inject()(gen:TokenGenerator, store:UserStore)(validator:TokenVal
         warn(s"provided token invalid!")
         val res = Response()
         res.status = Status.Unauthorized
-        res.contentString = "Invalid web-token!"
+        res.contentString = s"""Invalid authorization!
+														|Either provide:
+														|- the cookie token=<jwt-token>
+														|- ${constants.authorizationHeader}: Bearer <jwt-token>""".stripMargin
         Future.value(res)
     }
   }

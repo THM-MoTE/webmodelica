@@ -32,9 +32,12 @@ function persistedStore() {
 }
 /** Performs logout by clearing localStorage and reloading base path.*/
 export function destroySession() {
-  localStorage.clear()
-  delete cookies.token
-  window.location.replace("/")
+  //before killing local storage; close any open session to prevent memory leak
+  client.deleteCurrentSession().then(() => {
+    localStorage.clear()
+    delete cookies.token
+    window.location.replace("/")
+  })
   return (<span>logging out ...</span>)
 }
 
