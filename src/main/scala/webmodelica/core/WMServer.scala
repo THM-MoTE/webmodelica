@@ -16,11 +16,13 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.Http
 
 object WMServerMain extends WMServer
 
-class WMServer extends LazyLogging {
+class WMServer extends LazyLogging
+    with de.heikoseeberger.akkahttpcirce.FailFastCirceSupport {
   def main(mainArgs: Array[String]) = {
     val module = new WebmodelicaModule {
       override def arguments:Seq[String] = mainArgs
@@ -29,10 +31,22 @@ class WMServer extends LazyLogging {
     bootstrap(module)
   }
 
+  val exceptionMapper: ExceptionHandler = ExceptionHandler {
+    case e:IllegalArgumentException => complete(StatusCodes.BadRequest -> Seq(e.getMessage))
+    case e:com.twitter.finatra.http.exceptions.HttpException =>
+      val code = StatusCodes.getForKey(e.statusCode.code).getOrElse(throw new RuntimeException(s"there is no StatusCode for $e available!"))
+      complete(code -> e.errors)
+    case e:errors.WMException =>
+      val code = StatusCodes.getForKey(e.status.code).getOrElse(throw new RuntimeException(s"there is no StatusCode for $e available!"))
+      complete(code -> Seq(e.getMessage))
+  }
+
   def bootstrap(module:WebmodelicaModule): Unit = {
     import module._
     val ctrl = wire[AkkaProjectController]
-    val routes:Route = pathPrefix("api"/"v1"/"webmodelica") { ctrl.routes }
+    val routes:Route = handleExceptions(exceptionMapper) {
+      pathPrefix("api"/"v1"/"webmodelica") { ctrl.routes }
+    }
     val bindingFuture = Http().bindAndHandle(routes, args.interface(), args.port())
 
     val token = tokenGenerator.newToken(User("nico", "nico@xample.org", None, None, hashedPassword="abcdef12345"))
