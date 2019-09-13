@@ -13,6 +13,8 @@ import io.circe.syntax._
 import java.nio.file.{Path, Paths}
 import java.util.UUID
 
+import webmodelica.controllers.ProjectController.ProjectRequest
+
 package object models {
   implicit val encodePath: Encoder[Path] = new Encoder[Path] {
     final def apply(a: Path): Json = Json.fromString(a.toString)
