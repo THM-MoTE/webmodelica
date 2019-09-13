@@ -27,38 +27,42 @@ import webmodelica.conversions.futures._
 import webmodelica.services.{TokenGenerator, TokenValidator, UserToken}
 import webmodelica.stores.{ProjectStore, UserStore}
 
-case class CopyProjectRequest(
-  @RouteParam() id: String,
-  @JsonProperty() name: Option[String],
-  request: Request,
-) {
-  def newProject(p:Project, owner:String): Project = {
-    Project(
-      this.into[ProjectRequest]
-        .withFieldComputed(_.owner, _ => owner)
-        .withFieldComputed(_.name, req => req.name.getOrElse(p.name))
-        .withFieldComputed(_.request, req => req.request)
-        .transform
-    )
+object ProjectController {
+  case class CopyProjectRequest(
+                                 @RouteParam() id: String,
+                                 @JsonProperty() name: Option[String],
+                                 request: Request,
+                               ) {
+    def newProject(p: Project, owner: String): Project = {
+      Project(
+        this.into[ProjectRequest]
+          .withFieldComputed(_.owner, _ => owner)
+          .withFieldComputed(_.name, req => req.name.getOrElse(p.name))
+          .withFieldComputed(_.request, req => req.request)
+          .transform
+      )
+    }
   }
-}
-case class FileContentRequest(
-  @RouteParam() id: String,
-  @RouteParam() path: URI,
-  request: Request,
-) {
-  def asPath: Path = Paths.get(path.getPath)
-}
-case class ProjectFilesRequest(
-  @RouteParam() id: String,
-  @QueryParam() format:String="list",
-  request: Request,
-)
 
-case class VisibilityRequest(
-  @RouteParam() id: String,
-  @JsonProperty() visibility: String)
+  case class FileContentRequest(
+                                 @RouteParam() id: String,
+                                 @RouteParam() path: URI,
+                                 request: Request,
+                               ) {
+    def asPath: Path = Paths.get(path.getPath)
+  }
 
+  case class ProjectFilesRequest(
+                                  @RouteParam() id: String,
+                                  @QueryParam() format: String = "list",
+                                  request: Request,
+                                )
+
+  case class VisibilityRequest(
+                                @RouteParam() id: String,
+                                @JsonProperty() visibility: String)
+
+}
 class ProjectController@Inject()(
     override val projectStore:ProjectStore,
     prefix:webmodelica.ApiPrefix,
@@ -96,7 +100,7 @@ class ProjectController@Inject()(
           .map(_ => response.noContent)
       }
 
-      post("/projects/:id/copy") { copyReq: CopyProjectRequest =>
+      post("/projects/:id/copy") { copyReq: ProjectController.CopyProjectRequest =>
         (for {
           username <- extractUsername(copyReq.request)
           project <- extractProject(copyReq.id, username)
@@ -106,7 +110,7 @@ class ProjectController@Inject()(
         } yield JSProject(newProject))
       }
 
-      put("/projects/:id/visibility") { visibilityReq: VisibilityRequest =>
+      put("/projects/:id/visibility") { visibilityReq: ProjectController.VisibilityRequest =>
         projectStore.setVisiblity(visibilityReq.id, visibilityReq.visibility)
           .map(JSProject.apply)
           .handle {
@@ -115,7 +119,7 @@ class ProjectController@Inject()(
           }
       }
 
-      get("/projects/:id/files") { requ: ProjectFilesRequest =>
+      get("/projects/:id/files") { requ: ProjectController.ProjectFilesRequest =>
         for {
           username <- extractUsername(requ.request)
           project <- extractProject(requ.id, username)
@@ -130,7 +134,7 @@ class ProjectController@Inject()(
           file <- fileStore(project).packageProjectArchive(project.name)
         } yield sendFile(response)("application/zip", file)
       }
-      get("/projects/:id/files/:path") { req: FileContentRequest =>
+      get("/projects/:id/files/:path") { req: ProjectController.FileContentRequest =>
         for {
           username <- extractUsername(req.request)
           project <- extractProject(req.id, username)
