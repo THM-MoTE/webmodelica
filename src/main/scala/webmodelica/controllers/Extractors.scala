@@ -1,6 +1,6 @@
 package webmodelica.controllers
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 import akka.http.scaladsl.server.Directive1
 import akka.http.scaladsl.server.Directives._
@@ -8,8 +8,7 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers._
 import webmodelica.services._
 import webmodelica.stores._
-import webmodelica.models.errors
-import webmodelica.models.User
+import webmodelica.models.{Project, User, errors}
 import webmodelica.conversions.futures._
 import com.typesafe.scalalogging.LazyLogging
 
@@ -46,3 +45,11 @@ trait AkkaUserExtractor
     onSuccess(future)
   }
 }
+
+trait AkkaProjectExtractor {
+  def projectStore: ProjectStore
+
+  def extractProject(id:String, username:String): Future[Project] =
+    projectStore.findBy(id, username).flatMap(errors.notFoundExc(s"project with $id not found!")).asScala
+}
+
