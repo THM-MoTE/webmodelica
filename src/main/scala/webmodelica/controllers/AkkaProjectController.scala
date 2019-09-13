@@ -14,7 +14,7 @@ import webmodelica.models._
 import webmodelica.models.config.MopeClientConfig
 import webmodelica.conversions.futures._
 import io.scalaland.chimney.dsl._
-
+import java.nio.file.Paths
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -112,6 +112,17 @@ class AkkaProjectController(
             onSuccess(future) { file =>
               getFromFile(file.getPath)
             }
+          } ~
+            (get & path(Remaining)) { pathStr =>
+            //secured route: GET /projects/:id/files/:path
+            //(the uri is created to decode the uri-encoded path)
+            val path = Paths.get(new java.net.URI(pathStr).getPath)
+            logger.debug(s"searching for file $path")
+            complete(
+              projectFinder()
+                .map(fileStore)
+                .flatMap(_.findByPath(path).flatMap(errors.notFoundExc(s"file $path not found!")).asScala)
+            )
           }
         }
       }
