@@ -69,6 +69,11 @@ class AkkaSessionController(
           val future = service().flatMap(_.rename(req.oldPath, req.newPath)).asScala
           complete(future)
         } ~
+        (path(Segment) & delete) { pathStr =>
+          val path = Paths.get(pathStr)
+          logger.debug(s"deleting $path")
+          val future = service().flatMap(_.delete(path)).map(_ => StatusCodes.NoContent).asScala
+          complete(future)
         }
       }
     }
