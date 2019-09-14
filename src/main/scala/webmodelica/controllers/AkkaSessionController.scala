@@ -54,11 +54,8 @@ class AkkaSessionController(
     pathPrefix("sessions" / Segment) { (id:String) =>
       def service(): TFuture[SessionService] = sessionRegistry.get(id).flatMap(errors.notFoundExc(s"Can't find a session for: $id"))
         (delete & pathEnd) {
-        complete(
-          sessionRegistry.killSession(id)
-            .map(_ => StatusCodes.NoContent)
-            .asScala
-        )
+        val future = sessionRegistry.killSession(id).map(_ => StatusCodes.NoContent).asScala
+        complete(future)
       } ~
       pathPrefix("files") {
         (path("update") & post & entity(as[ModelicaFile])) { case file =>
