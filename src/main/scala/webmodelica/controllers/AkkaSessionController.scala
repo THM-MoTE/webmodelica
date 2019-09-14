@@ -66,6 +66,10 @@ class AkkaSessionController(
           val future = service().flatMap(_.rename(req.oldPath, req.newPath)).asScala
           complete(future)
         } ~
+          (path("upload") & storeUploadedFile("archive", tempDestination)) { case (metadata, file) =>
+            val future = service().flatMap(_.extractArchive(file.toPath)).asScala
+            complete(future)
+        } ~
         (path(Segment) & delete) { pathStr =>
           val path = Paths.get(pathStr)
           logger.debug(s"deleting $path")
