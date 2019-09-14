@@ -19,6 +19,11 @@ import scala.concurrent.Future
 import io.circe.generic.JsonCodec
 
 object AkkaSessionController {
+  @JsonCodec
+  case class RenameRequest(
+    oldPath: Path,
+    newPath: Path,
+  )
 }
 
 class AkkaSessionController(
@@ -59,6 +64,11 @@ class AkkaSessionController(
         (path("update") & post & entity(as[ModelicaFile])) { case file =>
           val future = service().flatMap(_.update(file)).asScala
           complete(future)
+        } ~
+          (path("rename") & put & entity(as[AkkaSessionController.RenameRequest])) { req =>
+          val future = service().flatMap(_.rename(req.oldPath, req.newPath)).asScala
+          complete(future)
+        } ~
         }
       }
     }
