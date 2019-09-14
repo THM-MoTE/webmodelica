@@ -32,22 +32,33 @@ class AkkaSessionController(
     with com.typesafe.scalalogging.LazyLogging
     with de.heikoseeberger.akkahttpcirce.FailFastCirceSupport
     with AkkaController {
-  override val routes:Route = logRequest("/sessions") {
-    (extractUser & pathPrefix("sessions")) { (user:User) =>
-      pathPrefix(Segment) { (id:String) =>
-        def service(): TFuture[SessionService] = sessionRegistry.get(id).flatMap(errors.notFoundExc(s"Can't find a session for: $id"))
-        (delete & pathEnd) {
-          complete(
-            sessionRegistry.killSession(id)
-              .map(_ => StatusCodes.NoContent)
-              .asScala
-          )
-        } ~
-        pathPrefix("files") {
-          (path("update") & post & entity(as[ModelicaFile])) { case file =>
-            val future = service().flatMap(_.update(file)).asScala
-            complete(future)
+  override val routes:Route = (logRequest("/sessions") & extractUser) { (user:User) =>
+    (path("projects" / Segment / "sessions" / "new") & post) { projectId =>
+      complete(for {
+          project <- extractProject(projectId, user.username)
+          (service, session) <- sessionRegistry.create(project).asScala
+          files <- service.files.asScala
+        } yield {
+          //only connect if not already done: we did if we have an id
+          if(session.mopeId.isEmpty) {
+            service.connect()
           }
+          JSSession(session, files)
+        })
+    } ~
+    pathPrefix("sessions" / Segment) { (id:String) =>
+      def service(): TFuture[SessionService] = sessionRegistry.get(id).flatMap(errors.notFoundExc(s"Can't find a session for: $id"))
+        (delete & pathEnd) {
+        complete(
+          sessionRegistry.killSession(id)
+            .map(_ => StatusCodes.NoContent)
+            .asScala
+        )
+      } ~
+      pathPrefix("files") {
+        (path("update") & post & entity(as[ModelicaFile])) { case file =>
+          val future = service().flatMap(_.update(file)).asScala
+          complete(future)
         }
       }
     }
