@@ -74,7 +74,7 @@ class AkkaProjectController(
         } ~
         (delete & pathEnd) { //secured route: DELETE /projects/:id
           logger.debug(s"deleting project $id")
-          val noContent = projectStore.delete(id).map { _ => HttpResponse(StatusCodes.NoContent) }.asScala
+          val noContent = projectStore.delete(id).map { _ => StatusCodes.NoContent }.asScala
           complete(noContent)
         } ~
         (path("copy") & post & entity(as[AkkaProjectController.CopyProjectRequest])) { copyReq =>
