@@ -46,8 +46,6 @@ class AkkaProjectController(
   val projectFiles: Project => Future[List[ModelicaPath]] = fileStore(_).files.asScala
   val projectFileTree: Project => Future[FileTree] = (p:Project) => fileStore(p).fileTree(Some(p.name)).asScala
 
-  //TODO: map options to 404 errors; currently result is 200 with empty body
-
   val routes:Route = logRequest("/projects") {
     (extractUser & pathPrefix("projects")) { (user:User) =>
       (get & pathEnd) { //secured route: GET /projects
@@ -70,7 +68,7 @@ class AkkaProjectController(
         def projectFinder(): Future[Project] = extractProject(id, user.username)
         (get & pathEnd) { //secured route: GET /projects/:id
           logger.debug(s"lookup project $id")
-          val project = projectStore.findBy(id, user.username).map(_.map(JSProject.apply)).asScala
+          val project = projectFinder().map(JSProject.apply)
           complete(project)
         } ~
         (delete & pathEnd) { //secured route: DELETE /projects/:id
