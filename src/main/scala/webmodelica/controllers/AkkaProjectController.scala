@@ -40,13 +40,14 @@ class AkkaProjectController(
     extends AkkaUserExtractor
     with AkkaProjectExtractor
     with com.typesafe.scalalogging.LazyLogging
-    with de.heikoseeberger.akkahttpcirce.FailFastCirceSupport {
+    with de.heikoseeberger.akkahttpcirce.FailFastCirceSupport
+    with AkkaController {
 
   val fileStore: Project => FileStore = FileStore.fromProject(mopeConf.data.hostDirectory, _)
   val projectFiles: Project => Future[List[ModelicaPath]] = fileStore(_).files.asScala
   val projectFileTree: Project => Future[FileTree] = (p:Project) => fileStore(p).fileTree(Some(p.name)).asScala
 
-  val routes:Route = logRequest("/projects") {
+  override val routes:Route = logRequest("/projects") {
     (extractUser & pathPrefix("projects")) { (user:User) =>
       (get & pathEnd) { //secured route: GET /projects
         logger.debug(s"searching projects for $user")
