@@ -4,6 +4,7 @@ import com.twitter.util.{Future => TFuture}
 import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.model._
+import akka.http.scaladsl.model.headers.Location
 import webmodelica.models._
 import webmodelica.models.config._
 import webmodelica.services._
@@ -24,6 +25,8 @@ object AkkaSessionController {
     oldPath: Path,
     newPath: Path,
   )
+  @JsonCodec
+  case class SimulationResponse(location: String)
 }
 
 class AkkaSessionController(
@@ -98,6 +101,13 @@ class AkkaSessionController(
       val future = service().flatMap(_.complete(completeReq)).asScala
       complete(future)
     } ~
+      (path("simulate") & extractUri & post & entity(as[SimulateRequest])) { (uri, simReq) =>
+      val future = service().flatMap(_.simulate(simReq)).asScala
+      onSuccess(future) { mopeUri =>
+        val location = uri.withQuery(Uri.Query("addr" -> mopeUri.toString))
+        respondWithHeader(headers.Location(location)) {
+          complete(StatusCodes.Accepted -> AkkaSessionController.SimulationResponse(location.toString))
+        }
       }
     }
   }
