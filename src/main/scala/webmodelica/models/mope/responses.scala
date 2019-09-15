@@ -45,6 +45,14 @@ object responses {
       }
     }
 
+    def filterVariables(filter: List[String]): SimulationResult = filter match {
+      case Nil => this
+      case lst =>
+        val set = lst.toSet
+        val filtered = this.variables.filter { case (name,_) => name=="time" || set(name) }
+        this.copy(variables = filtered)
+    }
+
     override def toString:String = {
       val vars = variables.keys.mkString(",")
       s"SimulationResult(name: $modelName, variables: $vars)"
