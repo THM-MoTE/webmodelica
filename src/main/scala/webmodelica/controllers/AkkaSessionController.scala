@@ -80,6 +80,20 @@ class AkkaSessionController(
           val future = service().flatMap(_.delete(path)).map(_ => StatusCodes.NoContent).asScala
           complete(future)
         }
+      } ~
+      mopeRoutes(() => service())
+    }
+
+  }
+
+  private def mopeRoutes(service: () => TFuture[SessionService]): Route = {
+    import webmodelica.models.mope._
+    import webmodelica.models.mope.requests._
+    import webmodelica.models.mope.responses._
+    (path("compile") & post & entity(as[FilePath])) { filePath =>
+      val future = service().flatMap(_.compile(filePath.toPath)).asScala
+      complete(future)
+    } ~
       }
     }
   }
