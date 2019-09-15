@@ -94,6 +94,10 @@ class AkkaSessionController(
       val future = service().flatMap(_.compile(filePath.toPath)).asScala
       complete(future)
     } ~
+      (path("complete") & post & entity(as[Complete])) { completeReq =>
+      val future = service().flatMap(_.complete(completeReq)).asScala
+      complete(future)
+    } ~
       }
     }
   }
