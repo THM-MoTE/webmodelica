@@ -56,11 +56,12 @@ class AkkaProjectController(
       } ~
       (post & entity(as[AkkaProjectController.ProjectRequest]) & pathEnd) { case AkkaProjectController.ProjectRequest(owner, name) =>
         //secured route: POST /projects
-        if(user.username == owner) {
+          if(user.username == owner) {
+            logger.debug(s"new project $name for $owner")
           val project = Project(owner,name)
           val jsProject = projectStore.add(project).map(_ => JSProject(project)).asScala
           complete(jsProject)
-        } else {
+          } else {
           complete(errors.ResourceUsernameError("project"))
         }
       } ~
@@ -79,6 +80,7 @@ class AkkaProjectController(
         } ~
         (path("copy") & post & entity(as[AkkaProjectController.CopyProjectRequest])) { copyReq =>
           //secured route: POST /projects/:id/copy
+          logger.debug(s"copy project $copyReq")
           complete(
             for {
               project <- projectFinder()
@@ -90,6 +92,7 @@ class AkkaProjectController(
         } ~
           (path("visibility") & put & entity(as[AkkaProjectController.VisibilityRequest])) { case AkkaProjectController.VisibilityRequest(visibility) =>
             //secured route: PUT /projects/:id/visibility
+            logger.debug(s"update visibility for $id:$visibility")
             complete(
               projectStore.setVisiblity(id, visibility)
                 .map(JSProject.apply)
@@ -103,6 +106,7 @@ class AkkaProjectController(
             case _ => complete(projectFinder().flatMap(projectFiles))
           } ~
             (get & path("download")) {//secured route: GET /projects/:id/files/download
+            logger.debug(s"download files for $id")
             val future = (for {
               project <- projectFinder()
               fs = fileStore(project)
@@ -115,6 +119,7 @@ class AkkaProjectController(
             (get & path(Remaining)) { pathStr =>
             //secured route: GET /projects/:id/files/:path
             //(the uri is created to decode the uri-encoded path)
+            logger.debug(s"fetch file content for $pathStr")
             val path = Paths.get(new java.net.URI(pathStr).getPath)
             logger.debug(s"searching for file $path")
             complete(

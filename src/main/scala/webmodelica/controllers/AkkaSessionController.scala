@@ -39,6 +39,7 @@ class AkkaSessionController(
     with AkkaController {
   override val routes:Route = (logRequest("/sessions") & extractUser) { (user:User) =>
     (path("projects" / Segment / "sessions" / "new") & post) { projectId =>
+      logger.debug(s"new session for $projectId")
       complete(for {
           project <- extractProject(projectId, user.username)
           (service, session) <- sessionRegistry.create(project).asScala
@@ -54,15 +55,18 @@ class AkkaSessionController(
     pathPrefix("sessions" / Segment) { (id:String) =>
       def service(): TFuture[SessionService] = sessionRegistry.get(id).flatMap(errors.notFoundExc(s"Can't find a session for: $id"))
         (delete & pathEnd) {
+        logger.debug(s"delete session $id")
         val future = sessionRegistry.killSession(id).map(_ => StatusCodes.NoContent).asScala
         complete(future)
       } ~
       pathPrefix("files") {
         (path("update") & post & entity(as[ModelicaFile])) { case file =>
+          logger.debug(s"update file $file")
           val future = service().flatMap(_.update(file)).asScala
           complete(future)
         } ~
           (path("rename") & put & entity(as[AkkaSessionController.RenameRequest])) { req =>
+          logger.debug(s"rename file $req")
           val future = service().flatMap(_.rename(req.oldPath, req.newPath)).asScala
           complete(future)
         } ~
@@ -72,7 +76,7 @@ class AkkaSessionController(
         } ~
         (path(Segment) & delete) { pathStr =>
           val path = Paths.get(pathStr)
-          logger.debug(s"deleting $path")
+          logger.debug(s"delete file $path")
           val future = service().flatMap(_.delete(path)).map(_ => StatusCodes.NoContent).asScala
           complete(future)
         }
