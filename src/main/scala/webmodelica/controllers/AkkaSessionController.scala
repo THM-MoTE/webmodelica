@@ -101,14 +101,43 @@ class AkkaSessionController(
       val future = service().flatMap(_.complete(completeReq)).asScala
       complete(future)
     } ~
-      (path("simulate") & extractUri & post & entity(as[SimulateRequest])) { (uri, simReq) =>
-      val future = service().flatMap(_.simulate(simReq)).asScala
-      onSuccess(future) { mopeUri =>
-        val location = uri.withQuery(Uri.Query("addr" -> mopeUri.toString))
-        respondWithHeader(headers.Location(location)) {
-          complete(StatusCodes.Accepted -> AkkaSessionController.SimulationResponse(location.toString))
+      (path("simulate") & extractUri) { uri =>
+        (post & pathEnd & entity(as[SimulateRequest])) { simReq =>
+          val future = service().flatMap(_.simulate(simReq)).asScala
+          onSuccess(future) { mopeUri =>
+            val location = uri.withQuery(Uri.Query("addr" -> mopeUri.toString))
+            respondWithHeader(headers.Location(location)) {
+              complete(StatusCodes.Accepted -> AkkaSessionController.SimulationResponse(location.toString))
+            }
+          }
+        } ~
+          (get & parameter("format" ? "default") & parameter("addr")) { case (format, addrStr) =>
+            val addr = new java.net.URI(addrStr)
+            parameter("filter"?) { filterStrOpt =>
+              //first apply filter & fetch the results
+              val filter = filterStrOpt.map { str => str.split(',').map(_.trim).toList }.getOrElse(List.empty[String])
+              val resultFuture = service()
+                .flatMap(_.simulationResults(addr))
+                .map(_.filterVariables(filter))
+              //then transform results according to the filter
+              format match {
+                case "csv" =>
+                  //just return the underlying file,
+                  //the file must be located first based on the model's name
+                  val fileFuture = for {
+                    result <- resultFuture
+                    svc <- service()
+                    csvOpt <- svc.locateSimulationCsv(result.modelName)
+                  } yield (result, csvOpt)
+                  onSuccess(fileFuture.asScala) {
+                    case (_, Some(file)) => getFromFile(file.getPath)
+                    case (SimulationResult(name, _), None) => complete(StatusCodes.NotFound -> s"no results for $name available!")
+                  }
+                case "chartjs" => complete(resultFuture.map(r => TableFormat(maxSimulationData, r)).asScala)
+                case _ => complete(resultFuture.asScala)
+              }
+            }
         }
-      }
     }
   }
 }
