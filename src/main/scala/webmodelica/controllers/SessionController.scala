@@ -95,14 +95,6 @@ object SessionController {
                                      @QueryParam addr: java.net.URI,
                                      @QueryParam(commaSeparatedList = true) filter: Seq[String] = Seq()
                                    )
-
-  case class TableFormat(
-                          modelName: String,
-                          data: Traversable[Traversable[Double]],
-                          header: Traversable[String],
-                          dataManipulated: Option[String]
-                        )
-
 }
 
 class SessionController@Inject()(
@@ -216,7 +208,7 @@ class SessionController@Inject()(
                 val variables = result.trimmedVariables(maxSimulationData.value)
                 val headers = variables.keys.filterNot(k => k=="time").toList
                 val tableData = (variables("time")+:headers.map(k => variables(k)).toSeq).transpose
-                Future.value(SessionController.TableFormat(
+                Future.value(TableFormat(
                   name,
                   tableData,
                   "time"::headers,
