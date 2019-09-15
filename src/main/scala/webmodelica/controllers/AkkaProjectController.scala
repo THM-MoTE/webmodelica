@@ -99,36 +99,42 @@ class AkkaProjectController(
                 .asScala
             )
         } ~
-        pathPrefix("files") {
-          (get & pathEnd & parameter("format" ? "list")) {
-            //secured route: GET /projects/:id/files?format=[tree|list]
-            case "tree" => complete(projectFinder().flatMap(projectFileTree))
-            case _ => complete(projectFinder().flatMap(projectFiles))
-          } ~
-            (get & path("download")) {//secured route: GET /projects/:id/files/download
-            logger.debug(s"download files for $id")
-            val future = (for {
-              project <- projectFinder()
-              fs = fileStore(project)
-              file <- fs.packageProjectArchive(project.name).asScala
-            } yield file)
-            onSuccess(future) { file =>
-              getFromFile(file.getPath)
-            }
-          } ~
-            (get & path(Remaining)) { pathStr =>
-            //secured route: GET /projects/:id/files/:path
-            //(the uri is created to decode the uri-encoded path)
-            logger.debug(s"fetch file content for $pathStr")
-            val path = Paths.get(new java.net.URI(pathStr).getPath)
-            logger.debug(s"searching for file $path")
-            complete(
-              projectFinder()
-                .map(fileStore)
-                .flatMap(_.findByPath(path).flatMap(errors.notFoundExc(s"file $path not found!")).asScala)
-            )
-          }
-        }
+        fileRoutes(id, () => projectFinder())
       }
     }
-  }}
+  }
+
+  private def fileRoutes(id:String, projectFinder: () => Future[Project]): Route = {
+    pathPrefix("files") {
+      (get & pathEnd & parameter("format" ? "list")) {
+        //secured route: GET /projects/:id/files?format=[tree|list]
+        case "tree" => complete(projectFinder().flatMap(projectFileTree))
+        case _ => complete(projectFinder().flatMap(projectFiles))
+      } ~
+        (get & path("download")) {//secured route: GET /projects/:id/files/download
+        logger.debug(s"download files for $id")
+        val future = (for {
+          project <- projectFinder()
+          fs = fileStore(project)
+          file <- fs.packageProjectArchive(project.name).asScala
+        } yield file)
+        onSuccess(future) { file =>
+          getFromFile(file.getPath)
+        }
+      } ~
+        (get & path(Remaining)) { pathStr =>
+        //secured route: GET /projects/:id/files/:path
+        //(the uri is created to decode the uri-encoded path)
+        logger.debug(s"fetch file content for $pathStr")
+        val path = Paths.get(new java.net.URI(pathStr).getPath)
+        logger.debug(s"searching for file $path")
+        complete(
+          projectFinder()
+            .map(fileStore)
+            .flatMap(_.findByPath(path).flatMap(errors.notFoundExc(s"file $path not found!")).asScala)
+        )
+      }
+    }
+  }
+
+}
