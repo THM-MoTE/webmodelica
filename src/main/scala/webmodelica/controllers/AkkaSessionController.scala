@@ -84,15 +84,17 @@ class AkkaSessionController(
           complete(future)
         }
       } ~
-      mopeRoutes(() => service())
+      mopeRoutes(() => service()) ~
+      simulateRoutes(() => service())
     }
 
   }
 
+  import webmodelica.models.mope._
+  import webmodelica.models.mope.requests._
+  import webmodelica.models.mope.responses._
+
   private def mopeRoutes(service: () => TFuture[SessionService]): Route = {
-    import webmodelica.models.mope._
-    import webmodelica.models.mope.requests._
-    import webmodelica.models.mope.responses._
     (path("compile") & post & entity(as[FilePath])) { filePath =>
       val future = service().flatMap(_.compile(filePath.toPath)).asScala
       complete(future)
@@ -100,8 +102,11 @@ class AkkaSessionController(
       (path("complete") & post & entity(as[Complete])) { completeReq =>
       val future = service().flatMap(_.complete(completeReq)).asScala
       complete(future)
-    } ~
-      (path("simulate") & extractUri) { uri =>
+    }
+  }
+
+  private def simulateRoutes(service: () => TFuture[SessionService]): Route = {
+    (path("simulate") & extractUri) { uri =>
         (post & pathEnd & entity(as[SimulateRequest])) { simReq =>
           val future = service().flatMap(_.simulate(simReq)).asScala
           onSuccess(future) { mopeUri =>
