@@ -43,15 +43,13 @@ class WMServer extends LazyLogging
 
   def bootstrap(module:WebmodelicaModule): Unit = {
     import module._
-    // val ctrl = AkkaController.combineAll(Seq(wire[AkkaProjectController], AkkaInfoController))
     val ctrl = wire[AkkaProjectController] || wire[AkkaSessionController] || AkkaInfoController
-    val routes:Route = handleExceptions(exceptionMapper) {
-      pathPrefix("api"/"v1"/"webmodelica") { ctrl.routes }
+    val routes:Route = AccessLog.logRequestResponse {
+      handleExceptions(exceptionMapper) {
+        pathPrefix("api"/"v1"/"webmodelica") { ctrl.routes }
+      }
     }
     val bindingFuture = Http().bindAndHandle(routes, args.interface(), args.port())
-
-    val token = tokenGenerator.newToken(User("nico", "nico@xample.org", None, None, hashedPassword="abcdef12345"))
-    logger.debug(s"test token is $token")
 
     bindingFuture onComplete {
       case scala.util.Success(_) =>
