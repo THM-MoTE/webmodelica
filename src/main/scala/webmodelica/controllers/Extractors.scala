@@ -11,10 +11,11 @@ import webmodelica.stores._
 import webmodelica.models.{Project, User, errors}
 import webmodelica.conversions.futures._
 import com.typesafe.scalalogging.LazyLogging
+import webmodelica.constants
 
 trait AkkaJwtExtractor {
   this: LazyLogging =>
-  def jwt:Directive1[String] = headerValue {
+  def jwt:Directive1[String] = optionalHeaderValue {
     case auth:Authorization =>
       auth.value match {
         case JwtFilter.bearerExtractor(token) => Some(token)
@@ -23,6 +24,13 @@ trait AkkaJwtExtractor {
     case cookie:Cookie =>
       cookie.cookies.find(c => c.name.toLowerCase == "token").map(_.value)
     case _ => None
+  }.flatMap {
+    case Some(s) => provide(s)
+    case None => complete(StatusCodes.Unauthorized ->
+                    s"""Authorization missing!
+                    |Either provide:
+                    |- the cookie token=<jwt-token>
+                    |- ${constants.authorizationHeader}: Bearer <jwt-token>""".stripMargin)
   }
 }
 
