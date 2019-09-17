@@ -16,7 +16,6 @@ import webmodelica.constants
 
 import com.twitter.util.Future
 import com.twitter.cache.FutureCache
-import com.twitter.finatra.http.exceptions.NotFoundException
 import com.twitter.finagle.stats.StatsReceiver
 import com.google.inject.Inject
 import scala.collection.JavaConverters._

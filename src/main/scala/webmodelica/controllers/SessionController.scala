@@ -26,7 +26,7 @@ import webmodelica.services.{SessionRegistry, SessionService, TokenGenerator, To
 import webmodelica.stores.{ProjectStore, UserStore}
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.twitter.finatra.request._
-import com.twitter.finatra.http.exceptions._
+import com.twitter.finatra.http.exceptions.BadRequestException
 import io.scalaland.chimney.dsl._
 import java.nio.file.{Files, Path, Paths}
 import java.net.URI

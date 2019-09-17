@@ -12,9 +12,9 @@ import better.files._
 import better.files.Dsl._
 import java.nio.file.Path
 import webmodelica.models._
+import webmodelica.models.errors.NotFoundException
 import webmodelica.models.mope.requests._
 import com.twitter.util.Future
-import com.twitter.finatra.http.exceptions.NotFoundException
 
 class FSStore(root:Path)
     extends FileStore

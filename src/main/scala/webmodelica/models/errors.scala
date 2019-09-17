@@ -10,13 +10,17 @@ package webmodelica.models
 
 import com.google.common.net.MediaType
 import com.twitter.finagle.http.Status
-import com.twitter.finatra.http.exceptions._
 import com.twitter.util.Future
 
 object errors {
   def notFoundExc[A](reason:String)(opt: Option[A]): Future[A] = opt match {
     case Some(a) => Future.value(a)
     case _ => Future.exception(NotFoundException(reason))
+  }
+
+  case class NotFoundException(reason:String) extends WMException {
+    override def status: Status = Status.NotFound
+    override def getMessage: String = reason
   }
 
   sealed abstract class WMException extends scala.Exception {
