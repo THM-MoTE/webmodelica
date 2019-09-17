@@ -33,6 +33,7 @@ import webmodelica.models.mope._
 import webmodelica.models.mope.requests._
 import webmodelica.models.mope.responses._
 import webmodelica.conversions.futures._
+import webmodelica.models.JsonSupport._
 
 trait MopeService {
   this: com.twitter.inject.Logging =>

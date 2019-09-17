@@ -18,7 +18,6 @@ import io.scalaland.chimney.dsl._
 import io.circe.generic.JsonCodec
 import webmodelica._
 
-@JsonCodec
 sealed trait FileTree {
   def path: Path
   def files: List[ModelicaPath]
@@ -33,7 +32,7 @@ case class Leaf(override val path:Path, file: ModelicaPath) extends FileTree {
   override def isLeaf: Boolean = true
   override def rename(name:String): FileTree = Leaf(Paths.get(name), file)
 }
-@JsonCodec
+
 case class Node(override val path:Path, children:List[FileTree]) extends FileTree {
   override def files: List[ModelicaPath] = children.flatMap(_.files)
   override def isNode: Boolean = true
