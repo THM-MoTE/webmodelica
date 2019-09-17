@@ -12,7 +12,6 @@ import java.security.MessageDigest
 
 import scala.concurrent.ExecutionContext
 import ExecutionContext.Implicits.global
-import com.google.inject.Inject
 import com.mongodb.ErrorCategory
 import com.twitter.util.Future
 import org.mongodb.scala.model.Filters
@@ -27,7 +26,7 @@ trait UserStore {
   def findBy(username: String): Future[Option[User]]
 }
 
-class UserStoreImpl @Inject()(db:MongoDatabase)
+class UserStoreImpl(db:MongoDatabase)
     extends UserStore
     with DocumentWriters {
   private val collection:MongoCollection[UserDocument] = db.getCollection(constants.userCollection)

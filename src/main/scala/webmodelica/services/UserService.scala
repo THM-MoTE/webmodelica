@@ -17,11 +17,10 @@ import webmodelica.constants
 import com.twitter.util.Future
 import com.twitter.cache.FutureCache
 import com.twitter.finagle.stats.StatsReceiver
-import com.google.inject.Inject
 import scala.collection.JavaConverters._
 
 /** A UserStore that caches calls to the underlying store. */
-class UserService@Inject()(redisConfig:RedisConfig, statsReceiver:StatsReceiver, underlying:UserStore)
+class UserService(redisConfig:RedisConfig, statsReceiver:StatsReceiver, underlying:UserStore)
     extends UserStore
     with com.twitter.inject.Logging {
 

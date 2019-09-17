@@ -12,11 +12,9 @@ import java.net.URI
 
 import webmodelica.models.mope.requests.{Complete, ProjectDescription, SimulateRequest}
 import webmodelica.models.mope.responses.Suggestion
-import com.google.inject.Inject
 import com.twitter.finagle.Service
 import com.twitter.finagle.Http
 import com.twitter.finagle.http.{Request, Response}
-import com.twitter.finatra.json.FinatraObjectMapper
 import com.twitter.util.{Future, Time}
 import com.twitter.finagle.stats.StatsReceiver
 import webmodelica.models.config.{MopeClientConfig, RedisConfig}
@@ -31,7 +29,7 @@ import webmodelica.models.errors.SimulationSetupError
 import scala.concurrent.{Future => SFuture, Promise => SPromise}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class SessionService @Inject()(
+class SessionService(
   val mopeConf:MopeClientConfig,
   val session:Session,
   redisConf:RedisConfig,

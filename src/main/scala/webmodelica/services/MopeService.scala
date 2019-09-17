@@ -13,7 +13,6 @@ import java.nio.file.{Path, Paths}
 import com.twitter.finagle.Service
 import com.twitter.finagle.Http
 import com.twitter.finagle.http.{Method, Request, Response, Status}
-import com.twitter.finatra.json.FinatraObjectMapper
 import java.net.{URI, URL}
 
 import com.twitter.util.{Future, Promise}

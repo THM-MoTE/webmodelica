@@ -8,8 +8,6 @@
 
 package webmodelica.services
 
-import com.google.inject.Inject
-import com.twitter.finatra.json.FinatraObjectMapper
 import com.twitter.util.{Future, FuturePool, Time}
 import com.twitter.finagle.stats.StatsReceiver
 import webmodelica.UUIDStr

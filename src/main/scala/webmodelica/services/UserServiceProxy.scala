@@ -8,7 +8,6 @@
 
 package webmodelica.services
 
-import com.google.inject.Inject
 import com.twitter.finagle.http.Status
 import com.twitter.util.Future
 import webmodelica.models.{AuthUser, User}
@@ -25,7 +24,7 @@ import io.circe.generic.JsonCodec
 private[services] case class UserWrapper(data:AuthUser)
 
 /** A UserService that talks to the UserSvc. */
-class UserServiceProxy@Inject()(conf:UserServiceConf)
+class UserServiceProxy(conf:UserServiceConf)
   extends UserStore
     with com.twitter.inject.Logging {
   import featherbed.circe._
