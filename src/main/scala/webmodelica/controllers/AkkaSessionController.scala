@@ -42,6 +42,7 @@ class AkkaSessionController(
     with AkkaController {
   override val routes:Route = (logRequest("/sessions") & extractUser) { (user:User) =>
     (path("projects" / Segment / "sessions" / "new") & post) { projectId =>
+      //secured route: POST /projects/:id/sessions/new
       logger.debug(s"new session for $projectId")
       complete(for {
           project <- extractProject(projectId, user.username)
@@ -56,28 +57,33 @@ class AkkaSessionController(
         })
     } ~
     pathPrefix("sessions" / Segment) { (id:String) =>
+      //secured route: /sessions/:id
       def service(): TFuture[SessionService] = sessionRegistry.get(id).flatMap(errors.notFoundExc(s"Can't find a session for: $id"))
-        (delete & pathEnd) {
+        (delete & pathEnd) { //secured route: DELETE /sessions/:id
         logger.debug(s"delete session $id")
         val future = sessionRegistry.killSession(id).map(_ => StatusCodes.NoContent).asScala
         complete(future)
       } ~
-      pathPrefix("files") {
+      pathPrefix("files") { //secured route: /sessions/:id/files
         (path("update") & post & entity(as[ModelicaFile])) { case file =>
+          //secured route: POST /sessions/:id/files/update
           logger.debug(s"update file $file")
           val future = service().flatMap(_.update(file)).asScala
           complete(future)
         } ~
           (path("rename") & put & entity(as[AkkaSessionController.RenameRequest])) { req =>
+          //secured route: PUT /sessions/:id/files/rename
           logger.debug(s"rename file $req")
           val future = service().flatMap(_.rename(req.oldPath, req.newPath)).asScala
           complete(future)
         } ~
           (path("upload") & storeUploadedFile("archive", tempDestination)) { case (metadata, file) =>
+            //secured route: POST /sessions/:id/files/upload
             val future = service().flatMap(_.extractArchive(file.toPath)).asScala
             complete(future)
         } ~
-        (path(Segment) & delete) { pathStr =>
+          (path(Segment) & delete) { pathStr =>
+          //secured route: DELETE /sessions/:id/files/:path
           val path = Paths.get(pathStr)
           logger.debug(s"delete file $path")
           val future = service().flatMap(_.delete(path)).map(_ => StatusCodes.NoContent).asScala
@@ -96,10 +102,12 @@ class AkkaSessionController(
 
   private def mopeRoutes(service: () => TFuture[SessionService]): Route = {
     (path("compile") & post & entity(as[FilePath])) { filePath =>
+      //secured route: POST /sessions/:id/compile
       val future = service().flatMap(_.compile(filePath.toPath)).asScala
       complete(future)
     } ~
       (path("complete") & post & entity(as[Complete])) { completeReq =>
+      //secured route: POST /sessions/:id/compile
       val future = service().flatMap(_.complete(completeReq)).asScala
       complete(future)
     }
@@ -107,7 +115,9 @@ class AkkaSessionController(
 
   private def simulateRoutes(service: () => TFuture[SessionService]): Route = {
     (path("simulate") & extractUri) { uri =>
-        (post & pathEnd & entity(as[SimulateRequest])) { simReq =>
+      //secured route: /sessions/:id/simulate
+      (post & pathEnd & entity(as[SimulateRequest])) { simReq =>
+        //secured route: POST /sessions/:id/simulate
           val future = service().flatMap(_.simulate(simReq)).asScala
           onSuccess(future) { mopeUri =>
             val location = uri.withQuery(Uri.Query("addr" -> mopeUri.toString))
@@ -116,7 +126,8 @@ class AkkaSessionController(
             }
           }
         } ~
-          (get & parameter("format" ? "default") & parameter("addr")) { case (format, addrStr) =>
+        (get & parameter("format" ? "default") & parameter("addr")) { case (format, addrStr) =>
+          //secured route: GET /sessions/:id/simulate?format=[default, chartjs]&addr=[mope-uri]&filter=[variable-filter]
             val addr = new java.net.URI(addrStr)
             parameter("filter"?) { filterStrOpt =>
               //first apply filter & fetch the results
