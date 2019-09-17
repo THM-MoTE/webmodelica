@@ -22,14 +22,11 @@ import webmodelica.models.{User, errors}
 class JwtFilter@Inject()(gen:TokenGenerator, store:UserStore)(validator:TokenValidator=gen) extends SimpleFilter[http.Request, http.Response]
   with com.twitter.inject.Logging {
 
-  //strips 'Bearer' from the authorization header (see: https://de.wikipedia.org/wiki/JSON_Web_Token#Header).
-  val bearerExtractor = """^Bearer\s+([\w\-.]+)$""".r
-
   override def apply(request: Request, service: Service[Request, Response]): Future[Response] = {
     val headerField = request.headerMap
       .get(constants.authorizationHeader)
       .flatMap {
-        case bearerExtractor(token) => Some(token)
+        case JwtFilter.bearerExtractor(token) => Some(token)
         case _ => None
       }
     lazy val cookie = request.cookies.get("token").map(_.value)
@@ -50,4 +47,9 @@ class JwtFilter@Inject()(gen:TokenGenerator, store:UserStore)(validator:TokenVal
         Future.value(res)
     }
   }
+}
+
+object JwtFilter {
+  //strips 'Bearer' from the authorization header (see: https://de.wikipedia.org/wiki/JSON_Web_Token#Header).
+  val bearerExtractor = """^Bearer\s+([\w\-.]+)$""".r
 }

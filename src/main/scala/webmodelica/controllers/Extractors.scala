@@ -15,7 +15,11 @@ import com.typesafe.scalalogging.LazyLogging
 trait AkkaJwtExtractor {
   this: LazyLogging =>
   def jwt:Directive1[String] = headerValue {
-    case auth:Authorization => Some(auth.value)
+    case auth:Authorization =>
+      auth.value match {
+        case JwtFilter.bearerExtractor(token) => Some(token)
+        case _ => None
+      }
     case cookie:Cookie =>
       cookie.cookies.find(c => c.name.toLowerCase == "token").map(_.value)
     case _ => None
