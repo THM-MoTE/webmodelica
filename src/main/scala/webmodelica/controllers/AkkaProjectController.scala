@@ -47,7 +47,7 @@ class AkkaProjectController(
   val projectFiles: Project => Future[List[ModelicaPath]] = fileStore(_).files.asScala
   val projectFileTree: Project => Future[FileTree] = (p:Project) => fileStore(p).fileTree(Some(p.name)).asScala
 
-  override val routes:Route = logRequest("/projects") {
+  override val routes:Route = {
     (extractUser & pathPrefix("projects")) { (user:User) =>
       (get & pathEnd) { //secured route: GET /projects
         logger.debug(s"searching projects for $user")

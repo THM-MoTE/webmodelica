@@ -40,7 +40,7 @@ class AkkaSessionController(
     with com.typesafe.scalalogging.LazyLogging
     with de.heikoseeberger.akkahttpcirce.FailFastCirceSupport
     with AkkaController {
-  override val routes:Route = (logRequest("/sessions") & extractUser) { (user:User) =>
+  override val routes:Route = extractUser { (user:User) =>
     (path("projects" / Segment / "sessions" / "new") & post) { projectId =>
       //secured route: POST /projects/:id/sessions/new
       logger.debug(s"new session for $projectId")
