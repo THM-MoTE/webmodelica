@@ -5,6 +5,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.directives._
 import akka.http.scaladsl.model._
 import java.io.File
+import io.circe.generic.JsonCodec
 
 trait AkkaController {
   self =>
@@ -19,6 +20,9 @@ trait AkkaController {
 }
 
 object AkkaController {
+  @JsonCodec
+  case class ErrorResponse(errors:Seq[String])
+
   def combineAll(ctrls: Traversable[AkkaController]): AkkaController =
     ctrls.reduce {
       (acc, elem) => acc || elem
