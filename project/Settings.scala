@@ -1,7 +1,7 @@
 import sbt._
 import sbt.Keys._
 
-object Common {
+object Settings {
   def settings = Seq(
     unmanagedResourceDirectories in Compile += baseDirectory.value / "conf",
     organization := "de.thm.mote",
@@ -58,7 +58,6 @@ object Dependencies {
   )
 
   val deps = Seq(
-    "com.twitter"   %% "finatra-http"    % finatraVersion,
     "com.twitter" %% "finagle-redis" % finatraVersion,
     "org.mongodb.scala" %% "mongo-scala-driver" % "2.5.+",
     "org.scalatest" %% "scalatest" % "3.0.+" % "test",

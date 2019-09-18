@@ -11,7 +11,7 @@ scalacOptions ++= Seq(
 
 resolvers += Resolver.sonatypeRepo("releases")
 
-initialCommands in console := Common.consoleInit
+initialCommands in console := Settings.consoleInit
 
 val copyrightName = "N. Justus"
 val copyrightYear = "2019-Today"
@@ -19,7 +19,7 @@ val license = "MPLv2"
 
 lazy val root = (project in file("."))
   .enablePlugins(BuildInfoPlugin, JavaAppPackaging)
-  .settings(Common.settings)
+  .settings(Settings.settings)
   .settings(
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
     version := IO.read(file("./project/version.txt")).trim(),
@@ -28,7 +28,7 @@ lazy val root = (project in file("."))
       BuildInfoKey.action("licenseUri") ("https://www.mozilla.org/en-US/MPL/2.0"),
       BuildInfoKey.action("copyright")(s"(c) $copyrightYear $copyrightName"),
       BuildInfoKey.action("commit") {
-        Common.latestCommitHash()
+        Settings.latestCommitHash()
       }), // re-computed each time at compile,
     headerLicense := Some(HeaderLicense.MPLv2(copyrightYear, copyrightName)),
     name := "webmodelica",
@@ -40,7 +40,7 @@ lazy val root = (project in file("."))
   )
 
 lazy val schemaGenerator = (project in file("./schema-generator"))
-  .settings(Common.settings)
+  .settings(Settings.settings)
   .settings(
     scalaSource in Compile := baseDirectory.value / "src",
     libraryDependencies ++= Dependencies.generatorDeps)
