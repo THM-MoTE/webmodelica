@@ -15,10 +15,11 @@ import webmodelica.constants
 
 trait AkkaJwtExtractor {
   this: LazyLogging =>
+
   def jwt:Directive1[String] = optionalHeaderValue {
     case auth:Authorization =>
       auth.value match {
-        case JwtFilter.bearerExtractor(token) => Some(token)
+        case AkkaJwtExtractor.bearerExtractor(token) => Some(token)
         case _ => None
       }
     case cookie:Cookie =>
@@ -32,6 +33,10 @@ trait AkkaJwtExtractor {
                     |- the cookie token=<jwt-token>
                     |- ${constants.authorizationHeader}: Bearer <jwt-token>""".stripMargin)
   }
+}
+object AkkaJwtExtractor {
+  //strips 'Bearer' from the authorization header (see: https://de.wikipedia.org/wiki/JSON_Web_Token#Header).
+  val bearerExtractor = """^Bearer\s+([\w\-.]+)$""".r
 }
 
 trait AkkaUserExtractor
@@ -64,4 +69,3 @@ trait AkkaProjectExtractor {
   def extractProject(id:String, username:String): Future[Project] =
     projectStore.findBy(id, username).flatMap(errors.notFoundExc(s"project with $id not found!")).asScala
 }
-

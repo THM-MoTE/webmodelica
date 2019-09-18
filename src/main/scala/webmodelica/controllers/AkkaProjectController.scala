@@ -5,9 +5,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.model._
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.twitter.finagle.http.Request
-import com.twitter.finatra.request.RouteParam
 import io.circe.generic.JsonCodec
-import webmodelica.controllers.ProjectController.ProjectRequest
 import webmodelica.stores._
 import webmodelica.services._
 import webmodelica.models._

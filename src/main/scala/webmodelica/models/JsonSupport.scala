@@ -13,7 +13,7 @@ import io.circe.syntax._
 import java.nio.file.{Path, Paths}
 import java.util.UUID
 
-import webmodelica.controllers.ProjectController.ProjectRequest
+import webmodelica.controllers.AkkaProjectController.ProjectRequest
 
 trait JsonSupport {
   implicit val encodePath: Encoder[Path] = new Encoder[Path] {

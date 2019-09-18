@@ -34,9 +34,6 @@ class WMServer extends LazyLogging
 
   val exceptionMapper: ExceptionHandler = ExceptionHandler {
     case e:IllegalArgumentException => complete(StatusCodes.BadRequest -> ErrorResponse(Seq(e.getMessage)))
-    case e:com.twitter.finatra.http.exceptions.HttpException =>
-      val code = StatusCodes.getForKey(e.statusCode.code).getOrElse(throw new RuntimeException(s"there is no StatusCode for $e available!"))
-      complete(code -> ErrorResponse(e.errors))
     case e:errors.WMException =>
       val code = StatusCodes.getForKey(e.status.code).getOrElse(throw new RuntimeException(s"there is no StatusCode for $e available!"))
       complete(code -> ErrorResponse(Seq(e.getMessage)))
