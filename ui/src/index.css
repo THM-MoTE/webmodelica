@@ -14,8 +14,7 @@ code {
 }
 
 div.editor {
-  height: 90vh;
-  border:1px solid grey;
+  height: 85vh;
 }
 .editor-row {
   align-items: stretch;
