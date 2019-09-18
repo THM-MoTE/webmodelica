@@ -25,7 +25,7 @@ trait SessionRegistry extends com.twitter.util.Closable {
 class InMemorySessionRegistry(conf:WMConfig,
   statsReceiver:StatsReceiver)
   extends SessionRegistry
-    with com.twitter.inject.Logging
+    with com.typesafe.scalalogging.LazyLogging
     with com.twitter.util.Closable {
 
   private val lock:java.util.concurrent.locks.Lock = new java.util.concurrent.locks.ReentrantLock()
@@ -42,7 +42,7 @@ class InMemorySessionRegistry(conf:WMConfig,
 
   override def create(p:Project): Future[(SessionService, Session)] = FuturePool.unboundedPool { sync {
     val s = Session(p)
-    info(s"creating session $s")
+    logger.info(s"creating session $s")
     val service = new SessionService(conf.mope, s, conf.redis, statsReceiver)
     registry += (s.idString -> service)
     (service, s)
@@ -53,10 +53,10 @@ class InMemorySessionRegistry(conf:WMConfig,
   override def killSession(id:UUIDStr): Future[Unit] = {
     sync { registry.remove(id) } match {
       case Some(service) =>
-        info(s"killing session $id")
+        logger.info(s"killing session $id")
         service.close(Time.fromSeconds(60))
       case None =>
-        warn(s"session $id not found, we aren't killing it.")
+        logger.warn(s"session $id not found, we aren't killing it.")
         Future.value(())
     }
   }

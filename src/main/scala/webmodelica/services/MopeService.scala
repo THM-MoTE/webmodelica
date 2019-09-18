@@ -35,16 +35,16 @@ import webmodelica.conversions.futures._
 import webmodelica.models.JsonSupport._
 
 trait MopeService {
-  this: com.twitter.inject.Logging =>
+  this: com.typesafe.scalalogging.LazyLogging =>
 
   def pathMapper: MopeService.PathMapper
   def clientProvider(): featherbed.Client
 
   private def withClient[A](fn: featherbed.Client => Future[A]): Future[A] = {
-    debug("Using new client")
+    logger.debug("Using new client")
     val cl = clientProvider()
     fn(cl).ensure {
-      debug("releasing client")
+      logger.debug("releasing client")
       cl.close()
     }
   }
@@ -53,16 +53,16 @@ trait MopeService {
     import com.twitter.util.{Return, Throw}
     f.transform {
       case Return(r) =>
-        debug(s"$msg returned $r")
+        logger.debug(s"$msg returned $r")
         Future.value(r)
       case Throw(e@request.ErrorResponse(req,resp)) =>
-        error(s"http error while $msg: ${e.getMessage}", e)
+        logger.error(s"http error while $msg: ${e.getMessage}", e)
         Future.exception(MopeServiceError(s"Error response $resp to request $req"))
       case Throw(e:MopeServiceError) if !ignore(e.getClass) =>
-        error(s"mope error while $msg: ${e.getMessage}", e)
+        logger.error(s"mope error while $msg: ${e.getMessage}", e)
         Future.exception(e)
       case Throw(e) if !ignore(e.getClass) =>
-        error(s"unknown error while $msg", e)
+        logger.error(s"unknown error while $msg", e)
         Future.exception(e)
       case Throw(e) => Future.exception(e)
     }
@@ -85,7 +85,7 @@ trait MopeService {
           .accept("application/json")
 
         req.send[Int]().map { id =>
-          info(s"registered id $id")
+          logger.info(s"registered id $id")
           projIdPromise setValue id
           id
         }
@@ -103,7 +103,7 @@ trait MopeService {
             .accept("application/json")
           req.send[Seq[CompilerError]]()
             .map { xs =>
-              debug(s"compiling returned $xs")
+              logger.debug(s"compiling returned $xs")
               xs.map { error => error.copy(file = pathMapper.relativize(error.file).toString) }
             }
         }
@@ -128,7 +128,7 @@ trait MopeService {
 
   def simulate(simParam:SimulateRequest): Future[URI] = {
     scala.concurrent.Future.fromTry(simParam.convertStepSize).asTwitter.flatMap { sim =>
-      debug(s"converting stepSize returned $sim")
+      logger.debug(s"converting stepSize returned $sim")
       projectId.flatMap { id =>
         transformError(s"simulating project:$id", Set(classOf[SimulationSetupError])) {
           withClient { client =>
@@ -139,7 +139,7 @@ trait MopeService {
               .flatMap {
                 case Some(l) => Future.value(new URI(l))
                 case None =>
-                  error(s"/simulate $req didn't return a Location header!")
+                  logger.error(s"/simulate $req didn't return a Location header!")
                   Future.exception(MopeServiceError(s"POST /simulate didn't return a Location header!"))
               }
               .handle {

@@ -22,9 +22,9 @@ import scala.collection.JavaConverters._
 /** A UserStore that caches calls to the underlying store. */
 class UserService(redisConfig:RedisConfig, statsReceiver:StatsReceiver, underlying:UserStore)
     extends UserStore
-    with com.twitter.inject.Logging {
+    with com.typesafe.scalalogging.LazyLogging {
 
-  info("UserService with caching started...")
+  logger.info("UserService with caching started...")
 
   val fallback = (k:String) => underlying.findBy(k)
   val cache = new RedisCacheImpl[User](redisConfig, constants.userCacheSuffix, fallback, statsReceiver)
@@ -34,7 +34,7 @@ class UserService(redisConfig:RedisConfig, statsReceiver:StatsReceiver, underlyi
     cache.find(username)
       .handle {
         case _ =>
-          warn(s"didn't find a value for $username")
+          logger.warn(s"didn't find a value for $username")
           None
       }
   }

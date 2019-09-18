@@ -37,7 +37,7 @@ class SessionService(
   )
   extends FileStore
     with MopeService
-  with com.twitter.inject.Logging
+  with com.typesafe.scalalogging.LazyLogging
   with com.twitter.util.Closable {
   override def clientProvider() = new CustomFeatherbedClient(new java.net.URL(mopeConf.address+"mope/"), mopeConf.clientResponseSize)
   val fsStore = FileStore.fromSession(mopeConf.data.hostDirectory, session)
@@ -48,8 +48,8 @@ class SessionService(
   private val projDescr = ProjectDescription(fsStore.rootDir.toString)
   override val pathMapper = MopeService.pathMapper(fsStore.rootDir.toAbsolutePath, mopeConf.data.bindDirectory.resolve(fsStore.rootDir.toAbsolutePath.getFileName()))
 
-  info(s"mapper: $pathMapper")
-  info(s"fsStore: $fsStore")
+  logger.info(s"mapper: $pathMapper")
+  logger.info(s"fsStore: $fsStore")
   override def rootDir: Path = fsStore.rootDir
   override def update(file: ModelicaFile): Future[Unit] = fsStore.update(file)
   override def files: Future[List[ModelicaPath]] = fsStore.files
@@ -67,14 +67,14 @@ class SessionService(
       case Some(path) =>
         compile(path).flatMap { errors =>
           if(errors.isEmpty) {
-            info(s"found source file for ${simParam.modelName} at ${path}")
+            logger.info(s"found source file for ${simParam.modelName} at ${path}")
             super.simulate(simParam)
           }
           else
             Future.exception(SimulationSetupError(s"the model ${simParam.modelName} contains compiler errors!"))
         }
       case None =>
-        warn(s"don't know where ${simParam.modelName} is stored.. lets hope its compiled already..")
+        logger.warn(s"don't know where ${simParam.modelName} is stored.. lets hope its compiled already..")
         super.simulate(simParam)
     }
   }
@@ -90,7 +90,7 @@ class SessionService(
   def extractArchive(path:Path): Future[List[ModelicaPath]] = {
     import scala.sys.process._
     Future {
-      info(s"extracting $path to ${fsStore.rootDir}")
+      logger.info(s"extracting $path to ${fsStore.rootDir}")
       Seq("unzip", path.toAbsolutePath.toString, "-d", fsStore.rootDir.toAbsolutePath.toString).!
     }.flatMap {
       case status:Int if status==0 => this.files

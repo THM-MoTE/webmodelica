@@ -26,7 +26,7 @@ private[services] case class UserWrapper(data:AuthUser)
 /** A UserService that talks to the UserSvc. */
 class UserServiceProxy(conf:UserServiceConf)
   extends UserStore
-    with com.twitter.inject.Logging {
+    with com.typesafe.scalalogging.LazyLogging {
   import featherbed.circe._
   import io.circe.Json
   import io.circe.generic.auto._
@@ -38,20 +38,20 @@ class UserServiceProxy(conf:UserServiceConf)
   )
   def clientProvider() = new featherbed.Client(url)
 
-  info("UserServiceProxy started.")
-  info(s"user-service at $url")
+  logger.info("UserServiceProxy started.")
+  logger.info(s"user-service at $url")
 
   private def withClient[A](fn: featherbed.Client => Future[A]): Future[A] = {
-    debug("Using new client")
+    logger.debug("Using new client")
     val cl = clientProvider()
     fn(cl).ensure {
-      debug("releasing client")
+      logger.debug("releasing client")
       cl.close()
     }
   }
 
   override def add(u: User): Future[Unit] = {
-    debug(s"adding $u")
+    logger.debug(s"adding $u")
     withClient { client =>
       val req = client.post("")
         .withHeaders(headers:_*)
@@ -69,19 +69,19 @@ class UserServiceProxy(conf:UserServiceConf)
   }
 
   override def findBy(username: String): Future[Option[User]] = {
-    debug(s"searching $username")
+    logger.debug(s"searching $username")
     withClient { client =>
       val req = client.get(s"$username")
         .withHeaders(headers:_*)
         .accept("application/json")
 
       req.send[UserWrapper]().map { wrapper =>
-        debug(s"searching $username returned ${wrapper.data}")
+        logger.debug(s"searching $username returned ${wrapper.data}")
         Some(wrapper.data.toUser)
       }
         .handle {
           case request.ErrorResponse(req,resp) if resp.status == Status.NotFound =>
-            debug(s"searching $username returned NotFound")
+            logger.debug(s"searching $username returned NotFound")
             None
           case request.ErrorResponse(req,resp) =>
             val str = s"Error in 'findBy' $resp to request $req"

@@ -18,7 +18,7 @@ import com.twitter.util.Future
 
 class FSStore(root:Path)
     extends FileStore
-    with com.twitter.inject.Logging {
+    with com.typesafe.scalalogging.LazyLogging {
   import webmodelica.constants.encoding
 
   mkdirs(File(root))
@@ -65,7 +65,7 @@ class FSStore(root:Path)
     val args = Seq("zip", "-r", s"--exclude=*${outDir.name}*", "--exclude=*.zip", zipFile.toString, "./"+rootDir.getFileName.toString)
     //run zip in parent directory of the project
     val process = Process(args, rootDir.getParent.toFile)
-    debug(s"running $args in ${rootDir.getParent}")
+    logger.debug(s"running $args in ${rootDir.getParent}")
     Future(process.!).flatMap {
       case status if status==0 => Future.value(zipFile.toJava)
       case code => Future.exception(errors.ArchiveError(s"Zipping $name failed, exit code: $code!"))

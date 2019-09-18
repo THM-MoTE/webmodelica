@@ -38,13 +38,13 @@ class RedisCacheImpl[A:Encoder:Decoder](
   cacheMiss: String => Future[Option[A]],
   statsReceiver: StatsReceiver)
   extends RedisCache[A]
-  with com.twitter.inject.Logging  {
+  with com.typesafe.scalalogging.LazyLogging  {
 
   val client = Client(config.address)
   val hitCounter = statsReceiver.counter(s"redis/$keySuffix/cache-hits")
   val missCounter = statsReceiver.counter(s"redis/$keySuffix/cache-miss")
 
-  info(s"redis cache for $keySuffix loaded using config: $config")
+  logger.info(s"redis cache for $keySuffix loaded using config: $config")
 
   private def makeKey(k:String): String = s"${keySuffix}:${k}"
 
@@ -55,11 +55,11 @@ class RedisCacheImpl[A:Encoder:Decoder](
       a <- OptionT.liftF(eitherToFuture(implicitly[Decoder[A]].decodeJson(json)))
     } yield a).value.flatMap {
       case Some(a) =>
-        debug(s"cache hit for $key")
+        logger.debug(s"cache hit for $key")
         hitCounter.incr()
         Future.value(Some(a))
       case None =>
-        info(s"cache miss for $key")
+        logger.info(s"cache miss for $key")
         missCounter.incr()
         cacheMiss(key).map(updateIfAvailable(key))
     }
@@ -77,12 +77,12 @@ class RedisCacheImpl[A:Encoder:Decoder](
     val json = implicitly[Encoder[A]].apply(value).noSpaces
     val keyBuf = StringToBuf(finalKey)
     val valBuf = StringToBuf(json)
-    debug(s"adding $json at $finalKey")
+    logger.debug(s"adding $json at $finalKey")
     client.setEx(keyBuf, config.defaultTtl.toSeconds, valBuf).map(_ => value)
   }
 
   def remove(key:String): Future[Unit] = {
-    debug(s"removing key $key")
+    logger.debug(s"removing key $key")
     client.dels(Seq(StringToBuf(makeKey(key)))).map(_ => ())
   }
 }

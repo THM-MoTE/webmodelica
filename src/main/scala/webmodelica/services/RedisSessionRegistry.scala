@@ -23,7 +23,7 @@ class RedisSessionRegistry(
   conf:WMConfig,
   statsReceiver:StatsReceiver)
     extends SessionRegistry
-    with com.twitter.inject.Logging {
+    with com.typesafe.scalalogging.LazyLogging {
 
   val higherTtlConf = conf.redis.copy(defaultTtl = 8 hours)
   val redis = new RedisCacheImpl[Session](higherTtlConf, "sessions", _ => Future.value(None), statsReceiver)
@@ -40,7 +40,7 @@ class RedisSessionRegistry(
   override def create(p:Project): Future[(SessionService, Session)] = {
     //tmp set mopeId to unknown
     val tmpSession = Session(p, mopeId=None)
-    info(s"creating session $tmpSession")
+    logger.info(s"creating session $tmpSession")
     val service = newService(tmpSession)
     for {
       mopeId <- service.connect()
@@ -54,7 +54,7 @@ class RedisSessionRegistry(
   override def killSession(id:UUIDStr): Future[Unit] = {
     redis.find(id).flatMap {
       case Some(session) =>
-        info(s"kill session $id")
+        logger.info(s"kill session $id")
         newService(session).close(Time.fromSeconds(60))
         redis.remove(id)
     case None => Future.value(())
