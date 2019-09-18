@@ -14,7 +14,7 @@ class CustomFeatherbedClient(url:URL, maxResponseSize:Int = 5)
   protected override def clientTransform(client: Http.Client): Http.Client = {
     //this function is called inside of the constructor of featherbed.Client
     //so we can't use any values outside of this function except constructor arguments of THIS class
-    val responseSize = maxResponseSize.megabytes
+    val responseSize:StorageUnit = maxResponseSize.megabytes
     logger.info(s"MoPE client responseSize: $responseSize")
     client.withMaxResponseSize(responseSize)
   }

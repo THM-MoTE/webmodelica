@@ -35,7 +35,7 @@ object Settings {
 }
 
 object Dependencies {
-  val finatraVersion = "19.6.0"
+  val finagleVersion = "19.6.0"
 
   val utils = Seq(
     "com.github.pureconfig" %% "pureconfig" % "0.10.1",
@@ -58,11 +58,13 @@ object Dependencies {
   )
 
   val deps = Seq(
-    "com.twitter" %% "finagle-redis" % finatraVersion,
+    "com.twitter" %% "finagle-http" % finagleVersion,
+    "com.twitter" %% "finagle-redis" % finagleVersion,
     "org.mongodb.scala" %% "mongo-scala-driver" % "2.5.+",
     "org.scalatest" %% "scalatest" % "3.0.+" % "test",
     "org.scalacheck" %% "scalacheck" % "1.14.+" % "test",
-    "io.github.finagle" %% "featherbed" % "0.3.+",
+    "io.github.finagle" %% "featherbed-core" % "0.3.+",
+    "io.github.finagle" %% "featherbed-circe" % "0.3.+",
   ) ++ utils ++ akka
 
   val generatorDeps = Seq(

@@ -8,7 +8,6 @@
 
 package webmodelica.models
 
-import com.google.common.net.MediaType
 import com.twitter.finagle.http.Status
 import com.twitter.util.Future
 
