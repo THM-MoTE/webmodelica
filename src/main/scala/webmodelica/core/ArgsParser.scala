@@ -4,7 +4,7 @@ import org.rogach.scallop._
 
 class ArgsParser(args:Seq[String]) extends ScallopConf(args) {
   version(s"${buildinfo.BuildInfo.name} ${buildinfo.BuildInfo.version} ${buildinfo.BuildInfo.copyright}")
-  val interface = opt[String]("interface", default=Some("localhost"), descr="the binding interface, defaults to `localhost`")
+  val interface = opt[String]("interface", default=Some("0.0.0.0"), descr="the binding interface, defaults to `localhost`")
   val port = opt[Int]("port", default=Some(8888), descr="the binding port, defaults to `8888`")
   val env = opt[String]("environment", default=Some("development"), descr="the environment, defaults to `development`")
   val configFile = opt[java.io.File]("configFile", descr="the config file to use")
