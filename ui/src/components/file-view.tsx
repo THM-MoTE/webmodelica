@@ -233,6 +233,7 @@ class FileViewCon extends React.Component<Props, State> {
           <Button variant="outline-primary" href={this.props.api.projectDownloadUrl(this.props.project.id)}><Octicon name="cloud-download" /> Download Archive</Button>
           <Button variant="outline-primary" onClick={this.props.onCompileClicked}><Octicon name="gear" /> Compile</Button>
         </ButtonGroup>
+        <hr/>
         <h5 className="text-secondary">Files</h5>
         <TreeView
           tree={this.props.files}
