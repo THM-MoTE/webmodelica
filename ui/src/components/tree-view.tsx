@@ -123,7 +123,7 @@ export class TreeViewCon extends React.Component<Props,State> {
     const iconName = node.children ? 'file-directory' : 'file-text';
     const errorCount = this.errorsInFile(node.path).length
     const btnTitle = (<span>
-      { (errorCount>0) && (<span className="badge badge-danger treeViewError">{errorCount}</span>) }
+      { (errorCount>0) && (<span className="badge badge-pill badge-danger treeViewError">{errorCount}</span>) }
       <Octicon name={iconName} /> { node.path }
       </span>
     )

@@ -225,7 +225,7 @@ class FileViewCon extends React.Component<Props, State> {
     const helpClicked = () => this.setState({showHelpDialog: true})
 
     return (<>
-        <h5 className="text-secondary">Actions <Button variant='link' onClick={helpClicked}><Octicon name='question'/></Button></h5>
+        <h5 className="">Actions <Button variant='link' onClick={helpClicked}><Octicon name='question'/></Button></h5>
         <ButtonGroup vertical className="full-width">
           <Button variant="outline-success" onClick={this.props.onSaveClicked}><Octicon name="check" /> Save</Button>
           <Button variant="outline-primary" onClick={newFileClicked}><Octicon name="plus" /> New File</Button>
@@ -234,7 +234,7 @@ class FileViewCon extends React.Component<Props, State> {
           <Button variant="outline-primary" onClick={this.props.onCompileClicked}><Octicon name="gear" /> Compile</Button>
         </ButtonGroup>
         <hr/>
-        <h5 className="text-secondary">Files</h5>
+        <h5 className="">Files</h5>
         <TreeView
           tree={this.props.files}
           compilerErrors={this.props.compilerErrors}
