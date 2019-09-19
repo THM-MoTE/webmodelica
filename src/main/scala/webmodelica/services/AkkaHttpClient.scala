@@ -14,6 +14,10 @@ import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport
 
 import scala.concurrent.Future
 
+object AkkaHttpClient {
+  case class Error(status:StatusCode, reason:String, response:HttpResponse) extends RuntimeException(s"$reason: $response")
+}
+
 class AkkaHttpClient(http:HttpExt, baseUri:Uri)
   extends com.typesafe.scalalogging.LazyLogging{
 
@@ -22,7 +26,13 @@ class AkkaHttpClient(http:HttpExt, baseUri:Uri)
 
   def unmarshal[E:Decoder](response:HttpResponse): Future[E] = {
     logger.debug(s"decoding $response")
-    Unmarshal(response).to[E]
+    if(response.status.isSuccess())
+      Unmarshal(response).to[E]
+    else
+      response.entity.dataBytes.runFold(ByteString(""))(_++_)
+        .flatMap { byteStr =>
+          Future.failed(AkkaHttpClient.Error(response.status, byteStr.utf8String, response))
+        }
   }
   def marshal[E:Encoder](entity:E): HttpEntity.Strict = {
     logger.debug(s"encoding $entity")
