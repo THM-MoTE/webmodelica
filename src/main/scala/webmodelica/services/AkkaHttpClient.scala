@@ -8,6 +8,7 @@ import webmodelica.models.JsonSupport._
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import io.circe.{Decoder, Encoder}
 import akka.http.scaladsl.model._
+import akka.http.scaladsl.model.headers.Accept
 import akka.stream.ActorMaterializer
 import akka.util.ByteString
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport
@@ -19,10 +20,12 @@ object AkkaHttpClient {
 }
 
 class AkkaHttpClient(http:HttpExt, baseUri:Uri)
-  extends com.typesafe.scalalogging.LazyLogging{
+  extends com.typesafe.scalalogging.LazyLogging {
 
   import http.system.dispatcher
   implicit val mat = ActorMaterializer.create(http.system)
+
+  val headers:List[HttpHeader] = List(Accept(MediaTypes.`application/json`))
 
   def unmarshal[E:Decoder](response:HttpResponse): Future[E] = {
     logger.debug(s"decoding $response")
@@ -40,17 +43,20 @@ class AkkaHttpClient(http:HttpExt, baseUri:Uri)
     HttpEntity(ContentTypes.`application/json`, json.noSpaces)
   }
 
-  def get[E:Decoder](path:Uri): Future[E] = {
+  def get(path:Uri): Future[HttpResponse] = {
     val uri = path.resolvedAgainst(baseUri)
     logger.debug(s"fetching $uri")
-    http.singleRequest(HttpRequest(uri=uri))
-      .flatMap(unmarshal[E])
+    http.singleRequest(HttpRequest(uri=uri, headers = headers))
   }
 
-  def post[Req:Encoder, Rep:Decoder](path:Uri, entity:Req): Future[Rep] = {
+  def post[Req:Encoder](path:Uri, entity:Req): Future[HttpResponse] = {
     val uri = path.resolvedAgainst(baseUri)
     logger.debug(s"posting $uri")
-    http.singleRequest(HttpRequest(method=HttpMethods.POST, uri=uri, entity = marshal(entity)))
-      .flatMap(unmarshal[Rep])
+    http.singleRequest(HttpRequest(method=HttpMethods.POST, uri=uri, headers = headers, entity = marshal(entity)))
   }
+
+  def postJson[Req:Encoder, Rep:Decoder](path:Uri, entity:Req): Future[Rep] =
+    post(path, entity).flatMap(unmarshal[Rep])
+  def getJson[E:Decoder](path:Uri): Future[E] =
+    get(path).flatMap(unmarshal[E])
 }
