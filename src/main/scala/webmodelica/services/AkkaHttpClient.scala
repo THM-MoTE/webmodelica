@@ -8,7 +8,10 @@ import webmodelica.models.JsonSupport._
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import io.circe.{Decoder, Encoder}
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.model.headers.Accept
+import akka.http.scaladsl.model.headers.{
+  Accept,
+  RawHeader
+}
 import akka.stream.ActorMaterializer
 import akka.util.ByteString
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport
@@ -27,7 +30,9 @@ class AkkaHttpClient(http:HttpExt, baseUri:Uri)
   import http.system.dispatcher
   implicit val mat = ActorMaterializer.create(http.system)
 
-  val headers:List[HttpHeader] = List(Accept(MediaTypes.`application/json`))
+  def addHeaders(headers: Seq[(String,String)]):List[HttpHeader] = {
+    List(Accept(MediaTypes.`application/json`)) ++ headers.map { case (n,v) => new RawHeader(n,v) }
+  }
 
   def unmarshal[E:Decoder](response:HttpResponse): Future[E] = {
     logger.debug(s"decoding $response")
@@ -45,20 +50,20 @@ class AkkaHttpClient(http:HttpExt, baseUri:Uri)
     HttpEntity(ContentTypes.`application/json`, json.noSpaces)
   }
 
-  def get(path:Uri): Future[HttpResponse] = {
+  def get(path:Uri, headers:Seq[(String,String)]=Seq.empty): Future[HttpResponse] = {
     val uri = path.resolvedAgainst(baseUri)
     logger.debug(s"fetching $uri")
-    http.singleRequest(HttpRequest(uri=uri, headers = headers))
+    http.singleRequest(HttpRequest(uri=uri, headers = addHeaders(headers)))
   }
 
-  def post[Req:Encoder](path:Uri, entity:Req): Future[HttpResponse] = {
+  def post[Req:Encoder](path:Uri, entity:Req, headers:Seq[(String,String)]=Seq.empty): Future[HttpResponse] = {
     val uri = path.resolvedAgainst(baseUri)
     logger.debug(s"posting $uri")
-    http.singleRequest(HttpRequest(method=HttpMethods.POST, uri=uri, headers = headers, entity = marshal(entity)))
+    http.singleRequest(HttpRequest(method=HttpMethods.POST, uri=uri, headers = addHeaders(headers), entity = marshal(entity)))
   }
 
-  def postJson[Req:Encoder, Rep:Decoder](path:Uri, entity:Req): Future[Rep] =
-    post(path, entity).flatMap(unmarshal[Rep])
-  def getJson[E:Decoder](path:Uri): Future[E] =
-    get(path).flatMap(unmarshal[E])
+  def postJson[Req:Encoder, Rep:Decoder](path:Uri, entity:Req, headers:Seq[(String,String)]=Seq.empty): Future[Rep] =
+    post(path, entity, headers).flatMap(unmarshal[Rep])
+  def getJson[E:Decoder](path:Uri, headers:Seq[(String,String)]=Seq.empty): Future[E] =
+    get(path, headers).flatMap(unmarshal[E])
 }
