@@ -1,5 +1,7 @@
 package webmodelica.core
 
+import akka.http.scaladsl.Http
+import akka.http.scaladsl.model.Uri
 import com.softwaremill.macwire._
 import com.typesafe.scalalogging.LazyLogging
 import org.mongodb.scala._
@@ -84,4 +86,6 @@ trait WebmodelicaModule
     new TokenGenerator(jwtConf.secret, jwtConf.tokenExpiration)
   def tokenValidator: CombinedTokenValidator =
     TokenValidator.combine(tokenGenerator, AuthTokenValidator(KeyFile(jwtConf.authSvcPublicKey)))
+
+  def httpClient:AkkaHttpClient = new AkkaHttpClient(Http(), Uri(config.mope.address+"mope/"))
 }

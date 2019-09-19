@@ -22,6 +22,8 @@ object AkkaHttpClient {
 class AkkaHttpClient(http:HttpExt, baseUri:Uri)
   extends com.typesafe.scalalogging.LazyLogging {
 
+  logger.info(s"client for $baseUri initialized.")
+
   import http.system.dispatcher
   implicit val mat = ActorMaterializer.create(http.system)
 
