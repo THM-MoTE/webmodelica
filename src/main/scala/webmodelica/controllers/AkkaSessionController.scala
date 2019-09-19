@@ -4,7 +4,10 @@ import com.twitter.util.{Future => TFuture}
 import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.model.headers.Location
+import akka.http.scaladsl.model.headers.{
+  Location,
+  RawHeader
+}
 import webmodelica.models._
 import webmodelica.models.config._
 import webmodelica.services._
@@ -146,7 +149,10 @@ class AkkaSessionController(
                     csvOpt <- svc.locateSimulationCsv(result.modelName)
                   } yield (result, csvOpt)
                   onSuccess(fileFuture.asScala) {
-                    case (_, Some(file)) => getFromFile(file.getPath)
+                    case (SimulationResult(name, _), Some(file)) =>
+                      respondWithHeader(RawHeader("Content-Disposition", s"attachment; filename=${name}.csv")) {
+                        getFromFile(file.getPath)
+                      }
                     case (SimulationResult(name, _), None) => complete(StatusCodes.NotFound -> s"no results for $name available!")
                   }
                 case "chartjs" => complete(resultFuture.map(r => TableFormat(maxSimulationData, r)).asScala)
