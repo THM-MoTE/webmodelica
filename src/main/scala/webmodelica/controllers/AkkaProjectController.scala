@@ -3,6 +3,7 @@ package webmodelica.controllers
 import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.model._
+import akka.http.scaladsl.model.headers.RawHeader
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.twitter.finagle.http.Request
 import io.circe.generic.JsonCodec
@@ -117,7 +118,9 @@ class AkkaProjectController(
           file <- fs.packageProjectArchive(project.name).asScala
         } yield file)
         onSuccess(future) { file =>
-          getFromFile(file.getPath)
+          respondWithHeader(RawHeader("Content-Disposition", s"attachment; filename=${file.getName}")) {
+            getFromFile(file.getPath)
+          }
         }
       } ~
         (get & path(Remaining)) { pathStr =>
