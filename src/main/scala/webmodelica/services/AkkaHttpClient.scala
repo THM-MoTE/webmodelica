@@ -1,4 +1,5 @@
 package webmodelica.services
+import akka.http.javadsl.model.RequestEntity
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.common.EntityStreamingSupport
 import akka.http.scaladsl.marshalling.Marshal
@@ -23,9 +24,10 @@ class AkkaHttpClient(http:HttpExt, baseUri:Uri)
     logger.debug(s"decoding $response")
     Unmarshal(response).to[E]
   }
-  def marshal[E:Encoder](entity:E, request:HttpRequest) = {
+  def marshal[E:Encoder](entity:E): HttpEntity.Strict = {
     logger.debug(s"encoding $entity")
-    Marshal(entity).toResponseFor(request)
+    val json = implicitly[Encoder[E]].apply(entity)
+    HttpEntity(ContentTypes.`application/json`, json.noSpaces)
   }
 
   def get[E:Decoder](path:Uri): Future[E] = {
@@ -33,5 +35,12 @@ class AkkaHttpClient(http:HttpExt, baseUri:Uri)
     logger.debug(s"fetching $uri")
     http.singleRequest(HttpRequest(uri=uri))
       .flatMap(unmarshal[E])
+  }
+
+  def post[Req:Encoder, Rep:Decoder](path:Uri, entity:Req): Future[Rep] = {
+    val uri = path.resolvedAgainst(baseUri)
+    logger.debug(s"posting $uri")
+    http.singleRequest(HttpRequest(method=HttpMethods.POST, uri=uri, entity = marshal(entity)))
+      .flatMap(unmarshal[Rep])
   }
 }
