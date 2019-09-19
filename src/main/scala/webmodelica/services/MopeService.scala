@@ -10,9 +10,6 @@ package webmodelica.services
 
 import java.nio.file.{Path, Paths}
 
-import com.twitter.finagle.Service
-import com.twitter.finagle.Http
-import com.twitter.finagle.http.{Method, Request, Response, Status}
 import java.net.{URI, URL}
 
 import akka.http.scaladsl.model.StatusCodes
@@ -21,10 +18,7 @@ import com.twitter.util.{Future, Promise}
 
 import scala.concurrent.{Future => SFuture, Promise => SPromise}
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.twitter.io.Buf
-import featherbed._
 
-import scala.reflect.Manifest
 import webmodelica.models.errors.{MopeServiceError, SimulationNotFinished, SimulationSetupError}
 import webmodelica.models.mope._
 import webmodelica.models.mope.requests._
@@ -44,9 +38,6 @@ trait MopeService {
       case Return(r) =>
         logger.debug(s"$msg returned $r")
         Future.value(r)
-      case Throw(e@request.ErrorResponse(req,resp)) =>
-        logger.error(s"http error while $msg: ${e.getMessage}", e)
-        Future.exception(MopeServiceError(s"Error response $resp to request $req"))
       case Throw(e:MopeServiceError) if !ignore(e.getClass) =>
         logger.error(s"mope error while $msg: ${e.getMessage}", e)
         Future.exception(e)
