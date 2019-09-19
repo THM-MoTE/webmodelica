@@ -6,22 +6,16 @@ import webmodelica.models._
 import webmodelica.models.mope._
 import webmodelica.models.mope.requests._
 import webmodelica.models.mope.responses._
-import webmodelica.core.AppModule
 
 import java.nio.file._
-import better.files._
-import com.twitter.finatra.json.modules.FinatraJacksonModule
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.twitter.finatra.json.FinatraObjectMapper
-import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import com.twitter.util.{Future,Await}
 import com.twitter.finagle.stats.NullStatsReceiver
 
 
 class MopeIntegration
     extends webmodelica.WMSpec {
-  val conf = AppModule.configProvider.mope
-  val session = Session(Project(ProjectRequest("nico", "awesomeProject", com.twitter.finagle.http.Request())))
+  val conf = appConf.mope
+  val session = Session(Project("nico", "awesomeProject"))
   val service = new SessionService(conf,session, appConf.redis, new NullStatsReceiver())
 
   val files = Seq(

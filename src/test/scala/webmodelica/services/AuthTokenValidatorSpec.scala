@@ -2,16 +2,11 @@ package webmodelica.services
 
 import pdi.jwt.{Jwt, JwtAlgorithm, JwtClaim, JwtUtils}
 import webmodelica.WMSpec
-import webmodelica.core.AppModule
 import webmodelica.models._
-import java.security._
 import java.time.Instant
-import java.time.temporal.TemporalUnit
-import java.util.concurrent.TimeUnit
 
 import better.files._
 import com.twitter.util.Await
-import org.joda.time.Hours
 
 import scala.concurrent.duration._
 
