@@ -33,13 +33,12 @@ class SessionService(
   val mopeConf:MopeClientConfig,
   val session:Session,
   redisConf:RedisConfig,
-  statsReceiver:StatsReceiver
-  )
+  statsReceiver:StatsReceiver,
+  override val client: AkkaHttpClient)
   extends FileStore
     with MopeService
   with com.typesafe.scalalogging.LazyLogging
   with com.twitter.util.Closable {
-  override def clientProvider() = new CustomFeatherbedClient(new java.net.URL(mopeConf.address+"mope/"), mopeConf.clientResponseSize)
   val fsStore = FileStore.fromSession(mopeConf.data.hostDirectory, session)
   val suggestionCache = new RedisCacheImpl[Seq[Suggestion]](redisConf, constants.completionCacheSuffix, _ => Future.value(None), statsReceiver)
 

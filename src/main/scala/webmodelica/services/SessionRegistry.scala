@@ -23,7 +23,8 @@ trait SessionRegistry extends com.twitter.util.Closable {
 }
 
 class InMemorySessionRegistry(conf:WMConfig,
-  statsReceiver:StatsReceiver)
+  statsReceiver:StatsReceiver,
+   client: AkkaHttpClient)
   extends SessionRegistry
     with com.typesafe.scalalogging.LazyLogging
     with com.twitter.util.Closable {
@@ -43,7 +44,7 @@ class InMemorySessionRegistry(conf:WMConfig,
   override def create(p:Project): Future[(SessionService, Session)] = FuturePool.unboundedPool { sync {
     val s = Session(p)
     logger.info(s"creating session $s")
-    val service = new SessionService(conf.mope, s, conf.redis, statsReceiver)
+    val service = new SessionService(conf.mope, s, conf.redis, statsReceiver, client)
     registry += (s.idString -> service)
     (service, s)
   }}
