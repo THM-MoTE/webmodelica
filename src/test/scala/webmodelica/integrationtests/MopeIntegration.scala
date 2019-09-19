@@ -16,7 +16,7 @@ class MopeIntegration
     extends webmodelica.WMSpec {
   val conf = appConf.mope
   val session = Session(Project("nico", "awesomeProject"))
-  val service = new SessionService(conf,session, appConf.redis, new NullStatsReceiver())
+  val service = new SessionService(conf,session, appConf.redis, new NullStatsReceiver(), module.httpClient)
 
   val files = Seq(
     ModelicaFile(
