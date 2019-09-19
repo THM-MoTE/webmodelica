@@ -12,9 +12,6 @@ import java.net.URI
 
 import webmodelica.models.mope.requests.{Complete, ProjectDescription, SimulateRequest}
 import webmodelica.models.mope.responses.Suggestion
-import com.twitter.finagle.Service
-import com.twitter.finagle.Http
-import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util.{Future, Time}
 import com.twitter.finagle.stats.StatsReceiver
 import webmodelica.models.config.{MopeClientConfig, RedisConfig}
