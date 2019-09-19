@@ -16,6 +16,7 @@
    <logger name="io.netty" level="INFO"></logger>
    <logger name="com.twitter" level="INFO"></logger>
    <logger name="org.mongodb" level="INFO"></logger>
+   <logger name="akka.http" level="INFO"></logger>
   <!-- <logger name="akka" level="INFO"></logger> -->
 
    <root level="DEBUG">

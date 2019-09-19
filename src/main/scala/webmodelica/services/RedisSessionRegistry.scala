@@ -21,7 +21,8 @@ import cats.implicits._
 
 class RedisSessionRegistry(
   conf:WMConfig,
-  statsReceiver:StatsReceiver)
+  statsReceiver:StatsReceiver,
+  client: AkkaHttpClient)
     extends SessionRegistry
     with com.typesafe.scalalogging.LazyLogging {
 
@@ -30,9 +31,9 @@ class RedisSessionRegistry(
 
   private def newService(s:Session): SessionService =
     s.mopeId match {
-      case None => new SessionService(conf.mope, s, conf.redis, statsReceiver)
+      case None => new SessionService(conf.mope, s, conf.redis, statsReceiver, client)
       case Some(id) =>
-        new SessionService(conf.mope, s, conf.redis, statsReceiver) {
+        new SessionService(conf.mope, s, conf.redis, statsReceiver, client) {
           override def projectId: Future[Int] = Future.value(id)
         }
     }

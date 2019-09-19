@@ -9,7 +9,7 @@ import webmodelica.models.errors.{
 }
 
 class UserServiceProxySpec extends WMSpec {
-  val proxy = new UserServiceProxy(appConf.userService)
+  val proxy = new UserServiceProxy(appConf.userService)(module.actorSystem)
 
   val user = User("test-2-user-5", "test-2-user-5@xample.org", None, None, "1234")
 

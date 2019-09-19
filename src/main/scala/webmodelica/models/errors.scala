@@ -8,8 +8,8 @@
 
 package webmodelica.models
 
-import com.twitter.finagle.http.Status
 import com.twitter.util.Future
+import akka.http.scaladsl.model._
 
 object errors {
   def notFoundExc[A](reason:String)(opt: Option[A]): Future[A] = opt match {
@@ -18,7 +18,7 @@ object errors {
   }
 
   case class NotFoundException(reason:String) extends WMException {
-    override def status: Status = Status.NotFound
+    override def status: StatusCode = StatusCodes.NotFound
     override def getMessage: String = reason
   }
 
@@ -26,16 +26,16 @@ object errors {
     //for whatever reason this must be a abstract class..
     //guice doesn't know how to handle traits ..
 
-    def status: Status = Status.InternalServerError
+    def status: StatusCode = StatusCodes.InternalServerError
   }
   private[errors] trait BRWMException extends WMException {
-    override def status: Status = Status.BadRequest
+    override def status: StatusCode = StatusCodes.BadRequest
   }
 
   trait AlreadyInUse extends WMException {
     def resource:String
     def name:String
-    override def status: Status = Status.Conflict
+    override def status: StatusCode = StatusCodes.Conflict
     override def getMessage: String = s"$resource `$name` already assigned"
   }
 
@@ -54,7 +54,7 @@ object errors {
   }
 
   case object CredentialsError extends WMException {
-    override def status: Status = Status.Unauthorized
+    override def status: StatusCode = StatusCodes.Unauthorized
     override def getMessage: String = "Wrong username or password!"
   }
   case class ResourceUsernameError(resourceName:String="resource") extends BRWMException {
@@ -76,7 +76,7 @@ object errors {
     override def getMessage: String = reason
   }
   case object SimulationNotFinished extends WMException {
-    override def status: Status = Status.Conflict
+    override def status: StatusCode = StatusCodes.Conflict
     override def getMessage: String = s"simulation not finished!"
   }
 }

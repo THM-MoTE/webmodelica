@@ -12,9 +12,6 @@ import java.net.URI
 
 import webmodelica.models.mope.requests.{Complete, ProjectDescription, SimulateRequest}
 import webmodelica.models.mope.responses.Suggestion
-import com.twitter.finagle.Service
-import com.twitter.finagle.Http
-import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util.{Future, Time}
 import com.twitter.finagle.stats.StatsReceiver
 import webmodelica.models.config.{MopeClientConfig, RedisConfig}
@@ -33,13 +30,12 @@ class SessionService(
   val mopeConf:MopeClientConfig,
   val session:Session,
   redisConf:RedisConfig,
-  statsReceiver:StatsReceiver
-  )
+  statsReceiver:StatsReceiver,
+  override val client: AkkaHttpClient)
   extends FileStore
     with MopeService
   with com.typesafe.scalalogging.LazyLogging
   with com.twitter.util.Closable {
-  override def clientProvider() = new CustomFeatherbedClient(new java.net.URL(mopeConf.address+"mope/"), mopeConf.clientResponseSize)
   val fsStore = FileStore.fromSession(mopeConf.data.hostDirectory, session)
   val suggestionCache = new RedisCacheImpl[Seq[Suggestion]](redisConf, constants.completionCacheSuffix, _ => Future.value(None), statsReceiver)
 
