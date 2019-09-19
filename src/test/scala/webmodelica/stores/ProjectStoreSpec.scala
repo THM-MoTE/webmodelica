@@ -1,6 +1,5 @@
 package webmodelica.stores
 
-import com.twitter.finagle.http
 import com.twitter.util.Await
 import webmodelica.controllers.AkkaProjectController
 import webmodelica.models.{Project, User}

@@ -47,6 +47,8 @@ object Dependencies {
     "com.softwaremill.macwire" %% "macros" % "2.3.+",
     "org.rogach" %% "scallop" % "3.3.+",
     "com.typesafe.scala-logging" %% "scala-logging" % "3.9.+",
+    "io.circe" %% "circe-core" % "0.11.+",
+    "io.circe" %% "circe-generic" % "0.11.+"
   )
 
   val akka = Seq(
@@ -54,17 +56,13 @@ object Dependencies {
     "com.typesafe.akka" %% "akka-stream" % "2.5.23",
     "com.typesafe.akka" %% "akka-slf4j" % "2.5.23",
     "de.heikoseeberger" %% "akka-http-circe" % "1.27.0",
-
   )
 
   val deps = Seq(
-    "com.twitter" %% "finagle-http" % finagleVersion,
     "com.twitter" %% "finagle-redis" % finagleVersion,
     "org.mongodb.scala" %% "mongo-scala-driver" % "2.5.+",
     "org.scalatest" %% "scalatest" % "3.0.+" % "test",
-    "org.scalacheck" %% "scalacheck" % "1.14.+" % "test",
-    "io.github.finagle" %% "featherbed-core" % "0.3.+",
-    "io.github.finagle" %% "featherbed-circe" % "0.3.+",
+    "org.scalacheck" %% "scalacheck" % "1.14.+" % "test"
   ) ++ utils ++ akka
 
   val generatorDeps = Seq(
