@@ -1,8 +1,7 @@
 package webmodelica
 
-import org.mongodb.scala.model.Filters
 import org.scalatest._
-import webmodelica.core.AppModule
+import webmodelica.core.WebmodelicaModule
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -12,13 +11,14 @@ abstract class WMSpec
     with Matchers
     with Inspectors
     with BeforeAndAfterAll {
-  AppModule.env.parse("test")
-  val appConf = AppModule.configProvider
+  val module = new WebmodelicaModule {
+    override def arguments:Seq[String] = Seq("--environment=test")
+  }
+  val appConf = module.config
 }
 
 abstract class DBSpec(collectionName:Option[String]=None) extends WMSpec {
-  val conf = AppModule.configProvider
-  val database = AppModule.mongoDBProvider(conf.mongodb, AppModule.mongoClientProvider(conf.mongodb))
+  val database = module.mongoDB
 
   override def afterAll:Unit = {
     collectionName.foreach { name =>
