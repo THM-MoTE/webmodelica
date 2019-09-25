@@ -12,11 +12,21 @@
     </encoder>
   </appender>
 
+  <appender name="accesslog" class="ch.qos.logback.core.FileAppender">
+    <file>./log/access.log</file>
+    <encoder>
+      <pattern>%date{ISO8601} [%-5level] - %msg%n</pattern>
+    </encoder>
+  </appender>
+
    <logger name="com.typesafe" level="INFO"></logger>
    <logger name="io.netty" level="INFO"></logger>
    <logger name="com.twitter" level="INFO"></logger>
    <logger name="org.mongodb" level="INFO"></logger>
    <logger name="akka.http" level="INFO"></logger>
+   <logger name="AccessLog">
+    <appender-ref ref="accesslog" />
+   </logger>
   <!-- <logger name="akka" level="INFO"></logger> -->
 
    <root level="DEBUG">
