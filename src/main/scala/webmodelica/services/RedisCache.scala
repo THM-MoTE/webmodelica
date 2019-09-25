@@ -25,6 +25,10 @@ trait RedisCache[A] {
   def remove(key:String): Future[Unit]
 }
 
+trait RedisCacheFactory[A] {
+  def get[A:Encoder:Decoder](keySuffix: String, cacheMiss: String => Future[Option[A]]): RedisCache[A]
+}
+
 /** Does no caching, just forwards to the given 'fn' */
 class NoCaching[A](fn: String => Future[Option[A]]) extends RedisCache[A] {
   def find(key:String): Future[Option[A]] = fn(key)
