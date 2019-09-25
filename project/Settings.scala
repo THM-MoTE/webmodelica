@@ -10,10 +10,12 @@ object Settings {
       "-unchecked",
       "-deprecation",
       "-feature",
+      "-explaintypes",
       "-Ypartial-unification",
       "-encoding", "utf8",
       "-language:higherKinds",
       "-language:postfixOps",
+      "-Xfatal-warnings",
     )
   )
 
