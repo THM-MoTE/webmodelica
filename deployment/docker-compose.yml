@@ -1,7 +1,7 @@
 version: '3'
 services:
   traefik:
-    image: "traefik:1.7.11"
+    image: "traefik:1.7.17"
     command: --api --docker
     ports:
       - "9000:80"     # The HTTP port
