@@ -1,5 +1,5 @@
 import React from 'react'
-import { Col, Nav } from 'react-bootstrap'
+import { Col, Nav, Tabs, Tab } from 'react-bootstrap'
 import * as monaco from 'monaco-editor';
 import { ApiClient } from '../services/api-client';
 import { File, toVSCodeComplete, Shortcut, asKeyBinding } from '../models/index'
@@ -88,10 +88,11 @@ export class EditorsPane extends React.Component<Props, any> {
     let tabTitle = (file) ? file.relativePath : "welcome"
 
     return (<>
-        <Nav className="justify-content-center" activeKey={tabTitle} onSelect={tabSelected}>
-          <Nav.Link href={tabTitle}>{tabTitle}</Nav.Link>
-        </Nav>
-        <div id={EditorsPane.editorName} className="editor"></div>
+      <Tabs defaultActiveKey="first" id="editor-tabs">
+        <Tab eventKey="first" title={tabTitle}>
+          <div id={EditorsPane.editorName} className="editor card"></div>
+        </Tab>
+      </Tabs>
       </>)
   }
 }
