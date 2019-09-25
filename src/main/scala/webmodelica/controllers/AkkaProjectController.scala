@@ -46,7 +46,6 @@ class AkkaProjectController(
     extends AkkaUserExtractor
     with AkkaProjectExtractor
     with com.typesafe.scalalogging.LazyLogging
-    with de.heikoseeberger.akkahttpcirce.FailFastCirceSupport
     with AkkaController {
 
   val fileStore: Project => FileStore = FileStore.fromProject(mopeConf.data.hostDirectory, _)

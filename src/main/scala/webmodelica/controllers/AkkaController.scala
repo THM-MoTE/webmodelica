@@ -14,8 +14,10 @@ import akka.http.scaladsl.server.directives._
 import akka.http.scaladsl.model._
 import java.io.File
 import io.circe.generic.JsonCodec
+import de.heikoseeberger.akkahttpcirce.ErrorAccumulatingCirceSupport
 
-trait AkkaController {
+trait AkkaController
+    extends ErrorAccumulatingCirceSupport {
   self =>
   def routes: Route
   def ||(other:AkkaController): AkkaController = new AkkaController() {

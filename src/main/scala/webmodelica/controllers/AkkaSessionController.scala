@@ -49,7 +49,6 @@ class AkkaSessionController(
     extends AkkaUserExtractor
     with AkkaProjectExtractor
     with com.typesafe.scalalogging.LazyLogging
-    with de.heikoseeberger.akkahttpcirce.FailFastCirceSupport
     with AkkaController {
   override val routes:Route = extractUser { (user:User) =>
     (path("projects" / Segment / "sessions" / "new") & post) { projectId =>
