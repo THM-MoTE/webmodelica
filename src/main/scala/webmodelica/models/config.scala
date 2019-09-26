@@ -40,9 +40,12 @@ package config {
     bindDirectory: Path
   )
   case class RedisConfig(
-    address: String,
+    host: String,
+    port: Int,
     defaultTtl: Duration
-  )
+  ) {
+    def address: String = s"$host:$port"
+  }
 
   case class UserServiceConf(
     address: String,
