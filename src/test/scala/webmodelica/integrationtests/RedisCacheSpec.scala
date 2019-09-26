@@ -24,16 +24,11 @@ case class Person(name:String, age:Int)
 
 class RedisCacheSpec
   extends webmodelica.WMSpec {
-
   implicit val encoder = deriveEncoder[Person]
   implicit val decoder = deriveDecoder[Person]
 
-  import module._
-  import AsyncRedisCache._
-
   val tim = Person("tim", 16)
   val nico = Person("nico", 19)
-
   var storeCounter:Int = 0
 
   val underlyingStore: String => Future[Option[Person]] = (k:String) => {
@@ -44,26 +39,21 @@ class RedisCacheSpec
       Future.value(None)
   }
 
-  val finagleCache = new RedisCacheImpl[Person](appConf.redis, "test:stub", underlyingStore, new NullStatsReceiver())
-  val akkaCache = new AsyncRedisCache[Person](scredis.Client(appConf.redis.host,appConf.redis.port), appConf.redis.defaultTtl, "test:stub", underlyingStore)
+  val asyncCache = module.redisCacheFactory.get[Person]("test:stub", underlyingStore)
 
   "The redis cache service" should "add a value to the cache" in {
-    Await.result(finagleCache.update("tim", tim))
-    Await.result(akkaCache.update("tim", tim))
+    Await.result(asyncCache.update("tim", tim))
   }
   it should "find the added value" in {
-    Await.result(finagleCache.find("tim")) shouldBe Some(tim)
-    Await.result(akkaCache.find("tim")) shouldBe Some(tim)
+    Await.result(asyncCache.find("tim")) shouldBe Some(tim)
     storeCounter shouldBe 0 //check that no backend was called
   }
   it should "call underlying store if no value available" in {
-    Await.result(finagleCache.find("nico")) shouldBe Some(nico)
-    Await.result(akkaCache.find("nico")) shouldBe Some(nico)
-    storeCounter shouldBe 2
+    Await.result(asyncCache.find("nico")) shouldBe Some(nico)
+    storeCounter shouldBe 1
   }
   it should "not save a value if it's not in the underlying store" in {
-    Await.result(finagleCache.find("blup")) shouldBe None
-    Await.result(akkaCache.find("blup")) shouldBe None
-    storeCounter shouldBe 4
+    Await.result(asyncCache.find("blup")) shouldBe None
+    storeCounter shouldBe 2
   }
 }
