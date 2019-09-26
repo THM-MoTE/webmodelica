@@ -56,4 +56,9 @@ class RedisCacheSpec
     Await.result(asyncCache.find("blup")) shouldBe None
     storeCounter shouldBe 2
   }
+  it should "remove a value" in {
+    Await.result(asyncCache.update("tim", tim))
+    Await.result(asyncCache.remove("tim"))
+    Await.result(asyncCache.find("tim")) shouldBe None
+  }
 }
