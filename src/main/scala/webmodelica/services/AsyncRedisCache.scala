@@ -24,37 +24,44 @@ class AsyncRedisCache[A:Reader:Writer] private (client: scredis.Client,
       case _ => Future.value(None)
     }
 
-  override def find(key: String): Future[Option[A]] =
-    client.get(makeKey(key))
+  override def find(key: String): Future[Option[A]] = {
+    val mKey = makeKey(key)
+    client.get(mKey)
       .flatMap {
         case opt@Some(_) =>
-          logger.debug(s"found value for $key")
+          logger.debug(s"found value for $mKey")
           SFuture.successful(opt)
         case None =>
-          logger.debug(s"cache miss for $key")
+          logger.debug(s"cache miss for $mKey")
           cacheMiss(key).asScala
       }
       .asTwitter
+  }
 
-  override def update(key: String, value: A): Future[A] =
-    client.set(makeKey(key), value, ttl)
+  override def update(key: String, value: A): Future[A] = {
+    val mKey = makeKey(key)
+    client.set(mKey, value, ttl)
       .flatMap { bool =>
         if(bool) {
-          logger.debug(s"cached $value at $key")
+          logger.debug(s"cached $value at $mKey")
         } else {
           logger.error(s"Couldn't cache $value in redis")
         }
         SFuture.successful(value)
       }
       .asTwitter
-  override def remove(key: String): Future[Unit] =
-    client.del(makeKey(key))
+  }
+
+  override def remove(key: String): Future[Unit] = {
+    val mKey = makeKey(key)
+    client.del(mKey)
       .map { cnt =>
-        logger.info(s"removed $cnt values for $key")
+        logger.info(s"removed $cnt values for $mKey")
         cnt
       }
       .asTwitter
       .unit
+  }
 }
 
 object AsyncRedisCache {

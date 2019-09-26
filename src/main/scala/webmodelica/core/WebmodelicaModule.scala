@@ -101,7 +101,10 @@ trait WebmodelicaModule
 
   def httpClient:AkkaHttpClient = new AkkaHttpClient(Http(), Uri(config.mope.address+"mope/"))
 
-  private def redisClient: scredis.Client = scredis.Client(redisConf.host, redisConf.port)
+  private def redisClient: scredis.Client = {
+    logger.info("RedisClient for {} created", redisConf.address)
+    scredis.Client(redisConf.host, redisConf.port)
+  }
   lazy val redisCacheFactory:RedisCacheFactory = new RedisCacheFactory {
     override def get[A:Encoder:Decoder](keySuffix: String,
                                            cacheMiss: String => Future[Option[A]],
