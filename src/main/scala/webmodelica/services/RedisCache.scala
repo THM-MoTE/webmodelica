@@ -19,6 +19,7 @@ trait RedisCache[A] {
 }
 
 trait RedisCacheFactory {
+  /** Factory for RedisCache's. A RedisCache can only be optained if an implicit circe.{Encoder, Decoder} is in-scope. */
   def get[A:Encoder:Decoder](keySuffix: String, cacheMiss: String => Future[Option[A]], ttlKeys:Option[FiniteDuration]=None): RedisCache[A]
 }
 

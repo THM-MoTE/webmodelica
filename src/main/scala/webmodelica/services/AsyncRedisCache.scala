@@ -6,6 +6,10 @@ import scredis.serialization.{Reader, Writer}
 import scala.concurrent.{Future => SFuture}
 import webmodelica.conversions.futures._
 
+/** A RedisCache implementation based on an scredis.Client.
+  *  It requires an implicit scredis.{Reader, Writer} to be in scope in order to serialize `A` values.
+  *  Should be instantiated through companion object's `apply` method.
+  */
 class AsyncRedisCache[A:Reader:Writer] private (client: scredis.Client,
                                        ttlKeys: scala.concurrent.duration.FiniteDuration,
                                        keySuffix: String,
@@ -64,21 +68,27 @@ class AsyncRedisCache[A:Reader:Writer] private (client: scredis.Client,
   }
 }
 
+/** AsyncRedisCache factory and scredis.{Reader,Writer} provider. */
 object AsyncRedisCache {
   import io.circe.{Encoder, Decoder, parser}
   import webmodelica.constants
 
+  /** builds a scredis.Reader from an implicit circe.Decoder */
   implicit def readerFromDecoder[A:Decoder]: Reader[A] = new Reader[A] {
     override protected def readImpl(bytes: Array[Byte]): A = {
       val str = new String(bytes, constants.encoding)
       parser.decode[A](str).toTry.get
     }
   }
+  /** builds a scredis.Writer from an implicit circe.Encoder */
   implicit def writerFromEncoder[A:Encoder]: Writer[A] = new Writer[A] {
     override protected def writeImpl(value: A): Array[Byte] =
       implicitly[Encoder[A]].apply(value).noSpaces.getBytes(constants.encoding)
   }
 
+  /** Creates an AsyncRedisCache with serializers based on the implicit circe.{Encoder, Decoder}.
+    *  This is the only way to obtain an AsyncRedisCache!
+    */
   def apply[A:Encoder:Decoder](client: scredis.Client,
             ttlKeys: scala.concurrent.duration.FiniteDuration,
             keySuffix: String,
