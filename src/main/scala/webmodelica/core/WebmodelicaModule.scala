@@ -11,13 +11,17 @@ package webmodelica.core
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.Uri
 import com.softwaremill.macwire._
+import com.twitter.util.Future
 import com.typesafe.scalalogging.LazyLogging
+import io.circe.{Decoder, Encoder}
 import org.mongodb.scala._
 import webmodelica.ApiPrefix
 import webmodelica.models._
 import webmodelica.models.config._
 import webmodelica.services._
 import webmodelica.stores._
+
+import scala.concurrent.duration.FiniteDuration
 
 trait ConfigModule
     extends LazyLogging {
@@ -96,4 +100,12 @@ trait WebmodelicaModule
     TokenValidator.combine(tokenGenerator, AuthTokenValidator(KeyFile(jwtConf.authSvcPublicKey)))
 
   def httpClient:AkkaHttpClient = new AkkaHttpClient(Http(), Uri(config.mope.address+"mope/"))
+
+  private def redisClient: scredis.Client = scredis.Client(redisConf.host, redisConf.port)
+  lazy val redisCacheFactory:RedisCacheFactory = new RedisCacheFactory {
+    override def get[A:Encoder:Decoder](keySuffix: String,
+                                           cacheMiss: String => Future[Option[A]],
+                                           ttlKeys: Option[FiniteDuration]): RedisCache[A] =
+      AsyncRedisCache(redisClient, ttlKeys.getOrElse(redisConf.defaultTtl), keySuffix, cacheMiss)
+  }
 }

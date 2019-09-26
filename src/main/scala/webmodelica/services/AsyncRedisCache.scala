@@ -6,7 +6,7 @@ import scredis.serialization.{Reader, Writer}
 import scala.concurrent.{Future => SFuture}
 import webmodelica.conversions.futures._
 
-class AsyncRedisCache[A:Reader:Writer](client: scredis.Client,
+class AsyncRedisCache[A:Reader:Writer] private (client: scredis.Client,
                                        ttlKeys: scala.concurrent.duration.FiniteDuration,
                                        keySuffix: String,
                                        cacheMiss: String => Future[Option[A]])
@@ -72,4 +72,9 @@ object AsyncRedisCache {
       implicitly[Encoder[A]].apply(value).noSpaces.getBytes(constants.encoding)
   }
 
+  def apply[A:Encoder:Decoder](client: scredis.Client,
+            ttlKeys: scala.concurrent.duration.FiniteDuration,
+            keySuffix: String,
+            cacheMiss: String => Future[Option[A]]): AsyncRedisCache[A] =
+    new AsyncRedisCache[A](client, ttlKeys, keySuffix, cacheMiss)
 }

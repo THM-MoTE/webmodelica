@@ -27,7 +27,7 @@ trait RedisCache[A] {
   def remove(key:String): Future[Unit]
 }
 
-trait RedisCacheFactory[A] {
+trait RedisCacheFactory {
   def get[A:Encoder:Decoder](keySuffix: String, cacheMiss: String => Future[Option[A]], ttlKeys:Option[FiniteDuration]=None): RedisCache[A]
 }
 
