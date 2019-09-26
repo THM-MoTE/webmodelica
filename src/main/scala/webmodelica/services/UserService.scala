@@ -10,14 +10,9 @@ package webmodelica.services
 
 import webmodelica.stores.UserStore
 import webmodelica.models._
-import webmodelica.models.errors._
-import webmodelica.models.config.RedisConfig
 import webmodelica.constants
 
 import com.twitter.util.Future
-import com.twitter.cache.FutureCache
-import com.twitter.finagle.stats.StatsReceiver
-import scala.collection.JavaConverters._
 
 /** A UserStore that caches calls to the underlying store. */
 class UserService(redisProvider: RedisCacheFactory,

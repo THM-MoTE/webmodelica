@@ -12,14 +12,12 @@ import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers.RawHeader
-import com.fasterxml.jackson.annotation.JsonProperty
 import io.circe.generic.JsonCodec
 import webmodelica.stores._
 import webmodelica.services._
 import webmodelica.models._
 import webmodelica.models.config.MopeClientConfig
 import webmodelica.conversions.futures._
-import io.scalaland.chimney.dsl._
 import java.nio.file.Paths
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

@@ -13,18 +13,14 @@ import java.net.URI
 import webmodelica.models.mope.requests.{Complete, ProjectDescription, SimulateRequest}
 import webmodelica.models.mope.responses.Suggestion
 import com.twitter.util.{Future, Time}
-import com.twitter.finagle.stats.StatsReceiver
-import webmodelica.models.config.{MopeClientConfig, RedisConfig}
+import webmodelica.models.config.{MopeClientConfig}
 import webmodelica.models.{FileTree, ModelicaFile, ModelicaPath, Session, errors}
 import webmodelica.stores.{FSStore, FileStore}
 import webmodelica.constants
-import java.nio.file.{Path, Paths}
+import java.nio.file.{Path}
 
 import better.files._
 import webmodelica.models.errors.SimulationSetupError
-
-import scala.concurrent.{Future => SFuture, Promise => SPromise}
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class SessionService(
   val mopeConf:MopeClientConfig,

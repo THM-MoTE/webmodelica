@@ -9,7 +9,6 @@
 package webmodelica.services
 
 import com.twitter.util.{Future, FuturePool, Time}
-import com.twitter.finagle.stats.StatsReceiver
 import webmodelica.UUIDStr
 import webmodelica.models.config.WMConfig
 import webmodelica.models.{Project, Session}

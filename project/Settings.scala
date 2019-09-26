@@ -50,7 +50,8 @@ object Dependencies {
     "org.rogach" %% "scallop" % "3.3.+",
     "com.typesafe.scala-logging" %% "scala-logging" % "3.9.+",
     "io.circe" %% "circe-core" % "0.11.+",
-    "io.circe" %% "circe-generic" % "0.11.+"
+    "io.circe" %% "circe-generic" % "0.11.+",
+    "com.twitter" %% "util-core" % "19.9.+"
   )
 
   val akka = Seq(
@@ -62,7 +63,6 @@ object Dependencies {
 
   val deps = Seq(
     "com.github.scredis" %% "scredis" % "2.2.6",
-    "com.twitter" %% "finagle-redis" % finagleVersion,
     "org.mongodb.scala" %% "mongo-scala-driver" % "2.5.+",
     "org.scalatest" %% "scalatest" % "3.0.+" % "test",
     "org.scalacheck" %% "scalacheck" % "1.14.+" % "test"

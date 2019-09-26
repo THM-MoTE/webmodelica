@@ -8,22 +8,19 @@
 
 package webmodelica.services
 
-import com.twitter.util.{Future, FuturePool, Time}
-import com.twitter.finagle.stats.StatsReceiver
+import com.twitter.util.{Future, Time}
 import webmodelica.{UUIDStr, constants}
 import webmodelica.models.config._
 import webmodelica.models.{Project, Session}
 import webmodelica.conversions.futures._
 
 import scala.concurrent.duration._
-import cats.syntax._
 import cats.data.OptionT
 import cats.implicits._
 
 class RedisSessionRegistry(
   conf:WMConfig,
   redisProvider: RedisCacheFactory,
-  statsReceiver:StatsReceiver,
   client: AkkaHttpClient)
     extends SessionRegistry
     with com.typesafe.scalalogging.LazyLogging {

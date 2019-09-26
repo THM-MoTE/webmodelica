@@ -16,7 +16,6 @@ import com.typesafe.scalalogging.LazyLogging
 import io.circe.{Decoder, Encoder}
 import org.mongodb.scala._
 import webmodelica.ApiPrefix
-import webmodelica.models._
 import webmodelica.models.config._
 import webmodelica.services._
 import webmodelica.stores._
@@ -70,7 +69,6 @@ trait WebmodelicaModule
     extends ConfigModule
     with MongoDBModule
     with AkkaModule {
-  lazy val noOpReceiver = new com.twitter.finagle.stats.NullStatsReceiver()
   def prefixProvider: ApiPrefix = ApiPrefix("/api/v1/webmodelica")
 
   def userStore = {
