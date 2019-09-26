@@ -1,0 +1,12 @@
+{
+  "type" : "record",
+  "name" : "ProjectRequest",
+  "namespace" : "webmodelica.controllers.AkkaProjectController",
+  "fields" : [ {
+    "name" : "owner",
+    "type" : "string"
+  }, {
+    "name" : "name",
+    "type" : "string"
+  } ]
+}
