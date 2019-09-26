@@ -40,7 +40,7 @@ class WMServer extends LazyLogging
 
   def bootstrap(module:WebmodelicaModule): Unit = {
     import module._
-    val ctrl = wire[AkkaProjectController] || wire[AkkaSessionController] || AkkaInfoController
+    val ctrl = AkkaInfoController || wire[AkkaProjectController] || wire[AkkaSessionController]
     val routes:Route = AccessLog.logRequestResponse {
       handleExceptions(exceptionMapper) {
         pathPrefix("api"/"v1"/"webmodelica") { ctrl.routes }
