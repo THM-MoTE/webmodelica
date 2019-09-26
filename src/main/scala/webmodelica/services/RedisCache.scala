@@ -19,6 +19,8 @@ import io.circe.parser._
 import cats.data.OptionT
 import cats.implicits._
 
+import scala.concurrent.duration.FiniteDuration
+
 trait RedisCache[A] {
   def find(key:String): Future[Option[A]]
   def update(key:String, value:A): Future[A]
@@ -26,7 +28,7 @@ trait RedisCache[A] {
 }
 
 trait RedisCacheFactory[A] {
-  def get[A:Encoder:Decoder](keySuffix: String, cacheMiss: String => Future[Option[A]]): RedisCache[A]
+  def get[A:Encoder:Decoder](keySuffix: String, cacheMiss: String => Future[Option[A]], ttlKeys:Option[FiniteDuration]=None): RedisCache[A]
 }
 
 /** Does no caching, just forwards to the given 'fn' */
@@ -36,6 +38,7 @@ class NoCaching[A](fn: String => Future[Option[A]]) extends RedisCache[A] {
   def remove(key:String): Future[Unit] = Future.value(())
 }
 
+@deprecated(message="Use scredis based client (webmodelica.services.AsyncRedisCache) instead.", since="2019-09-26")
 class RedisCacheImpl[A:Encoder:Decoder](
   config:RedisConfig,
   keySuffix: String,
