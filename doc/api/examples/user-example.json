@@ -1,0 +1,15 @@
+{
+  "data": {
+    "avatar_generator_url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAABlBMVEVymc3///+7AkCtAAAAkElEQVR4nO3YSwqAIBSFYZPAaTtoKS0t2llLaQlNHYRxA7EXOLyi/x1pfMgZiR0bMmNNZgAAJRC65/QKGQAAAKBa4OVmfcPjum8/J0zyYtgUQgIAAEDdwKXfslU+jWlfTkgAAAAAAAAAQMvAx6LAmEVWg6z8f3ugFhIAAACaAbNUBrtuBkDpwMVm6T6urrrpBLXfUOFSQqWQAAAAAElFTkSuQmCC",
+    "avatar_gravatar_url": "https://www.gravatar.com/avatar/a5ff9a6a16910c9a873916f859bb9223",
+    "avatar_type": "generator",
+    "avatar_url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAABlBMVEVymc3///+7AkCtAAAAkElEQVR4nO3YSwqAIBSFYZPAaTtoKS0t2llLaQlNHYRxA7EXOLyi/x1pfMgZiR0bMmNNZgAAJRC65/QKGQAAAKBa4OVmfcPjum8/J0zyYtgUQgIAAEDdwKXfslU+jWlfTkgAAAAAAAAAQMvAx6LAmEVWg6z8f3ugFhIAAACaAbNUBrtuBkDpwMVm6T6urrrpBLXfUOFSQqWQAAAAAElFTkSuQmCC",
+    "created_at": "2019-07-10T14:41:35.164+02:00",
+    "email": "test@xample.com",
+    "first_name": "Test",
+    "last_name": null,
+    "role": "student",
+    "updated_at": "2019-07-10T14:41:35.164+02:00",
+    "username": "test"
+  }
+}
