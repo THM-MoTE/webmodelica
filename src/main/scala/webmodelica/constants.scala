@@ -18,4 +18,5 @@ object constants {
   val cacheRootSuffix = "wm:"
   val userCacheSuffix = cacheRootSuffix+"users"
   val completionCacheSuffix = cacheRootSuffix+"completions"
+  val sessionCacheSuffix = cacheRootSuffix+"sessions"
 }

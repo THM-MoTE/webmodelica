@@ -29,20 +29,19 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class SessionService(
   val mopeConf:MopeClientConfig,
   val session:Session,
-  redisConf:RedisConfig,
-  statsReceiver:StatsReceiver,
+  redisProvider: RedisCacheFactory,
   override val client: AkkaHttpClient)
   extends FileStore
     with MopeService
   with com.typesafe.scalalogging.LazyLogging
   with com.twitter.util.Closable {
   val fsStore = FileStore.fromSession(mopeConf.data.hostDirectory, session)
-  val suggestionCache = new RedisCacheImpl[Seq[Suggestion]](redisConf, constants.completionCacheSuffix, _ => Future.value(None), statsReceiver)
+  val suggestionCache = redisProvider.get[Seq[Suggestion]](constants.completionCacheSuffix, _ => Future.value(None))
 
   private val modelToFileMapper = FSStore.findFileFor(fsStore.rootDir)(_)
 
   private val projDescr = ProjectDescription(fsStore.rootDir.toString)
-  override val pathMapper = MopeService.pathMapper(fsStore.rootDir.toAbsolutePath, mopeConf.data.bindDirectory.resolve(fsStore.rootDir.toAbsolutePath.getFileName()))
+  override val pathMapper = MopeService.pathMapper(fsStore.rootDir.toAbsolutePath, mopeConf.data.bindDirectory.resolve(fsStore.rootDir.toAbsolutePath.getFileName))
 
   logger.info(s"mapper: $pathMapper")
   logger.info(s"fsStore: $fsStore")
