@@ -60,7 +60,7 @@ export class NotificationComponentCon extends React.Component<Props, any> {
     return (
       <Toast onClose={this.removeNotification.bind(this)}>
       <Toast.Header>
-        <strong className="mr-auto">
+        <strong className="mr-auto text-success">
           <Octicon name="light-bulb" /> Info
         </strong>
       </Toast.Header>
