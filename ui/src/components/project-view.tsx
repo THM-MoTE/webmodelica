@@ -58,7 +58,10 @@ class ProjectViewCon extends Component<any, any> {
   private newProject(ev:any) {
     ev.preventDefault()
     this.api.newProject(this.props.username, this.newProjectName)
-      .then(this.props.addProject)
+      .then(project => {
+        this.props.addProject(project)
+        this.props.notifyInfo(`New private project '${project.name}' created.`)
+      })
       .catch((er:ApiError) => this.props.notifyError(`Couldn't create new project: ${er.statusText}`))
   }
 
