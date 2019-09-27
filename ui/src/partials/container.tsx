@@ -51,7 +51,7 @@ class WmContainerCon extends React.PureComponent<Props> {
   render() {
     return (<>
       <Navbar collapseOnSelect expand="md">
-        <Navbar.Brand href="#home">{this.appName} {this.props.title}</Navbar.Brand>
+        <Navbar.Brand><h3>{this.appName} {this.props.title}</h3></Navbar.Brand>
         <Navbar.Toggle aria-controls="webmodelica-navbar-nav"/>
             {this.props.displayName && (
           <Navbar.Collapse id="webmodelica-navbar-nav" className="justify-content-end">
