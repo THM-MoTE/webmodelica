@@ -1,11 +1,13 @@
 import { initialState, AppState, Session, SimulationOption, SimulationData, ProjectPreviewState, Notification, BackgroundJobInfo } from '../models/state'
 import { Project } from '../models/project'
-import { File, FileNode, setId } from '../models/file'
+import { File, FileNode, setId, toggleRoot } from '../models/file'
 import { Action, ActionTypes } from './actions'
 import * as utils from '../utils'
 import * as R from 'ramda'
 import { CompilerError, AuthServiceToken, WebmodelicaToken } from '../models/index';
 import { oc } from 'ts-optchain';
+
+const setupNodes = R.compose(toggleRoot, setId)
 
 const reducerMap = {
   [ActionTypes.SetProjects.toString()]: (state: AppState, data: Project[]) => { return { ...state, projects: data } },
@@ -13,9 +15,9 @@ const reducerMap = {
     ...state,
     projects: R.reduce((acc: Project[], p) => R.append((p.id === project.id) ? project : p, acc), [], state.projects)
   }),
-  [ActionTypes.SetSessionFiles.toString()]: (state: AppState, files: FileNode) => ({ ...state, session: { ...state.session!, files: setId(files) } }),
+  [ActionTypes.SetSessionFiles.toString()]: (state: AppState, files: FileNode) => ({ ...state, session: { ...state.session!, files: setupNodes(files) } }),
   [ActionTypes.AddProject.toString()]: (state: AppState, data: Project) => ({ ...state, projects: R.prepend(data, state.projects) }),
-  [ActionTypes.SetProjectPreview.toString()]: (state: AppState, data: ProjectPreviewState) => ({ ...state, projectPreview: { ...data, files: setId(data.files) } }),
+  [ActionTypes.SetProjectPreview.toString()]: (state: AppState, data: ProjectPreviewState) => ({ ...state, projectPreview: { ...data, files: setupNodes(data.files) } }),
   [ActionTypes.SetOpenFile.toString()]: (state: AppState, file: File) => R.assocPath(['session', 'openedFile'], file, state),
   [ActionTypes.SetSession.toString()]: (state: AppState, session: Session) => ({ ...state, session: session }),
   [ActionTypes.UpdateWsToken.toString()]: (state: AppState, token: string) => {

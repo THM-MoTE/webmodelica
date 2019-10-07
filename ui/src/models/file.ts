@@ -35,6 +35,9 @@ export function setId(root:FileNode): FileNode {
     ...root
   }
 }
+export function toggleRoot(root:FileNode): FileNode {
+  return { ...root, toggled: true }
+}
 
 export function renameFile(root: FileNode, oldFile: FilePath, newFile: FilePath): FileNode {
   if(root.file && root.file === oldFile)

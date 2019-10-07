@@ -17,6 +17,8 @@ interface Props {
   active?: string
   children: any
   notifications: Notification[]
+  sessionId?: string
+  displayName?: string
 }
 
 /** Application wrapper, its a wrapper for the whole page and contains from top to bottom:
@@ -26,9 +28,9 @@ interface Props {
  * - the loading overlay
  * - the optional footer, only displayed on landing page
 */
-class WmContainerCon extends React.Component<any, any> {
+class WmContainerCon extends React.PureComponent<Props> {
   private readonly appName: string = "Webmodelica"
-  constructor(props: any) {
+  constructor(props: Props) {
     super(props)
   }
   componentDidMount() {
@@ -49,7 +51,7 @@ class WmContainerCon extends React.Component<any, any> {
   render() {
     return (<>
       <Navbar collapseOnSelect expand="md">
-        <Navbar.Brand href="#home">{this.appName} {this.props.title}</Navbar.Brand>
+        <Navbar.Brand><h3>{this.appName} {this.props.title}</h3></Navbar.Brand>
         <Navbar.Toggle aria-controls="webmodelica-navbar-nav"/>
             {this.props.displayName && (
           <Navbar.Collapse id="webmodelica-navbar-nav" className="justify-content-end">
