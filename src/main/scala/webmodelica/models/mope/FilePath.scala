@@ -9,7 +9,12 @@
 package webmodelica.models.mope
 
 import io.circe.generic.JsonCodec
-
+import java.nio.file.{
+  Paths,
+  Path
+}
 /** Wrapper around a path to a file. */
 @JsonCodec
-case class FilePath(path: String)
+case class FilePath(path: String) {
+  def toPath:Path = Paths.get(path)
+}

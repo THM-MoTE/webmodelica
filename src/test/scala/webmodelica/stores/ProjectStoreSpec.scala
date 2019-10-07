@@ -1,8 +1,16 @@
+/*
+ * Copyright (c) 2019-Today N. Justus
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 package webmodelica.stores
 
-import com.twitter.finagle.http
 import com.twitter.util.Await
-import webmodelica.models.{Project, ProjectRequest, User}
+import webmodelica.controllers.AkkaProjectController
+import webmodelica.models.{Project, User}
 import webmodelica.models.errors.UsernameAlreadyInUse
 import webmodelica.{DBSpec, WMSpec, constants}
 
@@ -11,7 +19,7 @@ import scala.util.Try
 class ProjectStoreSpec extends DBSpec(Some(constants.projectCollection)) {
   val store = new ProjectStore(database)
   val user = User("test-1", "test-1@test.example", "1234")
-  val project = Project(ProjectRequest(user.username, "test-1-project", http.Request()))
+  val project = Project(user.username, "test-1-project")
 
   "The ProjectStore" should "save a project" in {
     Await.result(store.add(project))

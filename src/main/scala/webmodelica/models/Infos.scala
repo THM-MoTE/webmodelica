@@ -6,13 +6,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package webmodelica.controllers
+package webmodelica.models
 
-import com.twitter.finagle.http.Request
-import com.twitter.finatra.http.Controller
-import com.google.inject.Inject
-import webmodelica.models.config._
 import io.circe.generic.JsonCodec
+import buildinfo.BuildInfo
 
 @JsonCodec
 case class Infos(
@@ -23,9 +20,8 @@ case class Infos(
   licenseUri:String,
   commitHash:String,
 )
-object Infos {
-  import buildinfo.BuildInfo
 
+object Infos {
   def apply():Infos = Infos(
     BuildInfo.name,
     BuildInfo.version,
@@ -34,12 +30,4 @@ object Infos {
     BuildInfo.licenseUri,
     BuildInfo.commit
   )
-}
-
-class InfoController @Inject()(config: WMConfig, prefix:webmodelica.ApiPrefix)
-    extends Controller {
-
-  prefix(prefix.p) {
-    get("/info") { _:Request => Infos() }
-  }
 }

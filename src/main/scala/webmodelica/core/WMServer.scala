@@ -8,34 +8,61 @@
 
 package webmodelica.core
 
-import com.twitter.inject.logging.MDCInitializer
-import com.twitter.finatra.http.HttpServer
-import com.twitter.finagle.http.{Request, Response}
-import com.twitter.finatra.http.filters.{CommonFilters, LoggingMDCFilter, TraceIdMDCFilter, StatsFilter}
-import com.twitter.finatra.http.routing.HttpRouter
-import webmodelica._
+import webmodelica.controllers._
+import webmodelica.models._
+import com.typesafe.scalalogging.LazyLogging
+import com.softwaremill.macwire._
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
+import akka.http.scaladsl.server._
+import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.model.StatusCodes
+import akka.http.scaladsl.Http
+import AkkaController.ErrorResponse
 
 object WMServerMain extends WMServer
 
-class WMServer extends HttpServer {
-
-  MDCInitializer.init()
-
-  override def jacksonModule = JsonConfigModule
-  override val modules = Seq(AppModule)
-
-  override def configureHttp(router: HttpRouter) {
-    router
-      .filter[LoggingMDCFilter[Request, Response]]
-      .filter[TraceIdMDCFilter[Request, Response]]
-      .filter[StatsFilter[Request]]
-      .filter[CommonFilters]
-      .add[controllers.ProjectController]
-      .add[controllers.SessionController]
-      .add[controllers.InfoController]
-      .add[controllers.UserController]
-      .exceptionMapper[WMExceptionMapper]
+class WMServer extends LazyLogging
+    with de.heikoseeberger.akkahttpcirce.FailFastCirceSupport {
+  def main(mainArgs: Array[String]) = {
+    val module = new WebmodelicaModule {
+      override def arguments:Seq[String] = mainArgs
+    }
+    println(module.config)
+    bootstrap(module)
   }
 
-  scala.sys.addShutdownHook { this.close() }
+  val exceptionMapper: ExceptionHandler = ExceptionHandler {
+    case e:IllegalArgumentException => complete(StatusCodes.BadRequest -> ErrorResponse(Seq(e.getMessage)))
+    case e:errors.WMException =>
+      complete(e.status -> ErrorResponse(Seq(e.getMessage)))
+  }
+
+  def bootstrap(module:WebmodelicaModule): Unit = {
+    import module._
+    val ctrl = AkkaInfoController || wire[AkkaProjectController] || wire[AkkaSessionController]
+    val routes:Route = AccessLog.logRequestResponse {
+      handleExceptions(exceptionMapper) {
+        pathPrefix("api"/"v1"/"webmodelica") { ctrl.routes }
+      }
+    }
+    val bindingFuture = Http().bindAndHandle(routes, args.interface(), args.port())
+
+    bindingFuture onComplete {
+      case scala.util.Success(_) =>
+        logger.info("Server running at {}:{}", args.interface(), args.port())
+      case scala.util.Failure(ex) =>
+        logger.error("Failed to start server at {}:{} - {}", args.interface(), args.port(), ex.getMessage)
+        actorSystem.terminate()
+    }
+
+    scala.sys.addShutdownHook {
+      bindingFuture
+        .flatMap(_.unbind())
+        .onComplete { _ =>
+          actorSystem.terminate()
+        }
+      Await.ready(actorSystem.whenTerminated, 60.seconds)
+    }
+  }
 }

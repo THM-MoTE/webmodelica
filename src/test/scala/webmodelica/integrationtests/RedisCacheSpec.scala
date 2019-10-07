@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2019-Today N. Justus
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 package webmodelica.integrationtests
 
 import webmodelica.services._
@@ -6,7 +14,6 @@ import webmodelica.models._
 import webmodelica.models.mope._
 import webmodelica.models.mope.requests._
 import webmodelica.models.mope.responses._
-import webmodelica.core.AppModule
 import com.twitter.util.{Future,Await}
 import com.twitter.finagle.stats.NullStatsReceiver
 import io.circe.generic.JsonCodec
@@ -21,7 +28,6 @@ class RedisCacheSpec
   implicit val encoder = deriveEncoder[Person]
   implicit val decoder = deriveDecoder[Person]
 
-
   val tim = Person("tim", 16)
   val nico = Person("nico", 19)
 
@@ -35,8 +41,7 @@ class RedisCacheSpec
       Future.value(None)
   }
 
-  val config = AppModule.configProvider
-  val cache = new RedisCacheImpl[Person](config.redis, "test:stub", underlyingStore, new NullStatsReceiver())
+  val cache = new RedisCacheImpl[Person](appConf.redis, "test:stub", underlyingStore, new NullStatsReceiver())
 
   "The redis cache service" should "add a value to the cache" in {
     Await.result(cache.update("tim", tim))

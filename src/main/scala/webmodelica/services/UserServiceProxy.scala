@@ -8,13 +8,15 @@
 
 package webmodelica.services
 
-import com.google.inject.Inject
-import com.twitter.finagle.http.Status
 import com.twitter.util.Future
+import scala.concurrent.{Future => SFuture}
+import akka.actor.ActorSystem
+import akka.http.scaladsl._
+import akka.http.scaladsl.model._
 import webmodelica.models.{AuthUser, User}
 import webmodelica.models.config.UserServiceConf
 import webmodelica.stores.UserStore
-import featherbed._
+import webmodelica.conversions.futures._
 import webmodelica.models.errors.{
   UserServiceError,
   UserAlreadyInUse
@@ -25,69 +27,42 @@ import io.circe.generic.JsonCodec
 private[services] case class UserWrapper(data:AuthUser)
 
 /** A UserService that talks to the UserSvc. */
-class UserServiceProxy@Inject()(conf:UserServiceConf)
+class UserServiceProxy(conf:UserServiceConf)(implicit system:ActorSystem)
   extends UserStore
-    with com.twitter.inject.Logging {
-  import featherbed.circe._
+    with com.typesafe.scalalogging.LazyLogging {
   import io.circe.Json
   import io.circe.generic.auto._
   import io.circe.syntax._
 
-  val url = new java.net.URL(conf.address+ "/"+ conf.resource+"/")
   val headers = Seq(
     "Service" -> "auth"
   )
-  def clientProvider() = new featherbed.Client(url)
-
-  info("UserServiceProxy started.")
-  info(s"user-service at $url")
-
-  private def withClient[A](fn: featherbed.Client => Future[A]): Future[A] = {
-    debug("Using new client")
-    val cl = clientProvider()
-    fn(cl).ensure {
-      debug("releasing client")
-      cl.close()
-    }
-  }
+  import system.dispatcher
+  val client = new AkkaHttpClient(Http(), Uri(conf.address+ "/"+ conf.resource+"/"))
+  logger.info("UserServiceProxy started.")
 
   override def add(u: User): Future[Unit] = {
-    debug(s"adding $u")
-    withClient { client =>
-      val req = client.post("")
-        .withHeaders(headers:_*)
-        .withContent(Json.obj("user" -> u.asJson), "application/json")
-        .accept("application/json")
-
-      req.send[UserWrapper]().unit
-        .handle {
-          case request.ErrorResponse(req, resp) if resp.status == Status.Conflict => throw UserAlreadyInUse
-          case request.ErrorResponse(req, resp) =>
-            val str = s"Error in 'add' $resp to request $req"
-            throw UserServiceError(str)
-        }
-    }
+    logger.debug(s"adding $u")
+    client.postJson[Json, UserWrapper]("", Json.obj("user" -> u.asJson), headers)
+      .recoverWith {
+        case AkkaHttpClient.Error(StatusCodes.Conflict, _, _) => SFuture.failed(UserAlreadyInUse)
+      }
+      .asTwitter
+      .unit
   }
 
   override def findBy(username: String): Future[Option[User]] = {
-    debug(s"searching $username")
-    withClient { client =>
-      val req = client.get(s"$username")
-        .withHeaders(headers:_*)
-        .accept("application/json")
-
-      req.send[UserWrapper]().map { wrapper =>
-        debug(s"searching $username returned ${wrapper.data}")
+    logger.debug(s"searching $username")
+    client.getJson[UserWrapper](username, headers)
+      .map { wrapper =>
+        logger.debug(s"searching $username returned ${wrapper.data}")
         Some(wrapper.data.toUser)
       }
-        .handle {
-          case request.ErrorResponse(req,resp) if resp.status == Status.NotFound =>
-            debug(s"searching $username returned NotFound")
-            None
-          case request.ErrorResponse(req,resp) =>
-            val str = s"Error in 'findBy' $resp to request $req"
-            throw UserServiceError(str)
-        }
-    }
+      .recoverWith {
+        case AkkaHttpClient.Error(StatusCodes.NotFound, _, _) =>
+          logger.debug(s"searching $username returned NotFound")
+          SFuture.successful(None)
+      }
+      .asTwitter
   }
 }

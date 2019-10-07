@@ -1,17 +1,20 @@
+/*
+ * Copyright (c) 2019-Today N. Justus
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 package webmodelica.services
 
 import pdi.jwt.{Jwt, JwtAlgorithm, JwtClaim, JwtUtils}
 import webmodelica.WMSpec
-import webmodelica.core.AppModule
 import webmodelica.models._
-import java.security._
 import java.time.Instant
-import java.time.temporal.TemporalUnit
-import java.util.concurrent.TimeUnit
 
 import better.files._
 import com.twitter.util.Await
-import org.joda.time.Hours
 
 import scala.concurrent.duration._
 

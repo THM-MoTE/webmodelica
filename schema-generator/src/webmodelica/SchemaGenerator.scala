@@ -7,12 +7,7 @@ import com.sksamuel.avro4s._
 import org.apache.avro._
 import org.slf4j.LoggerFactory
 import better.files.File
-import better.files.File.OpenOptions
-import cats.{Applicative, Monad}
-import com.twitter.finagle.http.Request
 import webmodelica.controllers._
-import webmodelica.controllers.ProjectController._
-import webmodelica.controllers.SessionController._
 import webmodelica.models.mope._
 import webmodelica.models.mope.requests._
 import webmodelica.models.mope.responses._
@@ -23,10 +18,7 @@ trait Schemas {
   implicit object pathSchema extends SchemaFor[Path] {
     override def schema(implicit naming: NamingStrategy = DefaultNamingStrategy): Schema = SchemaBuilder.builder.stringType
   }
-  implicit object requestSchema extends SchemaFor[Request] {
-    override def schema(implicit naming: NamingStrategy = DefaultNamingStrategy): Schema = SchemaBuilder.builder.nullType()
-  }
-  implicit def traversableSchema[A:SchemaFor] = new SchemaFor[Traversable[A]]() {
+  implicit def traversableSchema[A:SchemaFor]: SchemaFor[Traversable[A]] = new SchemaFor[Traversable[A]]() {
     override def schema(implicit namingStrategy: NamingStrategy): Schema =
       SchemaBuilder.builder.array().items(AvroSchema[A])
   }
@@ -62,16 +54,15 @@ object SchemaGenerator
   }
 
 
-  import _root_.io.circe._, _root_.io.circe.generic.semiauto._
   val user = AuthUser("tim", Some("tim@xample.org"), Some("Tim"), Some("Mueller"))
-  val projRequest = ProjectRequest(user.username, "awesomeProject", Request())
+  val projRequest = AkkaProjectController.ProjectRequest(user.username, "awesomeProject")
   val project = Project(projRequest)
   val file = ModelicaFile(Paths.get("a/b/fac.mo"), "model fac\nend fac;")
   val path = ModelicaPath(file.relativePath)
   val models:Seq[TpeWrapper[Any]] = Seq(
     TpeWrapper(AvroSchema[Infos], Infos()),
     TpeWrapper(AvroSchema[AuthUser], user),
-    TpeWrapper(AvroSchema[ProjectRequest], projRequest),
+    TpeWrapper(AvroSchema[AkkaProjectController.ProjectRequest], projRequest),
     TpeWrapper(AvroSchema[JSProject], JSProject(project)),
     TpeWrapper(AvroSchema[JSSession], JSSession(Session(project), List(path))),
     TpeWrapper(AvroSchema[ModelicaPath], path),

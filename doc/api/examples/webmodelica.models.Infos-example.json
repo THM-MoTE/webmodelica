@@ -1,0 +1,8 @@
+{
+  "appName" : "webmodelica",
+  "version" : "0.7.7",
+  "copyright" : "(c) 2019-Today N. Justus",
+  "license" : "MPLv2",
+  "licenseUri" : "https://www.mozilla.org/en-US/MPL/2.0",
+  "commitHash" : "897c22fa"
+}

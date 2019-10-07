@@ -17,10 +17,11 @@ trait TokenValidator {
   def decodeToUser(token:String): Future[Option[User]]
   def isValid(token:String): Boolean
 }
+trait CombinedTokenValidator extends TokenValidator
 
 object TokenValidator {
   /** Combines the 2 validators by first running 'a' and if a failes try running 'b'. */
-  def combine(a:TokenValidator, b:TokenValidator): TokenValidator = new TokenValidator {
+  def combine(a:TokenValidator, b:TokenValidator): CombinedTokenValidator = new CombinedTokenValidator {
     override def decode(token: String): Future[UserToken] =
       a.decode(token).rescue {
         case _:JwtException => b.decode(token)

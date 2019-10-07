@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2019-Today N. Justus
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 package webmodelica.integrationtests
 
 import webmodelica.services._
@@ -6,23 +14,17 @@ import webmodelica.models._
 import webmodelica.models.mope._
 import webmodelica.models.mope.requests._
 import webmodelica.models.mope.responses._
-import webmodelica.core.AppModule
 
 import java.nio.file._
-import better.files._
-import com.twitter.finatra.json.modules.FinatraJacksonModule
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.twitter.finatra.json.FinatraObjectMapper
-import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import com.twitter.util.{Future,Await}
 import com.twitter.finagle.stats.NullStatsReceiver
 
 
 class MopeIntegration
     extends webmodelica.WMSpec {
-  val conf = AppModule.configProvider.mope
-  val session = Session(Project(ProjectRequest("nico", "awesomeProject", com.twitter.finagle.http.Request())))
-  val service = new SessionService(conf,session, appConf.redis, new NullStatsReceiver())
+  val conf = appConf.mope
+  val session = Session(Project("nico", "awesomeProject"))
+  val service = new SessionService(conf,session, appConf.redis, new NullStatsReceiver(), module.httpClient)
 
   val files = Seq(
     ModelicaFile(

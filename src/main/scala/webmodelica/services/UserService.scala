@@ -16,17 +16,15 @@ import webmodelica.constants
 
 import com.twitter.util.Future
 import com.twitter.cache.FutureCache
-import com.twitter.finatra.http.exceptions.NotFoundException
 import com.twitter.finagle.stats.StatsReceiver
-import com.google.inject.Inject
 import scala.collection.JavaConverters._
 
 /** A UserStore that caches calls to the underlying store. */
-class UserService@Inject()(redisConfig:RedisConfig, statsReceiver:StatsReceiver, underlying:UserStore)
+class UserService(redisConfig:RedisConfig, statsReceiver:StatsReceiver, underlying:UserStore)
     extends UserStore
-    with com.twitter.inject.Logging {
+    with com.typesafe.scalalogging.LazyLogging {
 
-  info("UserService with caching started...")
+  logger.info("UserService with caching started...")
 
   val fallback = (k:String) => underlying.findBy(k)
   val cache = new RedisCacheImpl[User](redisConfig, constants.userCacheSuffix, fallback, statsReceiver)
@@ -36,7 +34,7 @@ class UserService@Inject()(redisConfig:RedisConfig, statsReceiver:StatsReceiver,
     cache.find(username)
       .handle {
         case _ =>
-          warn(s"didn't find a value for $username")
+          logger.warn(s"didn't find a value for $username")
           None
       }
   }

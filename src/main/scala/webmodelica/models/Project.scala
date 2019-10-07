@@ -11,7 +11,7 @@ package webmodelica.models
 import org.mongodb.scala.bson.BsonObjectId
 import io.scalaland.chimney.dsl._
 import io.circe.generic.JsonCodec
-import webmodelica.controllers.ProjectController.ProjectRequest
+import webmodelica.controllers.AkkaProjectController.ProjectRequest
 
 @JsonCodec
 case class Project(
@@ -48,4 +48,6 @@ object Project {
       .withFieldComputed(_._id, req => s"${req.owner}_${req.name}")
       .withFieldComputed(_.visibility, _ => privateVisibility)
       .transform
+  def apply(owner:String, name:String): Project =
+    Project(s"${owner}_${name}", owner, name, privateVisibility)
 }

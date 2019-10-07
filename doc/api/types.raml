@@ -2,14 +2,14 @@
 ---
     
 Infos:
-  type: !include schemas/webmodelica.controllers.Infos-schema.json
-  example: !include examples/webmodelica.controllers.Infos-example.json
+  type: !include schemas/webmodelica.models.Infos-schema.json
+  example: !include examples/webmodelica.models.Infos-example.json
 AuthUser:
   type: !include schemas/webmodelica.models.AuthUser-schema.json
   example: !include examples/webmodelica.models.AuthUser-example.json
 ProjectRequest:
-  type: !include schemas/webmodelica.models.ProjectRequest-schema.json
-  example: !include examples/webmodelica.models.ProjectRequest-example.json
+  type: !include schemas/webmodelica.controllers.AkkaProjectController.ProjectRequest-schema.json
+  example: !include examples/webmodelica.controllers.AkkaProjectController.ProjectRequest-example.json
 JSProject:
   type: !include schemas/webmodelica.models.JSProject-schema.json
   example: !include examples/webmodelica.models.JSProject-example.json
@@ -41,7 +41,7 @@ SimulationResult:
   type: !include schemas/webmodelica.models.mope.responses.SimulationResult-schema.json
 
 TableFormat:
-  type: !include schemas/webmodelica.controllers.TableFormat-schema.json
+  type: !include schemas/webmodelica.models.TableFormat-schema.json
 
 FileOrPath:
   type: !include schemas/FileOrPath-schema.json

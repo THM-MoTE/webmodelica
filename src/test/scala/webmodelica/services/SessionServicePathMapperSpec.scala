@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2019-Today N. Justus
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 package webmodelica.services
 
 import better.files._
@@ -5,15 +13,14 @@ import webmodelica.models._
 import webmodelica.models.config._
 import java.nio.file._
 import com.twitter.finagle.stats.NullStatsReceiver
-import webmodelica.core.AppModule
 
 class SessionServicePathMapperSpec
     extends webmodelica.WMSpec {
 
   val tmpDir = File.newTemporaryDirectory("mapperspec-tmp")
   val conf = MopeClientConfig("http://localhost:9015/", 800, MopeDataConfig(tmpDir.path, Paths.get("/data/wm")))
-  val session = Session(Project(ProjectRequest("nico", "testproj", com.twitter.finagle.http.Request())))
-  val service = new SessionService(conf, session,appConf.redis, new NullStatsReceiver())
+  val session = Session(Project("nico", "testproj"))
+  val service = new SessionService(conf, session,appConf.redis, new NullStatsReceiver(), module.httpClient)
   val mapper = service.pathMapper
   val bindRoot = conf.data.bindDirectory.resolve(session.basePath)
   val hostRoot = service.fsStore.rootDir

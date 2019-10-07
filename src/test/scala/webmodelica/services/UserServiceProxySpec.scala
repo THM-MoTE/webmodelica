@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2019-Today N. Justus
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 package webmodelica.services
 
 import com.twitter.util.Await
@@ -9,7 +17,7 @@ import webmodelica.models.errors.{
 }
 
 class UserServiceProxySpec extends WMSpec {
-  val proxy = new UserServiceProxy(appConf.userService)
+  val proxy = new UserServiceProxy(appConf.userService)(module.actorSystem)
 
   val user = User("test-2-user-5", "test-2-user-5@xample.org", None, None, "1234")
 

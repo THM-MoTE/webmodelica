@@ -14,8 +14,6 @@ import webmodelica.constants
 import webmodelica.conversions.futures._
 import webmodelica.models.errors.ProjectnameAlreadyInUse
 import org.mongodb.scala._
-import com.google.inject._
-import com.google.inject.internal.BytecodeGen.Visibility
 
 import ExecutionContext.Implicits.global
 import com.twitter.util.{Future => TFuture}
@@ -26,7 +24,7 @@ import org.mongodb.scala.model.Sorts
 import org.mongodb.scala.model.Updates
 import org.mongodb.scala.{DuplicateKeyException, MongoCollection, MongoDatabase, MongoWriteException}
 
-class ProjectStore @Inject()(db:MongoDatabase)
+class ProjectStore(db:MongoDatabase)
     extends DocumentWriters {
   private val collection:MongoCollection[Project] = db.getCollection(constants.projectCollection)
 

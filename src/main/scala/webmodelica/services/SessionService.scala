@@ -12,11 +12,6 @@ import java.net.URI
 
 import webmodelica.models.mope.requests.{Complete, ProjectDescription, SimulateRequest}
 import webmodelica.models.mope.responses.Suggestion
-import com.google.inject.Inject
-import com.twitter.finagle.Service
-import com.twitter.finagle.Http
-import com.twitter.finagle.http.{Request, Response}
-import com.twitter.finatra.json.FinatraObjectMapper
 import com.twitter.util.{Future, Time}
 import com.twitter.finagle.stats.StatsReceiver
 import webmodelica.models.config.{MopeClientConfig, RedisConfig}
@@ -31,17 +26,16 @@ import webmodelica.models.errors.SimulationSetupError
 import scala.concurrent.{Future => SFuture, Promise => SPromise}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class SessionService @Inject()(
+class SessionService(
   val mopeConf:MopeClientConfig,
   val session:Session,
   redisConf:RedisConfig,
-  statsReceiver:StatsReceiver
-  )
+  statsReceiver:StatsReceiver,
+  override val client: AkkaHttpClient)
   extends FileStore
     with MopeService
-  with com.twitter.inject.Logging
+  with com.typesafe.scalalogging.LazyLogging
   with com.twitter.util.Closable {
-  override def clientProvider() = new CustomFeatherbedClient(new java.net.URL(mopeConf.address+"mope/"), mopeConf.clientResponseSize)
   val fsStore = FileStore.fromSession(mopeConf.data.hostDirectory, session)
   val suggestionCache = new RedisCacheImpl[Seq[Suggestion]](redisConf, constants.completionCacheSuffix, _ => Future.value(None), statsReceiver)
 
@@ -50,8 +44,8 @@ class SessionService @Inject()(
   private val projDescr = ProjectDescription(fsStore.rootDir.toString)
   override val pathMapper = MopeService.pathMapper(fsStore.rootDir.toAbsolutePath, mopeConf.data.bindDirectory.resolve(fsStore.rootDir.toAbsolutePath.getFileName()))
 
-  info(s"mapper: $pathMapper")
-  info(s"fsStore: $fsStore")
+  logger.info(s"mapper: $pathMapper")
+  logger.info(s"fsStore: $fsStore")
   override def rootDir: Path = fsStore.rootDir
   override def update(file: ModelicaFile): Future[Unit] = fsStore.update(file)
   override def files: Future[List[ModelicaPath]] = fsStore.files
@@ -69,14 +63,14 @@ class SessionService @Inject()(
       case Some(path) =>
         compile(path).flatMap { errors =>
           if(errors.isEmpty) {
-            info(s"found source file for ${simParam.modelName} at ${path}")
+            logger.info(s"found source file for ${simParam.modelName} at ${path}")
             super.simulate(simParam)
           }
           else
             Future.exception(SimulationSetupError(s"the model ${simParam.modelName} contains compiler errors!"))
         }
       case None =>
-        warn(s"don't know where ${simParam.modelName} is stored.. lets hope its compiled already..")
+        logger.warn(s"don't know where ${simParam.modelName} is stored.. lets hope its compiled already..")
         super.simulate(simParam)
     }
   }
@@ -92,7 +86,7 @@ class SessionService @Inject()(
   def extractArchive(path:Path): Future[List[ModelicaPath]] = {
     import scala.sys.process._
     Future {
-      info(s"extracting $path to ${fsStore.rootDir}")
+      logger.info(s"extracting $path to ${fsStore.rootDir}")
       Seq("unzip", path.toAbsolutePath.toString, "-d", fsStore.rootDir.toAbsolutePath.toString).!
     }.flatMap {
       case status:Int if status==0 => this.files
