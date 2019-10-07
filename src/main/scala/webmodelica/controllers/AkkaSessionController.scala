@@ -162,7 +162,21 @@ class AkkaSessionController(
                       }
                     case (SimulationResult(name, _), None) => complete(StatusCodes.NotFound -> s"no results for $name available!")
                   }
-                case "chartjs" => complete(resultFuture.map(r => TableFormat(maxSimulationData, r)).asScala)
+                case "chartjs" =>
+                  val future = resultFuture.map{ result =>
+                    val originalVariablesSize = result.variables.values.head.size
+                    val variables = result.trimmedVariables(maxSimulationData.value)
+                    val headers = variables.keys.filterNot(k => k=="time").toList
+                    val tableData = (variables("time")+:headers.map(k => variables(k)).toSeq).transpose
+                    TableFormat(
+                      result.modelName,
+                      tableData,
+                      "time"::headers,
+                      if(originalVariablesSize>maxSimulationData.value) Some(s"Your simulation produced too much data to display in the browser. Data was resampled to ${variables.values.head.size} data points for plotting (was ${originalVariablesSize} data points). The CSV file will still contain all data points. ")
+                      else None
+                    )
+                  }
+                  complete(future.asScala)
                 case _ => complete(resultFuture.asScala)
               }
             }
