@@ -51,7 +51,7 @@ $ docker container exec -it deployment_mongo_1 mongo wm-dev
 == Developer Documentation
 
 TIP: setting up a development environment is described here:
-      link:doc/sections/dependencies.adoc[Development Setup]
+      link:doc/readme.adoc[Development Setup]
 
 The developer documentation is available in _doc/_.
 You can generate a html file using asciidoctor.js:
