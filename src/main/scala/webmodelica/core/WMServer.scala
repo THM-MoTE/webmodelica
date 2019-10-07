@@ -12,6 +12,7 @@ import webmodelica.controllers._
 import webmodelica.models._
 import com.typesafe.scalalogging.LazyLogging
 import com.softwaremill.macwire._
+
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import akka.http.scaladsl.server._
@@ -19,6 +20,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.Http
 import AkkaController.ErrorResponse
+import pdi.jwt.exceptions.JwtExpirationException
 
 object WMServerMain extends WMServer
 
@@ -34,6 +36,7 @@ class WMServer extends LazyLogging
 
   val exceptionMapper: ExceptionHandler = ExceptionHandler {
     case e:IllegalArgumentException => complete(StatusCodes.BadRequest -> ErrorResponse(Seq(e.getMessage)))
+    case e:JwtExpirationException => complete(StatusCodes.Unauthorized -> ErrorResponse(Seq(e.getMessage)))
     case e:errors.WMException =>
       complete(e.status -> ErrorResponse(Seq(e.getMessage)))
   }

@@ -13,6 +13,9 @@ import pureconfig.ConfigReader
 import scala.concurrent.duration.Duration
 
 package config {
+
+  import scala.concurrent.duration.FiniteDuration
+
   case class MaxSimulationData(value:Int) extends AnyVal
   case class WMConfig(
     mope: MopeClientConfig,
@@ -40,9 +43,12 @@ package config {
     bindDirectory: Path
   )
   case class RedisConfig(
-    address: String,
-    defaultTtl: Duration
-  )
+    host: String,
+    port: Int,
+    defaultTtl: FiniteDuration
+  ) {
+    def address: String = s"$host:$port"
+  }
 
   case class UserServiceConf(
     address: String,

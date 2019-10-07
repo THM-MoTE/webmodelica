@@ -13,36 +13,31 @@ import java.net.URI
 import webmodelica.models.mope.requests.{Complete, ProjectDescription, SimulateRequest}
 import webmodelica.models.mope.responses.Suggestion
 import com.twitter.util.{Future, Time}
-import com.twitter.finagle.stats.StatsReceiver
-import webmodelica.models.config.{MopeClientConfig, RedisConfig}
+import webmodelica.models.config.{MopeClientConfig}
 import webmodelica.models.{FileTree, ModelicaFile, ModelicaPath, Session, errors}
 import webmodelica.stores.{FSStore, FileStore}
 import webmodelica.constants
-import java.nio.file.{Path, Paths}
+import java.nio.file.{Path}
 
 import better.files._
 import webmodelica.models.errors.SimulationSetupError
 
-import scala.concurrent.{Future => SFuture, Promise => SPromise}
-import scala.concurrent.ExecutionContext.Implicits.global
-
 class SessionService(
   val mopeConf:MopeClientConfig,
   val session:Session,
-  redisConf:RedisConfig,
-  statsReceiver:StatsReceiver,
+  redisProvider: RedisCacheFactory,
   override val client: AkkaHttpClient)
   extends FileStore
     with MopeService
   with com.typesafe.scalalogging.LazyLogging
   with com.twitter.util.Closable {
   val fsStore = FileStore.fromSession(mopeConf.data.hostDirectory, session)
-  val suggestionCache = new RedisCacheImpl[Seq[Suggestion]](redisConf, constants.completionCacheSuffix, _ => Future.value(None), statsReceiver)
+  val suggestionCache = redisProvider.get[Seq[Suggestion]](constants.completionCacheSuffix, _ => Future.value(None))
 
   private val modelToFileMapper = FSStore.findFileFor(fsStore.rootDir)(_)
 
   private val projDescr = ProjectDescription(fsStore.rootDir.toString)
-  override val pathMapper = MopeService.pathMapper(fsStore.rootDir.toAbsolutePath, mopeConf.data.bindDirectory.resolve(fsStore.rootDir.toAbsolutePath.getFileName()))
+  override val pathMapper = MopeService.pathMapper(fsStore.rootDir.toAbsolutePath, mopeConf.data.bindDirectory.resolve(fsStore.rootDir.toAbsolutePath.getFileName))
 
   logger.info(s"mapper: $pathMapper")
   logger.info(s"fsStore: $fsStore")

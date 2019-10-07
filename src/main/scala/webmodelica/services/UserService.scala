@@ -10,24 +10,20 @@ package webmodelica.services
 
 import webmodelica.stores.UserStore
 import webmodelica.models._
-import webmodelica.models.errors._
-import webmodelica.models.config.RedisConfig
 import webmodelica.constants
 
 import com.twitter.util.Future
-import com.twitter.cache.FutureCache
-import com.twitter.finagle.stats.StatsReceiver
-import scala.collection.JavaConverters._
 
 /** A UserStore that caches calls to the underlying store. */
-class UserService(redisConfig:RedisConfig, statsReceiver:StatsReceiver, underlying:UserStore)
+class UserService(redisProvider: RedisCacheFactory,
+                   underlying:UserStore)
     extends UserStore
     with com.typesafe.scalalogging.LazyLogging {
 
   logger.info("UserService with caching started...")
 
   val fallback = (k:String) => underlying.findBy(k)
-  val cache = new RedisCacheImpl[User](redisConfig, constants.userCacheSuffix, fallback, statsReceiver)
+  val cache = redisProvider.get[User](constants.userCacheSuffix, fallback)
 
   override def add(u:User): Future[Unit] = underlying add u
   override def findBy(username: String): Future[Option[User]] = {

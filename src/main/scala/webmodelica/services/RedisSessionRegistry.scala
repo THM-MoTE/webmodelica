@@ -8,32 +8,30 @@
 
 package webmodelica.services
 
-import com.twitter.util.{Future, FuturePool, Time}
-import com.twitter.finagle.stats.StatsReceiver
-import webmodelica.UUIDStr
+import com.twitter.util.{Future, Time}
+import webmodelica.{UUIDStr, constants}
 import webmodelica.models.config._
 import webmodelica.models.{Project, Session}
 import webmodelica.conversions.futures._
+
 import scala.concurrent.duration._
-import cats.syntax._
 import cats.data.OptionT
 import cats.implicits._
 
 class RedisSessionRegistry(
   conf:WMConfig,
-  statsReceiver:StatsReceiver,
+  redisProvider: RedisCacheFactory,
   client: AkkaHttpClient)
     extends SessionRegistry
     with com.typesafe.scalalogging.LazyLogging {
 
-  val higherTtlConf = conf.redis.copy(defaultTtl = 8 hours)
-  val redis = new RedisCacheImpl[Session](higherTtlConf, "sessions", _ => Future.value(None), statsReceiver)
+  val redis = redisProvider.get[Session](constants.sessionCacheSuffix, _ => Future.value(None), Some(8 hours))
 
   private def newService(s:Session): SessionService =
     s.mopeId match {
-      case None => new SessionService(conf.mope, s, conf.redis, statsReceiver, client)
+      case None => new SessionService(conf.mope, s, redisProvider, client)
       case Some(id) =>
-        new SessionService(conf.mope, s, conf.redis, statsReceiver, client) {
+        new SessionService(conf.mope, s, redisProvider, client) {
           override def projectId: Future[Int] = Future.value(id)
         }
     }

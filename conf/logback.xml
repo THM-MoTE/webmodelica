@@ -24,6 +24,10 @@
    <logger name="com.twitter" level="INFO"></logger>
    <logger name="org.mongodb" level="INFO"></logger>
    <logger name="akka.http" level="INFO"></logger>
+<!--   <logger name="scredis.io.IOActor" level="WARN"></logger>
+   <logger name="scredis.io.ListenerActor" level="WARN"></logger> -->
+   <logger name="scredis" level="INFO"></logger>
+
    <logger name="AccessLog">
     <appender-ref ref="accesslog" />
    </logger>
