@@ -33,7 +33,7 @@ class SimulationPaneCon extends React.Component<Props, any> {
 
   private simulate(sr: SimulateRequest): void {
     console.log("gonna simulate: ", sr)
-    this.props.setBackgroundJobInfo(true, "simulating be patient..")
+    this.props.setBackgroundJobInfo(true, "simulating, please be patient.")
     this.props.api.simulate(sr)
       .then(l => {
         const url = new URL(l)

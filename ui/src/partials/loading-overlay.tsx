@@ -29,7 +29,7 @@ class LoadingOverlayCon extends React.Component<Props,any> {
           <div className="spinner-border text-info" role="status" style={{width: '15rem', height: '15rem'}}>
           </div>
           <div>
-            {this.props.msg || "Loading be patient.."}
+            {this.props.msg || "Loading, please be patient."}
           </div>
         </div>
       </div>
