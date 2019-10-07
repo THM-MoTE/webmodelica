@@ -220,7 +220,7 @@ class SessionController@Inject()(
                   name,
                   tableData,
                   "time"::headers,
-                  if(originalVariablesSize>maxSimulationData.value) Some(s"The plot doesn't contain all variables ($originalVariablesSize). Variables stripped to ${variables.values.head.size}. ")
+                  if(originalVariablesSize>maxSimulationData.value) Some(s"Your simulation produced too much data to display in the browser. Data was resampled to ${variables.values.head.size} data points for plotting (was ${originalVariablesSize} data points). The CSV file will still contain all data points. ")
                   else None
                 ))
               case results => Future.value(results)
