@@ -41,10 +41,10 @@ class WmContainerCon extends React.PureComponent<Props> {
   simLink() {
     if (this.props.sessionId && this.props.active === 'session') {
       //we are at the session/editor pane => create a link to simulation
-      return (<Nav.Item><Link to={`/session/${this.props.sessionId}/simulate`}><Octicon name="rocket" /> Simulate</Link></Nav.Item>)
+      return (<Nav.Item><Nav.Link><Link to={`/session/${this.props.sessionId}/simulate`}><Octicon name="rocket" /> Simulate</Link></Nav.Link></Nav.Item>)
     } else if (this.props.sessionId && this.props.active === 'simulation') {
       //we are at simulation => create a link to editor pane
-      return (<Nav.Item><Link to={`/session/${this.props.sessionId}`}><Octicon name="reply" /> Back to Session</Link></Nav.Item>)
+      return (<Nav.Item><Nav.Link><Link to={`/session/${this.props.sessionId}`}><Octicon name="reply" /> Back to Session</Link></Nav.Link></Nav.Item>)
     }
     else { return undefined } //we don't know => we don't create a link
   }
@@ -54,11 +54,11 @@ class WmContainerCon extends React.PureComponent<Props> {
       <Navbar collapseOnSelect expand="md">
         <Navbar.Brand><h3>{this.appName} {this.props.title}</h3></Navbar.Brand>
         <Navbar.Toggle aria-controls="webmodelica-navbar-nav"/>
-            {this.props.displayName && (
+          {this.props.displayName && (
           <Navbar.Collapse id="webmodelica-navbar-nav" className="justify-content-end">
             {this.simLink()}
             <Nav.Item><Link to="/projects"><Octicon name="repo" /> Projects</Link></Nav.Item>
-              <NavDropdown title={this.props.displayName} id="nav-profile-dropwdown">
+            <NavDropdown title={this.props.displayName} id="nav-profile-dropwdown">
               <NavDropdown.Item href="/logout"><Octicon name="sign-out" /> Logout</NavDropdown.Item>
             </NavDropdown>
           </Navbar.Collapse>
