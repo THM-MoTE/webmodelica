@@ -10,6 +10,7 @@ import { AppState, Notification, NotificationType } from '../models/index'
 import * as R from 'ramda';
 import { oc } from 'ts-optchain';
 import { LoadingOverlay } from './loading-overlay';
+import { Link } from 'react-router-dom';
 
 interface Props {
   title: string
@@ -40,10 +41,10 @@ class WmContainerCon extends React.PureComponent<Props> {
   simLink() {
     if (this.props.sessionId && this.props.active === 'session') {
       //we are at the session/editor pane => create a link to simulation
-      return (<Nav.Item><Nav.Link href={`/session/${this.props.sessionId}/simulate`}><Octicon name="rocket" /> Simulate</Nav.Link></Nav.Item>)
+      return (<Nav.Item><Link to={`/session/${this.props.sessionId}/simulate`}><Octicon name="rocket" /> Simulate</Link></Nav.Item>)
     } else if (this.props.sessionId && this.props.active === 'simulation') {
       //we are at simulation => create a link to editor pane
-      return (<Nav.Item><Nav.Link href={`/session/${this.props.sessionId}`}><Octicon name="reply" /> Back to Session</Nav.Link></Nav.Item>)
+      return (<Nav.Item><Link to={`/session/${this.props.sessionId}`}><Octicon name="reply" /> Back to Session</Link></Nav.Item>)
     }
     else { return undefined } //we don't know => we don't create a link
   }
@@ -56,7 +57,7 @@ class WmContainerCon extends React.PureComponent<Props> {
             {this.props.displayName && (
           <Navbar.Collapse id="webmodelica-navbar-nav" className="justify-content-end">
             {this.simLink()}
-            <Nav.Item><Nav.Link href="/projects"><Octicon name="repo" /> Projects</Nav.Link></Nav.Item>
+            <Nav.Item><Link to="/projects"><Octicon name="repo" /> Projects</Link></Nav.Item>
               <NavDropdown title={this.props.displayName} id="nav-profile-dropwdown">
               <NavDropdown.Item href="/logout"><Octicon name="sign-out" /> Logout</NavDropdown.Item>
             </NavDropdown>
