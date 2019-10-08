@@ -25,6 +25,13 @@ export class EditorsPane extends React.Component<Props, any> {
   static editorName: string = "monaco-editor"
   static monacoEditor?: monaco.editor.IStandaloneCodeEditor = undefined
 
+  /** TODO: that's a hack to prevent dangling editors that aren't displayed in the browser  because they are part of a non-rendered component..
+   *  This occurs when switching between projects or the project-preview.
+  */
+  static killEditorInstance() {
+    EditorsPane.monacoEditor = undefined
+  }
+
   componentDidMount() {
     //make sure we have only 1 instance of MonacoEditor regardless of how many EditorsPane's are created
     if (!EditorsPane.monacoEditor) {

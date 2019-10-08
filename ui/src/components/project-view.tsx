@@ -12,6 +12,7 @@ import Octicon from 'react-octicon'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as R from 'ramda'
+import { EditorsPane } from './index';
 
 
 /** The project view displayed at `/projects`. */
@@ -32,6 +33,7 @@ class ProjectViewCon extends Component<any, any> {
   }
 
   private newSession(ev: any, p: Project): void {
+    EditorsPane.killEditorInstance() //to prevent old monaco editor instances
     withOverlay(this.props.setBackgroundJobInfo, "opening project ...")(
       this.api.newSession(p)
         .then(s => {
@@ -45,6 +47,7 @@ class ProjectViewCon extends Component<any, any> {
 
   private previewProject(ev: any, p:Project): void {
     ev.preventDefault()
+    EditorsPane.killEditorInstance() //to prevent old monaco editor instances
     withOverlay(this.props.setBackgroundJobInfo, "opening project ...")(
       this.api.projectFileTree(p.id)
         .then(files => {
