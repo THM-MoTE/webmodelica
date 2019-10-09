@@ -21,7 +21,11 @@ const client = new ApiClient(store)
 store.subscribe(() => {
   const state = store.getState()
   console.log("state changed:", state)
-  localStorage.setItem(stateKey, JSON.stringify(state))
+  const persistedState = { ...state,
+    notifications: [],
+    jobInfo: { running: false }
+  }
+  localStorage.setItem(stateKey, JSON.stringify(persistedState))
 })
 
 /** read state from localStorage.  */
