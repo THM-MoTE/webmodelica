@@ -15,6 +15,7 @@ function rejectError(res: Response): Promise<Response> {
     } else {
       return res.text()
         .then(txt => Promise.reject(new ApiError(res.status, [txt || res.statusText])))
+        .catch(er => Promise.reject(new ApiError(res.status, ["Unknown error occured: "+res.statusText, "Check browser console for details."])))
     }
   }
 }
