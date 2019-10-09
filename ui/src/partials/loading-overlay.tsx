@@ -10,12 +10,15 @@ import Octicon from 'react-octicon'
 interface Props {
   msg?: string
   display?: boolean
+  cancelCallback?: () => void
 }
 
 class LoadingOverlayCon extends React.Component<Props,any> {
   private cancel() {
-    //TODO: implement a cancelation strategy .. e.g.: abort the running promise, fetch call?!
-    console.warn("cancelation not supported yet!")
+    //TODO: implement a better cancelation strategy .. e.g.: abort the running promise, fetch call?!
+    if(window.confirm("Cancelation a background job is dangerous and experimental. Are you sure?")) {
+      (this.props.cancelCallback) ? this.props.cancelCallback() : window.location.reload()
+    }
   }
 
   render() {
