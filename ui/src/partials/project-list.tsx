@@ -41,7 +41,7 @@ export class ProjectList extends React.Component<Props, any> {
             </h6>
           </Col>
            <Col><ButtonGroup size="lg" className="float-right">
-             <Button variant="outline-info" href={`#${p.id}/preview`} onClick={(ev: any) => this.props.previewProject(ev, p)}><Octicon name="device-desktop" /></Button>
+             <Button variant="outline-info" onClick={(ev: any) => this.props.previewProject(ev, p)}><Octicon name="device-desktop" /></Button>
              <Button variant="outline-primary" onClick={() => this.props.updateVisibility(p)}><Octicon name="key" /></Button>
              <Button variant="outline-danger" onClick={() => this.props.deleteProject(p)}><Octicon name="flame" /></Button>
             </ButtonGroup></Col>
