@@ -36,7 +36,7 @@ export class EditorsPane extends React.Component<Props, any> {
     //make sure we have only 1 instance of MonacoEditor regardless of how many EditorsPane's are created
     if (!EditorsPane.monacoEditor) {
       EditorsPane.monacoEditor = monaco.editor.create(document.getElementById(EditorsPane.editorName) as HTMLElement, {
-        value: "your editor for modelica code!",
+        value: "//Please open or create a modelica file first!\n//Everything inside of this editor will not be saved!",
         language: language,
         glyphMargin: true
       })
