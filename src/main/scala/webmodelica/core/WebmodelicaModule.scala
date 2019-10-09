@@ -97,7 +97,7 @@ trait WebmodelicaModule
   def tokenValidator: CombinedTokenValidator =
     TokenValidator.combine(tokenGenerator, AuthTokenValidator(KeyFile(jwtConf.authSvcPublicKey)))
 
-  def httpClient:AkkaHttpClient = new AkkaHttpClient(Http(), Uri(config.mope.address+"mope/"))
+  def httpClient:AkkaHttpClient = new AkkaHttpClient(Http(), Uri(config.mope.address+"mope/"), Some(config.mope.responseSizeInBytes))
 
   private def redisClient: scredis.Client = {
     logger.info("RedisClient for {} created", redisConf.address)

@@ -35,9 +35,12 @@ package config {
 
   case class MopeClientConfig(
     address: String,
-    clientResponseSize: Int,
+    clientResponseSize: Int, //max size in MegaBytes
     data: MopeDataConfig
-  )
+  ) {
+    //clientResponseSize in Bytes
+    def responseSizeInBytes: Int = (clientResponseSize*1e+6).toInt
+  }
   case class MopeDataConfig(
     hostDirectory: Path,
     bindDirectory: Path

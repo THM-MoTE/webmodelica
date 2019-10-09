@@ -30,10 +30,10 @@ object AkkaHttpClient {
   case class Error(status:StatusCode, reason:String, response:HttpResponse) extends RuntimeException(s"$reason: $response")
 }
 
-class AkkaHttpClient(http:HttpExt, baseUri:Uri)
+class AkkaHttpClient(http:HttpExt, baseUri:Uri, maxPayloadSize:Option[Int]=None)
   extends com.typesafe.scalalogging.LazyLogging {
 
-  logger.info(s"client for $baseUri initialized.")
+  logger.info(s"client for $baseUri initialized with payload: $maxPayloadSize.")
 
   import http.system.dispatcher
   implicit val mat = ActorMaterializer.create(http.system)
@@ -44,10 +44,11 @@ class AkkaHttpClient(http:HttpExt, baseUri:Uri)
 
   def unmarshal[E:Decoder](response:HttpResponse): Future[E] = {
     logger.debug(s"decoding $response")
+    val entity = maxPayloadSize.map(size => response.entity.withSizeLimit(size)).getOrElse(response.entity)
     if(response.status.isSuccess())
-      Unmarshal(response).to[E]
+      Unmarshal(entity).to[E]
     else
-      response.entity.dataBytes.runFold(ByteString(""))(_++_)
+      entity.dataBytes.runFold(ByteString(""))(_++_)
         .flatMap { byteStr =>
           Future.failed(AkkaHttpClient.Error(response.status, byteStr.utf8String, response))
         }
