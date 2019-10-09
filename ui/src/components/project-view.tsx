@@ -46,7 +46,6 @@ class ProjectViewCon extends Component<any, any> {
 
   private previewProject(ev: any, p:Project): void {
     ev.preventDefault()
-    EditorsPane.killEditorInstance() //to prevent old monaco editor instances
     withOverlay(this.props.setBackgroundJobInfo, "opening project ...")(
       this.api.projectFileTree(p.id)
         .then(files => {

@@ -28,6 +28,7 @@ class ProjectPreviewCon extends Component<Props, State> {
   constructor(p:Props) {
     super(p)
     this.state = {}
+    EditorsPane.killEditorInstance() //to prevent old monaco editor instances
   }
 
   private updatePreviewFile(previewFile:File): void {
