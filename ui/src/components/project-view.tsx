@@ -33,7 +33,6 @@ class ProjectViewCon extends Component<any, any> {
   }
 
   private newSession(ev: any, p: Project): void {
-    EditorsPane.killEditorInstance() //to prevent old monaco editor instances
     withOverlay(this.props.setBackgroundJobInfo, "opening project ...")(
       this.api.newSession(p)
         .then(s => {

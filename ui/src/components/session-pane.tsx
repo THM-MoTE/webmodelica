@@ -60,6 +60,7 @@ class SessionPaneCon extends React.Component<Props, State> {
     super(props)
     this.api = this.props.api
     this.state = { deltaMarkers: [], compiling: false }
+    EditorsPane.killEditorInstance() //to prevent old monaco editor instances
   }
 
   private setupShortcuts(): Shortcut[] {
