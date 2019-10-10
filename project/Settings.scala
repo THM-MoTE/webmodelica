@@ -26,13 +26,11 @@ object Settings {
 
   def consoleInit:String =
     """import webmodelica._
-|import webmodelica.models._
-|import webmodelica.stores._
-|import webmodelica.services._
-|import webmodelica.core._
+|import webmodelica.models._, webmodelica.stores._, webmodelica.services._
+|import webmodelica.core._, webmodelica.controllers._
 |import java.nio.file._
 |import better.files._
-|import io.circe._""".stripMargin
+|import io.circe._, io.circe.syntax._, io.circe.parser._""".stripMargin
 
 }
 
