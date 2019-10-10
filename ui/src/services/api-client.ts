@@ -24,13 +24,9 @@ const authHeader = "Authorization"
 export const baseApiPrefix = "/api/v1/"
 const apiPrefix = baseApiPrefix + "webmodelica/"
 
-function backendUri(baseApi: string = apiPrefix): string {
-  return window.location.protocol + "//" + window.location.host + baseApi
-}
-
 /** fetches app infos from '/api/v1/webmodelica/info' */
 export function fetchAppInfos(): Promise<AppInfo> {
-  return fetch(backendUri() + "info", {
+  return fetch(apiPrefix + "info", {
     method: 'GET',
     headers: {
       "Accept": 'application/json'
@@ -41,26 +37,24 @@ export function fetchAppInfos(): Promise<AppInfo> {
 
 /** Main client for commmunicating with the backend. */
 export class ApiClient {
-  private readonly base: string
   private readonly store: Store<AppState>
 
   constructor(store: Store<AppState>) {
     this.store = store
-    this.base = backendUri()
     window.addEventListener('beforeunload', (e: BeforeUnloadEvent) => this.deleteCurrentSession())
   }
 
   private userUri(): string {
-    return this.base + "users"
+    return baseApiPrefix + "users"
   }
   private projectUri(): string {
-    return this.base + "projects"
+    return apiPrefix + "projects"
   }
   private sessionUri(): string {
-    return this.base + "sessions"
+    return apiPrefix + "sessions"
   }
 
-  private authUri(): string { return backendUri(baseApiPrefix) + "auths" }
+  private authUri(): string { return baseApiPrefix + "auths" }
 
   /** updates our copy of authentication token by reading it either from cookie or header field. */
   private updateWSToken(res: Response): Response {
@@ -296,8 +290,8 @@ export class ApiClient {
   public deleteFile(file: FilePath): Promise<void> {
     return this.withSession("can't delete a file if there is no session!")
       .then(session => {
-        const url = new URL(this.sessionUri() + `/${session.id}/files/${encodeURIComponent(file.relativePath)}`)
-        return fetch(url.toString(), {
+        const url = (this.sessionUri() + `/${session.id}/files/${encodeURIComponent(file.relativePath)}`)
+        return fetch(url, {
           method: 'DELETE',
           headers: {
             [authHeader]: this.token()
@@ -311,8 +305,8 @@ export class ApiClient {
 
   public getFile(project: string | Project, path: string): Promise<File> {
     const pid = (typeof project === "string") ? project : project.id
-    const url = new URL(this.projectUri() + `/${pid}/files/${encodeURIComponent(path)}`)
-    return fetch(url.toString(), {
+    const url = (this.projectUri() + `/${pid}/files/${encodeURIComponent(path)}`)
+    return fetch(url, {
       headers: {
         [authHeader]: this.token(),
         'Accept': 'application/json'
