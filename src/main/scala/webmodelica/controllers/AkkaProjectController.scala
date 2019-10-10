@@ -28,8 +28,8 @@ object AkkaProjectController {
                             name: String)
 
   @JsonCodec
-  case class CopyProjectRequest(name: Option[String]) {
-    def newProject(p: Project, owner: String): Project = Project(owner, name.getOrElse(p.name))
+  case class CopyProjectRequest(name: String) {
+    def newProject(p: Project, owner: String): Project = Project(owner, name)
   }
 
   @JsonCodec

@@ -204,7 +204,7 @@ export class ApiClient {
     else return Promise.resolve(undefined)
   }
 
-  public copyProject(p: Project, newName?: string): Promise<Project> {
+  public copyProject(p: Project, newName: string): Promise<Project> {
     //POST / api / v1 / projects /: projectId / copy
     return fetch(this.projectUri() + `/${p.id}/copy`, {
       method: 'POST',
@@ -213,7 +213,7 @@ export class ApiClient {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      body: (newName) ? JSON.stringify({ name: newName }) : JSON.stringify({})
+      body: JSON.stringify({ name: newName })
     })
       .then(rejectError)
       .then(this.updateWSToken.bind(this))
