@@ -8,8 +8,8 @@ import { ApiClient } from '../services/api-client'
 import { Row, Col, Button, ButtonGroup, Container as RContainer, Card } from 'react-bootstrap'
 //@ts-ignore
 import Octicon from 'react-octicon'
-import { File, FileNode, AppState, CompilerError, Session, Shortcut, cmdShiftAnd } from '../models/index'
-import { Action, setCompilerErrors, setSessionFiles, notifyInfo, notifyWarning, setOpenFile } from '../redux/actions'
+import { ApiError, File, FileNode, AppState, CompilerError, Session, Shortcut, cmdShiftAnd } from '../models/index'
+import { Action, setCompilerErrors, setSessionFiles, notifyInfo, notifyWarning, notifyError,setOpenFile } from '../redux/actions'
 import * as monaco from 'monaco-editor';
 import * as R from 'ramda'
 import { renderErrors } from '../partials/errors';
@@ -29,6 +29,7 @@ interface Props {
   setCompilerErrors(ers: CompilerError[]): void
   notifyInfo(msg:string):void
   notifyWarning(msg:string):void
+  notifyError(msg:string):void
   history: History
 }
 
@@ -80,6 +81,7 @@ class SessionPaneCon extends React.Component<Props, State> {
         //when opening a new file; display error markers for the new file
         this.markErrors(this.state.deltaMarkers, this.props.compilerErrors)
       })
+      .catch((er: ApiError) => this.props.notifyError(`Couldn't open file: ${er.statusText}`))
   }
 
   private currentFile(): File|undefined {
@@ -183,7 +185,7 @@ function mapProps(state: AppState) {
 }
 
 function dispatchToProps(dispatch: (a: Action) => any) {
-  return bindActionCreators({ setCompilerErrors, setSessionFiles, setOpenFile, notifyInfo, notifyWarning }, dispatch)
+  return bindActionCreators({ setCompilerErrors, setSessionFiles, setOpenFile, notifyInfo, notifyWarning, notifyError }, dispatch)
 }
 
 const SessionPane = connect(mapProps, dispatchToProps)(SessionPaneCon)
