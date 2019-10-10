@@ -35,8 +35,8 @@ docker push $backendImage:$version
 docker push $frontendImage:$version
 
 echo "==> updating compose file.."
-sed -iE "s/thmmote\/webmodelica:[0-9].[0-9].[0-9]/thmmote\/webmodelica:$version/" deployment/docker-compose.prod.yml
-sed -iE "s/thmmote\/webmodelica-ui:[0-9].[0-9].[0-9]/thmmote\/webmodelica-ui:$version/" deployment/docker-compose.prod.yml
+sed -iE "s/thmmote\/webmodelica:\w+\.\w+\.[\w-]+/thmmote\/webmodelica:$version/" deployment/docker-compose.prod.yml
+sed -iE "s/thmmote\/webmodelica-ui:\w+\.\w+\.[\w-]+/thmmote\/webmodelica-ui:$version/" deployment/docker-compose.prod.yml
 
 echo "==> pushing to github.."
 git commit deployment/*.yml -m "use new container versions"
