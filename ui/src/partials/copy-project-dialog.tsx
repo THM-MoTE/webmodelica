@@ -13,21 +13,23 @@ interface Props {
   notifyInfo(msg: string): void
   notifyError(msg: string): void
 }
-type State = any
+type State = {
+  newProjectName: string
+}
 
 class CopyProjectDialogCon extends React.Component<Props,State> {
-  private newProjectName: string = ""
 
   constructor(p:Props) {
     super(p)
+    this.state = { newProjectName: ''  }
   }
 
   private copyProject() {
-    console.log("copying ", this.props.project, "with name ", this.newProjectName)
+    console.log("copying ", this.props.project, "with name ", this.state.newProjectName)
     this.props.api
-      .copyProject(this.props.project!, this.newProjectName)
+      .copyProject(this.props.project!, this.state.newProjectName || this.props.project!.name)
       .then(p => {
-        this.props.notifyInfo(`project ${this.props.project!.name} copied to ${this.newProjectName}`)
+        this.props.notifyInfo(`project ${this.props.project!.name} copied to ${p.name}`)
         this.props.onClose()
       })
       .catch((er:ApiError) => {
@@ -37,11 +39,8 @@ class CopyProjectDialogCon extends React.Component<Props,State> {
   }
 
   render() {
-    if(this.props.project) {
-      this.newProjectName = this.props.project.name
-    }
-
-    const handleProjectNameChange = (ev:any) => this.newProjectName = ev.target.value
+    const handleProjectNameChange = (ev:any) => this.setState({newProjectName: ev.target.value})
+    const placeholder = (this.props.project) ? this.props.project!.name : ''
     return (
       <Modal show={this.props.project !== undefined} onHide={this.props.onClose}>
         <Modal.Header closeButton>
@@ -51,7 +50,7 @@ class CopyProjectDialogCon extends React.Component<Props,State> {
           <Form>
             <Form.Group>
               <Form.Label>New Name</Form.Label>
-              <Form.Control type="text" size="lg" placeholder={this.newProjectName} onChange={handleProjectNameChange} />
+              <Form.Control type="text" size="lg" placeholder={placeholder} onChange={handleProjectNameChange} />
             </Form.Group>
           </Form>
         </Modal.Body>
