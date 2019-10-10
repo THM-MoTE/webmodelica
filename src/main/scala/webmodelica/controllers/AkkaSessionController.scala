@@ -130,7 +130,7 @@ class AkkaSessionController(
         //secured route: POST /sessions/:id/simulate
           val future = service().flatMap(_.simulate(simReq)).asScala
           onSuccess(future) { mopeUri =>
-            val location = uri.withQuery(Uri.Query("addr" -> mopeUri.toString))
+            val location = uri.withQuery(Uri.Query("addr" -> mopeUri.toString)).toRelative
             respondWithHeader(headers.Location(location)) {
               complete(StatusCodes.Accepted -> AkkaSessionController.SimulationResponse(location.toString))
             }
@@ -163,7 +163,7 @@ class AkkaSessionController(
                     case (SimulationResult(name, _), None) => complete(StatusCodes.NotFound -> s"no results for $name available!")
                   }
                 case "chartjs" =>
-                  val future = resultFuture.map{ result =>
+                  val future = resultFuture.map { result =>
                     val originalVariablesSize = result.variables.values.head.size
                     val variables = result.trimmedVariables(maxSimulationData.value)
                     val headers = variables.keys.filterNot(k => k=="time").toList

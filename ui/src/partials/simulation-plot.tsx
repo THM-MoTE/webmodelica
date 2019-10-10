@@ -32,7 +32,7 @@ class SimulationPlotCon extends React.Component<Props, State> {
 
   render() {
     const dataSet = R.prepend(this.props.data.header as any[], this.props.data.data as any[][])
-    const csvUrl = new URL('', this.props.address)
+    const csvUrl = new URL(window.location.origin+this.props.address)
     csvUrl.searchParams.set("format", "csv")
     return (<><Row>
       <Col xs={10}>

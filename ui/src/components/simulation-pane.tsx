@@ -36,21 +36,19 @@ class SimulationPaneCon extends React.Component<Props, any> {
     this.props.setBackgroundJobInfo(true, "simulating, please be patient.")
     this.props.api.simulate(sr)
       .then(l => {
-        const url = new URL(l)
-        url.host = window.location.host
         //this.props.addSimulationData({ address: url })
-        this.queryResults(url)
+        this.queryResults(l)
       })
   }
 
-  private queryResults(location: URL): void {
+  private queryResults(relativeLocation: string): void {
     console.log("query results ...")
     this.props.api
-      .getSimulationResults(location, 'chartjs', this.props.variables)
+      .getSimulationResults(relativeLocation, 'chartjs', this.props.variables)
       .then(rs => {
         //TODO: handle multiple simulation results
         //save the data into local state and not redux store to avoid overflowing browser's storage size limits
-        this.setState({data: {address: location, data:rs as TableFormat}})
+        this.setState({ data: { address: relativeLocation, data:rs as TableFormat}})
         this.props.setBackgroundJobInfo(false)
       })
       .catch((er: ApiError) => {
@@ -59,7 +57,7 @@ class SimulationPaneCon extends React.Component<Props, any> {
           this.props.notifyError(er.statusText)
           this.props.setBackgroundJobInfo(false)
         } else if(er.code === 409) {
-          window.setTimeout(() => this.queryResults(location), 5000)
+          window.setTimeout(() => this.queryResults(relativeLocation), 5000)
         } else {
           console.error("don't know how to handle error:", er)
           this.props.setBackgroundJobInfo(false)
