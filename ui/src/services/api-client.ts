@@ -213,7 +213,7 @@ export class ApiClient {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      body: (newName) ? JSON.stringify({ name: newName }) : undefined
+      body: (newName) ? JSON.stringify({ name: newName }) : JSON.stringify({})
     })
       .then(rejectError)
       .then(this.updateWSToken.bind(this))
