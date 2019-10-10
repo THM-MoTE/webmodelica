@@ -39,6 +39,6 @@ sed -iE "s/thmmote\/webmodelica:\w+\.\w+\.[\w-]+/thmmote\/webmodelica:$version/"
 sed -iE "s/thmmote\/webmodelica-ui:\w+\.\w+\.[\w-]+/thmmote\/webmodelica-ui:$version/" deployment/docker-compose.prod.yml
 
 echo "==> pushing to github.."
-git commit deployment/*.yml -m "use new container versions"
+git commit deployment/*.yml -m ":up: container versions"
 git push origin master
 git push origin --tags
