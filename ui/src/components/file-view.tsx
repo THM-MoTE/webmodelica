@@ -112,8 +112,10 @@ class FileViewCon extends React.Component<Props, State> {
         this.setState({ showNewFileDialog: false })
     }
     const handleFilenameChange = (ev: any) => this.newFilename = ev.target.value
-    const handleFileTypeSelect = (tpe: string) => this.selectedType = tpe
-
+    const handleFileTypeSelect = (ev : any) => {
+      const tpe = ev.target.value
+      this.selectedType = tpe
+    }
     return (
       <Modal show={this.state.showNewFileDialog} onHide={handleClose}>
         <Modal.Header closeButton>
@@ -127,8 +129,8 @@ class FileViewCon extends React.Component<Props, State> {
             </Form.Group>
             <Form.Group controlId="formModeltype">
               <Form.Label>Type</Form.Label>
-              <Form.Control as="select">
-                {this.fileTypes.map(tpe => <option key={tpe} onClick={() => handleFileTypeSelect(tpe)}>{tpe}</option>)}
+              <Form.Control as="select" onChange= { handleFileTypeSelect } >
+                {this.fileTypes.map(tpe => <option key={tpe} >{tpe}</option>)}
               </Form.Control>
             </Form.Group>
             <Button variant="success" type="submit" >Create</Button>
