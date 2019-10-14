@@ -20,7 +20,7 @@ import webmodelica.models.config.MopeClientConfig
 import webmodelica.conversions.futures._
 import java.nio.file.Paths
 
-import webmodelica.models.errors.DeleteUsernameError
+import webmodelica.models.errors.{DeleteUsernameError, VisibilityUsernameError}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -105,11 +105,17 @@ class AkkaProjectController(
           (path("visibility") & put & entity(as[AkkaProjectController.VisibilityRequest])) { case AkkaProjectController.VisibilityRequest(visibility) =>
             //secured route: PUT /projects/:id/visibility
             logger.debug(s"update visibility for $id:$visibility")
-            complete(
-              projectStore.setVisiblity(id, visibility)
-                .map(JSProject.apply)
-                .asScala
-            )
+            val updatedProject = projectFinder().flatMap{project =>
+              if ( user.username == project.owner) {
+                projectStore.setVisiblity(id, visibility)
+                  .map(JSProject.apply)
+                  .asScala
+              }
+              else {
+              Future.failed(VisibilityUsernameError)
+              }
+            }
+            complete(updatedProject)
         } ~
         fileRoutes(id, () => projectFinder())
       }
