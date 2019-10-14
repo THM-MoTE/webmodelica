@@ -60,6 +60,12 @@ object errors {
   case class ResourceUsernameError(resourceName:String="resource") extends BRWMException {
     override def getMessage: String = s"You can't create a ${resourceName} for another user!"
   }
+  case object DeleteUsernameError extends BRWMException {
+    override def getMessage: String = "You can't delete a project from another user!"
+  }
+  case object VisibilityUsernameError extends BRWMException {
+    override def getMessage: String = "You can't change the visibility of another users project!"
+  }
   case class ArchiveError(reason:String) extends WMException {
     override def getMessage: String = reason
   }
