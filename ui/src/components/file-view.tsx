@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 import * as R from 'ramda'
 import { File, FilePath, FileNode, AppState, CompilerError, Project, ApiError } from '../models/index'
 import * as file from '../models/file'
-import { setSessionFiles, Action, notifyError } from '../redux/index'
+import { setSessionFiles, Action, notifyError, setOpenFile } from '../redux/index'
 import { ApiClient } from '../services/api-client';
 import { renderErrors } from '../partials/errors'
 import { SessionHelp } from '../partials/session-help'
@@ -78,12 +78,17 @@ class FileViewCon extends React.Component<Props, State> {
       const name = extractModelname(suffixStripped)
       const path = createFilename(suffixStripped)
       const content = `${tpe} ${name}\nend ${name};`
+      const newFile = { relativePath: path, content: content }
       this.api
-        .updateFile({ relativePath: path, content: content })
+        .updateFile(newFile)
         .then(_ => this.api.projectFileTree(this.props.project.id))
         .then(this.props.setSessionFiles)
-        .then(() => this.updateErrors([]))
-        .catch(er => this.updateErrors(["Creation failed because of: " + er]))
+        .then(_ => this.props.onFileClicked(newFile))
+        .then(_ => this.updateErrors([]))
+        .catch(er => {
+          console.log("error: ", er)
+          this.updateErrors(["Creation failed because of: " + er])
+        })
     } else {
       this.updateErrors([
         "The file needs a type and a name!",
@@ -218,7 +223,11 @@ class FileViewCon extends React.Component<Props, State> {
   }
 
   render() {
-    const newFileClicked = () => { this.setState({ showNewFileDialog: true }) }
+    const newFileClicked = () => { 
+      if (this.props.activeFile ) {
+        this.props.onSaveClicked()  
+      }
+      this.setState({ showNewFileDialog: true }) }
     const uploadArchiveClicked = () => { this.setState({showUploadDialog: true}) }
     const renameFileClicked = (f:FilePath) => this.setState({fileToRename: f})
 
