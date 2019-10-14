@@ -19,6 +19,9 @@ import webmodelica.models._
 import webmodelica.models.config.MopeClientConfig
 import webmodelica.conversions.futures._
 import java.nio.file.Paths
+
+import webmodelica.models.errors.DeleteUsernameError
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -77,10 +80,16 @@ class AkkaProjectController(
           complete(project)
         } ~
         (delete & pathEnd) { //secured route: DELETE /projects/:id
-          logger.debug(s"deleting project $id")
-          val noContent = projectStore.delete(id).map { _ => StatusCodes.NoContent }.asScala
-          complete(noContent)
-        } ~
+          val noContent = projectFinder().flatMap{project =>
+            if ( user.username == project.owner) {
+              logger.debug(s"deleting project $id")
+              projectStore.delete(id).map { _ => StatusCodes.NoContent }.asScala
+            } else {
+              Future.failed( DeleteUsernameError )
+            }
+          }
+            complete(noContent)
+        }~
         (path("copy") & post & entity(as[AkkaProjectController.CopyProjectRequest])) { copyReq =>
           //secured route: POST /projects/:id/copy
           logger.debug(s"copy project $copyReq")
