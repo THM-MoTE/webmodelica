@@ -167,12 +167,14 @@ class AkkaSessionController(
                     val originalVariablesSize = result.variables.values.head.size
                     val variables = result.trimmedVariables(maxSimulationData.value)
                     val headers = variables.keys.filterNot(k => k=="time").toList
+                    val newSize = variables.values.head.size
+
                     val tableData = (variables("time")+:headers.map(k => variables(k)).toSeq).transpose
                     TableFormat(
                       result.modelName,
                       tableData,
                       "time"::headers,
-                      if(originalVariablesSize>maxSimulationData.value) Some(s"Your simulation produced too much data to display in the browser. Data was resampled to ${variables.values.head.size} data points for plotting (was ${originalVariablesSize} data points). The CSV file will still contain all data points. ")
+                      if(originalVariablesSize>newSize) Some(s"Your simulation produced too much data to display in the browser. Data was resampled to ${newSize} data points for plotting (was ${originalVariablesSize} data points). The CSV file will still contain all data points. ")
                       else None
                     )
                   }
