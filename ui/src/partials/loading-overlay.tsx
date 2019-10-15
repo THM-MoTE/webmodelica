@@ -29,7 +29,9 @@ class LoadingOverlayCon extends React.Component<Props,any> {
           <Button variant="link" className="text-danger" onClick={() => this.cancel()}><Octicon name="x" style={{fontSize: '24pt'}} /></Button>
         </div>
         <div id="overlay-content">
-          <div className="spinner-border text-info" role="status" style={{width: '15rem', height: '15rem'}}>
+          <div className="d-flex justify-content-center">
+            <div className="spinner-border text-info" role="status">
+          </div>
           </div>
           <div>
             {this.props.msg || "Loading, please be patient."}
