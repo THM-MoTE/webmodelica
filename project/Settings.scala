@@ -5,7 +5,7 @@ object Settings {
   def settings = Seq(
     unmanagedResourceDirectories in Compile += baseDirectory.value / "conf",
     organization := "de.thm.mote",
-    scalaVersion := "2.12.8",
+    scalaVersion := "2.12.9",
     scalacOptions ++= Seq(
       "-unchecked",
       "-deprecation",
