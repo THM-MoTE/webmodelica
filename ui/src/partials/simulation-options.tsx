@@ -90,7 +90,7 @@ class SimulationOptionsCon extends React.Component<Props, State> {
               </Form.Control>)
             }
             { //if there are no suggestions; provide a textfield
-              R.isEmpty(values) && (<Form.Control placeholder="value" value={opt.value.toString()} onChange={(ev:any) => this.updateValue(idx, ev.target.value)}/>)
+                R.isEmpty(values) && (<Form.Control placeholder="value" value={opt.value.toString()} onChange={(ev: any) => this.updateValue(idx, ev.target.value)} required pattern="[^\s]+"/>)
             }
             </Col>
             <Col as={ButtonGroup} sm={1}>
