@@ -125,7 +125,7 @@ class FileViewCon extends React.Component<Props, State> {
           <Form onSubmit={this.createNewFile.bind(this)}>
             <Form.Group>
               <Form.Label>Filename</Form.Label>
-              <Form.Control type="text" size="lg" placeholder="my.package.awesome-file.mo" onChange={handleFilenameChange} required />
+              <Form.Control type="text" size="lg" placeholder="my.package.awesome-file.mo" onChange={handleFilenameChange} required pattern="[^\s]+"/>
             </Form.Group>
             <Form.Group controlId="formModeltype">
               <Form.Label>Type</Form.Label>
@@ -215,7 +215,7 @@ class FileViewCon extends React.Component<Props, State> {
           <Form onSubmit={(ev:any) => {ev.preventDefault(); this.renameFile(this.state.fileToRename!, newFilename)} }>
             <Form.Group>
               <Form.Label>Filename</Form.Label>
-              <Form.Control type="text" size="lg" defaultValue={this.state.fileToRename && this.state.fileToRename!.relativePath} onChange={handleFilenameChange} />
+              <Form.Control type="text" size="lg" defaultValue={this.state.fileToRename && this.state.fileToRename!.relativePath} onChange={handleFilenameChange} required pattern="[^\s]+"/>
             </Form.Group>
             <Button variant="success" type="submit">Rename</Button>
           </Form>
