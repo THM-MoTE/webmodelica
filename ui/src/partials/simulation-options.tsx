@@ -94,7 +94,7 @@ class SimulationOptionsCon extends React.Component<Props, State> {
             }
             </Col>
             <Col as={ButtonGroup} sm={1}>
-                <Button variant="outline-danger" onClick={() => this.deleteOptionField(idx)}><Octicon name="x" /></Button>
+              <Button variant="outline-danger" onClick={() => this.deleteOptionField(idx)}><Octicon name="x" /></Button>
             </Col>
           </Form.Row>
         )
@@ -103,7 +103,7 @@ class SimulationOptionsCon extends React.Component<Props, State> {
       <Row className="justify-content-center">
         <ButtonGroup className="col-sm-4">
           <Button onClick={this.addOptionField.bind(this)}><Octicon name="plus" /></Button>
-          <Button variant="outline-success" onClick={this.props.simulateClicked}><Octicon name="rocket" /> Simulate</Button>
+          <Button type="submit" variant="outline-success"><Octicon name="rocket" /> Simulate</Button>
         </ButtonGroup>
       </Row>
       </>
