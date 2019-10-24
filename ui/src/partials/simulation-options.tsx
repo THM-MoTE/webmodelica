@@ -90,11 +90,11 @@ class SimulationOptionsCon extends React.Component<Props, State> {
               </Form.Control>)
             }
             { //if there are no suggestions; provide a textfield
-              R.isEmpty(values) && (<Form.Control placeholder="value" value={opt.value.toString()} onChange={(ev:any) => this.updateValue(idx, ev.target.value)}/>)
+                R.isEmpty(values) && (<Form.Control placeholder="value" value={opt.value.toString()} onChange={(ev: any) => this.updateValue(idx, ev.target.value)} required pattern="[^\s]+"/>)
             }
             </Col>
             <Col as={ButtonGroup} sm={1}>
-                <Button variant="outline-danger" onClick={() => this.deleteOptionField(idx)}><Octicon name="x" /></Button>
+              <Button variant="outline-danger" onClick={() => this.deleteOptionField(idx)}><Octicon name="x" /></Button>
             </Col>
           </Form.Row>
         )
@@ -103,7 +103,7 @@ class SimulationOptionsCon extends React.Component<Props, State> {
       <Row className="justify-content-center">
         <ButtonGroup className="col-sm-4">
           <Button onClick={this.addOptionField.bind(this)}><Octicon name="plus" /></Button>
-          <Button variant="outline-success" onClick={this.props.simulateClicked}><Octicon name="rocket" /> Simulate</Button>
+          <Button type="submit" variant="outline-success"><Octicon name="rocket" /> Simulate</Button>
         </ButtonGroup>
       </Row>
       </>

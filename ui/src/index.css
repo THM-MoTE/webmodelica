@@ -71,6 +71,10 @@ div#overlay-content {
   transform: translate(-50%,-50%);
   -ms-transform: translate(-50%,-50%);
 }
+div#overlay-content div.spinner-border {
+  width: 15rem;
+  height: 15rem;
+}
 div#overlay-close {
   position: absolute;
   right: 1em;

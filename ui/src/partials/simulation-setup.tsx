@@ -45,8 +45,10 @@ class SimulationSetupCon extends React.Component<Props, State> {
 
   private simulateClicked(ev:any) {
     const form = ev.currentTarget
-    this.setState({validated: form.checkValidity()})
-    if(form.checkValidity()) {
+    const validated = form.checkValidity()
+    this.setState({validated})
+    console.log("form target is: ", form, "form is valid: ", validated)
+    if(validated) {
       const opts = R.fromPairs(
         this.props.options
           .filter(o => !R.empty(o.name.trim()))
@@ -107,11 +109,11 @@ class SimulationSetupCon extends React.Component<Props, State> {
     const modelNameChanged = (ev:any) => this.setState({modelName: ev.target.value})
     const variableFilterChanged = (ev:any) => this.setState({rawVariableFilter: ev.target.value})
     return (<>
-      <Form validated={this.state.validated}>
+      <Form validated={this.state.validated} onSubmit={(ev: any) => {ev.preventDefault(); this.simulateClicked(ev) }}>
       <Form.Row>
         <Form.Label column sm={1}>Model</Form.Label>
         <Col sm={10}>
-            <Form.Control placeholder="model to simulate" defaultValue={this.openedModelName()} onChange={modelNameChanged} required/>
+            <Form.Control placeholder="model to simulate" defaultValue={this.openedModelName()} onChange={modelNameChanged} required pattern="[^\s]+"/>
           <Form.Control.Feedback type="invalid">
             Provide a modelname!
           </Form.Control.Feedback>
