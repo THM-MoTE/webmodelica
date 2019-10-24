@@ -76,10 +76,12 @@ class ProjectViewCon extends Component<any, any> {
 
   private deleteProject(p:Project): void {
     const newProjects = this.props.projects.filter((other:Project) => other.id!==p.id)
-    this.props.api.deleteProject(p)
-      .then(() => this.props.setProjects(newProjects))
-      .then(() => this.props.notifyInfo(`Project ${p.name} removed!`))
-      .catch((er: ApiError) => this.props.notifyError(`Couldn't delete project: ${er.statusText}`))
+    if(window.confirm("You are deleting the project, are you sure?")) {
+      this.props.api.deleteProject(p)
+        .then(() => this.props.setProjects(newProjects))
+        .then(() => this.props.notifyInfo(`Project ${p.name} removed!`))
+        .catch((er: ApiError) => this.props.notifyError(`Couldn't delete project: ${er.statusText}`))
+    }
   }
 
   private myProjects(): Project[] {
