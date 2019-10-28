@@ -66,6 +66,9 @@ object errors {
   case object VisibilityUsernameError extends BRWMException {
     override def getMessage: String = "You can't change the visibility of another users project!"
   }
+  case object VisibilityProjectError extends BRWMException {
+    override def getMessage: String = "You are denied access to this project!"
+  }
   case class ArchiveError(reason:String) extends WMException {
     override def getMessage: String = reason
   }
