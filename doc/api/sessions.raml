@@ -59,7 +59,10 @@
         200:
           headers:
             Location:
-              description: Location that contains the simulation results one's the simulation finished.
+              description: |
+                Location that contains the simulation results one's the simulation finished.
+                It's a path relative to the origin's server address.
+              example: "/api/v1/webmodelica/sessions/8344de63-...-abcdef/simulate?addr=http://localhost:9015/mope/project/0/simulate/a838-...-0924"
         400:
           description: If provided model or parameters aren't valid.
       is: [rscNotFound: {id: sessionId}]
