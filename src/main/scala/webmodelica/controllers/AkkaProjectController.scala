@@ -20,7 +20,7 @@ import webmodelica.models.config.MopeClientConfig
 import webmodelica.conversions.futures._
 import java.nio.file.Paths
 
-import webmodelica.models.errors.{DeleteUsernameError, VisibilityUsernameError, VisibilityDownloadError}
+import webmodelica.models.errors.{DeleteUsernameError, VisibilityUsernameError}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -123,44 +123,38 @@ class AkkaProjectController(
   }
 
   private def fileRoutes(id:String, projectFinder: () => Future[Project]): Route = {
-    case (projectStore.byUsername(id).map( lst => lst.exists(p => p._id == id))) {
-      pathPrefix("files") {
-        (get & pathEnd & parameter("format" ? "list")) {
-          //secured route: GET /projects/:id/files?format=[tree|list]
-         case "tree" => complete(projectFinder().flatMap(projectFileTree))
-         case _ => complete(projectFinder().flatMap(projectFiles))
-        } ~
-         (get & path("download")) {//secured route: GET /projects/:id/files/download
-         logger.debug(s"download files for $id")
-         val future = (for {
-           project <- projectFinder()
-           fs = fileStore(project)
-           file <- fs.packageProjectArchive(project.name).asScala
-         } yield file)
-         onSuccess(future) { file =>
-           respondWithHeader(RawHeader("Content-Disposition", s"attachment; filename=${file.getName}")) {
-             getFromFile(file.getPath)
-           }
-         }
-       } ~
-         (get & path(Remaining)) { pathStr =>
-         //secured route: GET /projects/:id/files/:path
-         //(the uri is created to decode the uri-encoded path)
-          logger.debug(s"fetch file content for $pathStr")
-          val path = Paths.get(new java.net.URI(pathStr).getPath)
-          logger.debug(s"searching for file $path")
-          if(byUsername(user.username).contains(project)) {
-           projectFinder()
-              .map(fileStore)
-              .flatMap(_.findByPath(path).flatMap(errors.notFoundExc(s"file $path not found!")).asScala)
-          )
-          }
-          else {
-            Future.failed(VisibilityDownloadError)
+    pathPrefix("files") {
+      (get & pathEnd & parameter("format" ? "list")) {
+        //secured route: GET /projects/:id/files?format=[tree|list]
+        case "tree" => complete(projectFinder().flatMap(projectFileTree))
+        case _ => complete(projectFinder().flatMap(projectFiles))
+      } ~
+        (get & path("download")) {//secured route: GET /projects/:id/files/download
+        logger.debug(s"download files for $id")
+        val future = (for {
+          project <- projectFinder()
+          fs = fileStore(project)
+          file <- fs.packageProjectArchive(project.name).asScala
+        } yield file)
+        onSuccess(future) { file =>
+          respondWithHeader(RawHeader("Content-Disposition", s"attachment; filename=${file.getName}")) {
+            getFromFile(file.getPath)
           }
         }
+      } ~
+        (get & path(Remaining)) { pathStr =>
+        //secured route: GET /projects/:id/files/:path
+        //(the uri is created to decode the uri-encoded path)
+        logger.debug(s"fetch file content for $pathStr")
+        val path = Paths.get(new java.net.URI(pathStr).getPath)
+        logger.debug(s"searching for file $path")
+        complete(
+          projectFinder()
+            .map(fileStore)
+            .flatMap(_.findByPath(path).flatMap(errors.notFoundExc(s"file $path not found!")).asScala)
+        )
       }
-    } else Future.failed(VisibilityUsernameError);
+    }
   }
 
 }
