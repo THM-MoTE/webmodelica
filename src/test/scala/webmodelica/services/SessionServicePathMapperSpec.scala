@@ -12,7 +12,6 @@ import better.files._
 import webmodelica.models._
 import webmodelica.models.config._
 import java.nio.file._
-import com.twitter.finagle.stats.NullStatsReceiver
 
 class SessionServicePathMapperSpec
     extends webmodelica.WMSpec {
@@ -20,7 +19,7 @@ class SessionServicePathMapperSpec
   val tmpDir = File.newTemporaryDirectory("mapperspec-tmp")
   val conf = MopeClientConfig("http://localhost:9015/", 800, MopeDataConfig(tmpDir.path, Paths.get("/data/wm")))
   val session = Session(Project("nico", "testproj"))
-  val service = new SessionService(conf, session,appConf.redis, new NullStatsReceiver(), module.httpClient)
+  val service = new SessionService(conf, session,NoCaching.cacheFactory, module.httpClient)
   val mapper = service.pathMapper
   val bindRoot = conf.data.bindDirectory.resolve(session.basePath)
   val hostRoot = service.fsStore.rootDir
