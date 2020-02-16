@@ -1,14 +1,13 @@
 version: '3'
 services:
   traefik:
-    image: "traefik:1.7.17"
-    command: --api --docker
+    image: "traefik:2.1"
+    command: --api.insecure=true --providers.docker
     ports:
       - "9000:80"     # The HTTP port
       - "9080:8080" # The Web UI (enabled by --api)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
-      - ./config/traefik-dev.toml:/etc/traefik/traefik.toml
     labels:
       - "de.thm.webmodelica.name=traefik-proxy"
     restart: on-failure
@@ -17,16 +16,12 @@ services:
     restart: on-failure
     volumes:
       - webmodelica_db:/data/db
-    ports:
-      - 9010:27017
     labels:
       - "de.thm.webmodelica.name=mongodb"
       - "traefik.enable=false"
   cache:
     image: "redis:5.0.4-alpine"
     restart: on-failure
-    ports:
-      - 9011:6379
     volumes:
       - redis_cache:/data
     labels:
@@ -36,18 +31,17 @@ services:
     image: "thmmote/mope-server:0.7.1"
     restart: on-failure
     user: openmodelica:openmodelica
-    ports:
-      - 9015:3000
     labels:
       - "de.thm.webmodelica.name=mope-server"
+      - "traefik.enable=false"
     volumes:
       - ../private/data:/home/openmodelica/data
       - ./config/mope.conf:/home/openmodelica/.config/mope/mope.conf
   user-svc:
     image: hobbypunk90/mt-services-user:fa26b3d
     restart: on-failure
-    ports:
-      - 9012:3000
+    # ports:
+    #   - 9012:3000
     depends_on:
       - mongo
     environment:
@@ -57,15 +51,13 @@ services:
     volumes:
       - ./config/user-svc.settings.yml:/config.yml
     labels:
-      - "traefik.frontend.rule=PathPrefix:/api/v{[0-9]+}/users"
-      - "traefik.backend=webmodelica-user-svc"
-      - "traefik.port=3000"
+      - "traefik.http.routers.user-svc.rule=PathPrefix(`/api/v{[0-9]+}/users`)"
       - "de.thm.webmodelica.name=webmodelica-user-svc"
   auth-svc:
     image: hobbypunk90/mt-services-auth:0.0.3
     restart: on-failure
-    ports:
-      - 9013:3000
+    # ports:
+    #   - 9013:3000
     depends_on:
       - mongo
       - user-svc
@@ -81,9 +73,7 @@ services:
     volumes:
       - ./config/auth-svc.settings.yml:/config.yml
     labels:
-      - "traefik.frontend.rule=PathPrefix:/api/v{[0-9]+}/auths"
-      - "traefik.backend=webmodelica-auth-svc"
-      - "traefik.port=3000"
+      - "traefik.http.routers.auth-svc.rule=PathPrefix(`/api/v{[0-9]+}/auths`)"
       - "de.thm.webmodelica.name=webmodelica-auth-svc"
 volumes:
   webmodelica_data:

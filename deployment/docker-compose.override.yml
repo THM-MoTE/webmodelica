@@ -1,0 +1,11 @@
+version: '3'
+services:
+  mongo:
+    ports:
+      - 9010:27017
+  cache:
+    ports:
+      - 9011:6379
+  mope:
+    ports:
+      - 9015:3000
