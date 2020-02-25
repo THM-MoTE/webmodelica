@@ -2,7 +2,9 @@ version: '3'
 services:
   traefik:
     image: "traefik:2.1"
-    command: --api.insecure=true --providers.docker
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker"
     ports:
       - "9000:80"     # The HTTP port
       - "9080:8080" # The Web UI (enabled by --api)
