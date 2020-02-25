@@ -3,13 +3,9 @@ services:
   backend:
     image: "thmmote/webmodelica:0.8.1"
     restart: unless-stopped
-    ports:
-      - 9002:3000
     labels:
-      - "traefik.frontend.rule=PathPrefix:/api/v{[0-9]+}/webmodelica"
-      - "traefik.backend=webmodelica-backend"
-      - "traefik.port=3000"
       - "de.thm.webmodelica.name=webmodelica-backend"
+      - "traefik.http.routers.webmodelica.rule=PathPrefix(`/api/v{[0-9]+}/webmodelica`)"
     depends_on:
       - cache
       - mongo
@@ -22,13 +18,9 @@ services:
   ui:
     image: "thmmote/webmodelica-ui:0.8.1"
     restart: unless-stopped
-    ports:
-      - 9003:3000
     labels:
-      - "traefik.frontend.rule=PathPrefix:/"
-      - "traefik.backend=webmodelica-ui"
-      - "traefik.port=3000"
       - "de.thm.webmodelica.name=webmodelica-frontend"
+      - "traefik.http.routers.webmodelica-ui.rule=PathPrefix(`/`)"
   traefik:
     restart: unless-stopped
     ports:
@@ -36,7 +28,7 @@ services:
       - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
-      - ./config/traefik-prod.toml:/etc/traefik/traefik.toml
+      # - ./config/traefik-prod.toml:/etc/traefik/traefik.toml
       - /etc/ssl/private:/ssl
   mongo:
     restart: unless-stopped
