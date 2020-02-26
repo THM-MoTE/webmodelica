@@ -3,8 +3,10 @@ services:
   traefik:
     image: "traefik:2.1"
     command:
+      - "--log.level=info"
       - "--api.insecure=true"
       - "--providers.docker"
+      - "--entrypoints.web.address=:80"
     ports:
       - "9000:80"     # The HTTP port
       - "9080:8080" # The Web UI (enabled by --api)

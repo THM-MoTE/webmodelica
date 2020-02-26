@@ -25,14 +25,25 @@ services:
       - "traefik.http.routers.webmodelica-ui.tls"
   traefik:
     restart: unless-stopped
+    command:
+      - "--log.level=info"
+      - "--api.insecure=true"
+      - "--providers.docker"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
     ports:
       - "80:80"     # The HTTP port
       - "443:443"
+    labels:
+      - "traefik.http.routers.http_catchall.rule=HostRegexp(`{any:.+}`)"
+      - "traefik.http.routers.http_catchall.entrypoints=web"
+      - "traefik.http.routers.http_catchall.middlewares=https_redirect"
+      - "traefik.http.middlewares.https_redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.https_redirect.redirectscheme.permanent=true"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
-      - ./config/traefik-prod.yaml:/etc/traefik/traefik.yaml
-      # - /etc/ssl/private:/ssl
-      - ../private/ssl:/ssl
+      - /etc/ssl/private:/ssl
+      # - ../private/ssl:/ssl
   mongo:
     restart: unless-stopped
   cache:
