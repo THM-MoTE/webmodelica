@@ -38,27 +38,19 @@ class WmContainerCon extends React.PureComponent<Props> {
     document.title = this.appName + " " + this.props.title
   }
 
-  simLink() {
-    if (this.props.sessionId && this.props.active === 'session') {
-      //we are at the session/editor pane => create a link to simulation
-      return (<Nav.Link><Link to={`/session/${this.props.sessionId}/simulate`}><Octicon name="rocket" /> Simulate</Link></Nav.Link>)
-    } else if (this.props.sessionId && this.props.active === 'simulation') {
-      //we are at simulation => create a link to editor pane
-      return (<Nav.Link><Link to={`/session/${this.props.sessionId}`}><Octicon name="reply" /> Back to Session</Link></Nav.Link>)
-    }
-    else { return undefined } //we don't know => we don't create a link
-  }
-
   render() {
     return (<>
-      <Navbar expand="md">
+      <Navbar expand="md" variant="dark" className="bg-primary">
         <Navbar.Brand><h3>{this.appName} {this.props.title}</h3></Navbar.Brand>
         <Navbar.Toggle aria-controls="webmodelica-navbar-nav" />
         {this.props.displayName && (
           <Navbar.Collapse id="webmodelica-navbar-nav" className="justify-content-end">
-            <Nav>
-              {this.simLink()}
-              <Nav.Link><Link to="/projects"><Octicon name="repo" /> Projects</Link></Nav.Link>
+            <Nav activeKey={this.props.active}>
+              {this.props.sessionId && (<>
+                <Nav.Item><Nav.Link eventKey="session" as={Link} to={`/session/${this.props.sessionId}`}><Octicon name="gist" /> Session</Nav.Link></Nav.Item>
+                <Nav.Item><Nav.Link eventKey="simulate" as={Link} to={`/session/${this.props.sessionId}/simulate`}><Octicon name="rocket" /> Simulate</Nav.Link></Nav.Item>
+                </>)}
+              <Nav.Item><Nav.Link eventKey="projects" as={Link} to="/projects"><Octicon name="repo" /> Projects</Nav.Link></Nav.Item>
               <Dropdown as={Nav.Item}>
                 <Dropdown.Toggle as={Nav.Link} id="nav-user-dropdown">{this.props.displayName}</Dropdown.Toggle>
                 <Dropdown.Menu className="dropdown-menu dropdown-menu-right">

@@ -93,7 +93,7 @@ class ProjectViewCon extends Component<any, any> {
 
   public render() {
     const newProjectNameChanged = (ev: any) => this.newProjectName = ev.target.value
-    return (<WmContainer title="Projects">
+    return (<WmContainer title="Projects" active="projects">
       <Row> <Col md={2} /><Col md={10}>
       <Form onSubmit={this.newProject.bind(this)}>
         <Form.Row>

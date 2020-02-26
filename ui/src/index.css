@@ -40,6 +40,10 @@ span.treeViewError {
   padding: 0.25rem 0.5rem;
 }
 
+.nav-item .active {
+  font-weight: bold;  
+}
+
 .footer {
   position: absolute;
   bottom: 0;
