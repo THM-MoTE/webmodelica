@@ -1,7 +1,7 @@
 version: '3'
 services:
   backend:
-    image: "thmmote/webmodelica:0.8.1"
+    image: "thmmote/webmodelica:0.8.3"
     restart: unless-stopped
     labels:
       - "de.thm.webmodelica.name=webmodelica-backend"
@@ -17,7 +17,7 @@ services:
       - ../conf/auth-svc-key.pub:/opt/auth-key.pub
       - webmodelica_data:/data
   ui:
-    image: "thmmote/webmodelica-ui:0.8.1"
+    image: "thmmote/webmodelica-ui:0.8.3"
     restart: unless-stopped
     labels:
       - "de.thm.webmodelica.name=webmodelica-frontend"

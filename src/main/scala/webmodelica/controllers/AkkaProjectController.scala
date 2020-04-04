@@ -20,7 +20,7 @@ import webmodelica.models.config.MopeClientConfig
 import webmodelica.conversions.futures._
 import java.nio.file.Paths
 
-import webmodelica.models.errors.{DeleteUsernameError, VisibilityUsernameError}
+import webmodelica.models.errors.{DeleteUsernameError, VisibilityProjectError, VisibilityUsernameError}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -117,12 +117,12 @@ class AkkaProjectController(
             }
             complete(updatedProject)
         } ~
-        fileRoutes(id, () => projectFinder())
+        fileRoutes(user, id, () => projectFinder())
       }
     }
   }
 
-  private def fileRoutes(id:String, projectFinder: () => Future[Project]): Route = {
+  private def fileRoutes( user:User, id:String, projectFinder: () => Future[Project]): Route = {
     pathPrefix("files") {
       (get & pathEnd & parameter("format" ? "list")) {
         //secured route: GET /projects/:id/files?format=[tree|list]
@@ -130,17 +130,27 @@ class AkkaProjectController(
         case _ => complete(projectFinder().flatMap(projectFiles))
       } ~
         (get & path("download")) {//secured route: GET /projects/:id/files/download
-        logger.debug(s"download files for $id")
-        val future = (for {
-          project <- projectFinder()
-          fs = fileStore(project)
-          file <- fs.packageProjectArchive(project.name).asScala
-        } yield file)
-        onSuccess(future) { file =>
-          respondWithHeader(RawHeader("Content-Disposition", s"attachment; filename=${file.getName}")) {
-            getFromFile(file.getPath)
+          val future = (projectStore.byUsername(user.username).asScala
+            .map(lst => lst.exists(p => p._id == id)))
+            .flatMap { canDownload =>
+              if (canDownload) {
+                logger.debug(s"download files for $id")
+
+                (for {
+                  project <- projectFinder()
+                  fs = fileStore(project)
+                  file <- fs.packageProjectArchive(project.name).asScala
+                } yield file)
+              } else {
+                Future.failed(VisibilityProjectError)
+              }
+            }
+
+          onSuccess(future) { file =>
+            respondWithHeader(RawHeader("Content-Disposition", s"attachment; filename=${file.getName}")) {
+              getFromFile(file.getPath)
+            }
           }
-        }
       } ~
         (get & path(Remaining)) { pathStr =>
         //secured route: GET /projects/:id/files/:path

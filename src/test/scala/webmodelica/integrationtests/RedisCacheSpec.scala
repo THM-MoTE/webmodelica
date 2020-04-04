@@ -15,7 +15,7 @@ import webmodelica.models.mope._
 import webmodelica.models.mope.requests._
 import webmodelica.models.mope.responses._
 import com.twitter.util.{Future,Await}
-import com.twitter.finagle.stats.NullStatsReceiver
+
 import io.circe.generic.JsonCodec
 import io.circe.generic.semiauto._
 
@@ -24,8 +24,6 @@ case class Person(name:String, age:Int)
 
 class RedisCacheSpec
   extends webmodelica.WMSpec {
-  implicit val encoder = deriveEncoder[Person]
-  implicit val decoder = deriveDecoder[Person]
 
   val tim = Person("tim", 16)
   val nico = Person("nico", 19)
