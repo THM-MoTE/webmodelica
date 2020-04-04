@@ -17,14 +17,13 @@ import webmodelica.models.mope.responses._
 
 import java.nio.file._
 import com.twitter.util.{Future,Await}
-import com.twitter.finagle.stats.NullStatsReceiver
 
 
 class MopeIntegration
     extends webmodelica.WMSpec {
   val conf = appConf.mope
   val session = Session(Project("nico", "awesomeProject"))
-  val service = new SessionService(conf,session, appConf.redis, new NullStatsReceiver(), module.httpClient)
+  val service = new SessionService(conf,session, NoCaching.cacheFactory, module.httpClient)
 
   val files = Seq(
     ModelicaFile(
@@ -111,7 +110,7 @@ end BouncingBall;
     import io.circe.syntax._
     Await.result(service.compile(files.last.relativePath))
     val uri = Await.result(service.simulate(SimulateRequest("BouncingBall", Map("stopTime" -> 2.asJson))))
-    Thread.sleep(3000)
+    Thread.sleep(5000)
     Await.result(service.simulationResults(uri)) shouldBe an[SimulationResult]
   }
 }

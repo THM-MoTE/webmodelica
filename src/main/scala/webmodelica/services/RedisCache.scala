@@ -29,3 +29,9 @@ class NoCaching[A](fn: String => Future[Option[A]]) extends RedisCache[A] {
   def update(key:String, value:A): Future[A] = Future.value(value)
   def remove(key:String): Future[Unit] = Future.value(())
 }
+
+object NoCaching {
+  def cacheFactory: RedisCacheFactory = new RedisCacheFactory {
+    override def get[A:Encoder:Decoder](keySuffix: String, cacheMiss: String => Future[Option[A]], ttlKeys:Option[FiniteDuration]=None): RedisCache[A] = new NoCaching(cacheMiss)
+  }
+}
