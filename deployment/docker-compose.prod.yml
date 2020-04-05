@@ -43,6 +43,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
       - /etc/ssl/private:/ssl
+      - ./config/traefik-prod.yml:/etc/traefik/traefik.toml
       # - ../private/ssl:/ssl
   mongo:
     restart: unless-stopped
