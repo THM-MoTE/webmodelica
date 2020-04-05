@@ -31,6 +31,8 @@ services:
       - "--providers.docker"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
+      - "--providers.docker.tls.cert=/ssl/cert.pem"
+      - "--providers.docker.tls.key=/ssl/server.key"
     ports:
       - "80:80"     # The HTTP port
       - "443:443"
