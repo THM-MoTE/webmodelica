@@ -79,9 +79,6 @@ services:
     labels:
       - "traefik.http.routers.auth-svc.rule=PathPrefix(`/api/v{[0-9]+}/auths`)"
       - "de.thm.webmodelica.name=webmodelica-auth-svc"
-      - "traefik.http.routers.auth-svc-redirect.rule=PathPrefix(`/api/v1/auths/identity/register`)"
-      - "traefik.http.routers.auth-svc-redirect.middlewares=auth-redirect"
-      - "traefik.http.middlewares.auth-redirect.basicauth.users=clara:$$apr1$$92t1n5mg$$LYNnt.aCouj6SgD20urGJ0"
 volumes:
   webmodelica_data:
   webmodelica_db:
