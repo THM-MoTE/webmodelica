@@ -31,21 +31,20 @@ services:
       - "--providers.docker"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      - "--providers.docker.tls.cert=/ssl/cert.pem"
-      - "--providers.docker.tls.key=/ssl/server.key"
+      - "--providers.file.filename=/mnt/traefik-prod.yml"
     ports:
       - "80:80"     # The HTTP port
       - "443:443"
     labels:
-      - "traefik.http.routers.http_catchall.rule=HostRegexp(`{any:.+}`)"
-      - "traefik.http.routers.http_catchall.entrypoints=web"
-      - "traefik.http.routers.http_catchall.middlewares=https_redirect"
-      - "traefik.http.middlewares.https_redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.https_redirect.redirectscheme.permanent=true"
+      - "traefik.http.routers.http-catchall.rule=HostRegexp(`{any:.+}`)"
+      - "traefik.http.routers.http-catchall.entrypoints=web"
+      - "traefik.http.routers.http-catchall.middlewares=https-redirect@file"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
-      - /etc/ssl/private:/ssl
-      # - ../private/ssl:/ssl
+      - ./config/traefik-prod.yml:/mnt/traefik-prod.yml
+      - ./private/usersfile:/mnt/usersfile
+      # - /etc/ssl/private:/ssl
+      - ../private/ssl:/ssl
   mongo:
     restart: unless-stopped
   cache:
@@ -54,6 +53,9 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.http.routers.auth-svc.tls"
+      - "traefik.http.routers.auth-svc-redirect.tls"
+      - "traefik.http.routers.auth-svc-redirect.rule=PathPrefix(`/api/v1/auths/identity/register`)"
+      - "traefik.http.routers.auth-svc-redirect.middlewares=basic-auth@file"
   user-svc:
     restart: unless-stopped
     labels:
