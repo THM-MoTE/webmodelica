@@ -8,4 +8,8 @@ services:
       - 9011:6379
   mope:
     ports:
-      - 9015:3000
+      - 9015:3000 
+  traefik:
+    ports:
+      - 9000:80
+

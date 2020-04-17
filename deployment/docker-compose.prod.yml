@@ -6,7 +6,8 @@ services:
     labels:
       - "de.thm.webmodelica.name=webmodelica-backend"
       - "traefik.http.routers.webmodelica.rule=PathPrefix(`/api/v{[0-9]+}/webmodelica`)"
-      - "traefik.http.routers.webmodelica.tls"
+      - "traefik.http.routers.webmodelica.tls=true"
+      - "traefik.http.routers.webmodelica.tls.certresolver=le"
     depends_on:
       - cache
       - mongo
@@ -22,7 +23,9 @@ services:
     labels:
       - "de.thm.webmodelica.name=webmodelica-frontend"
       - "traefik.http.routers.webmodelica-ui.rule=PathPrefix(`/`)"
-      - "traefik.http.routers.webmodelica-ui.tls"
+      - "traefik.http.routers.webmodelica-ui.tls=true"
+      - "traefik.http.routers.webmodelica-ui.tls.certresolver=le"
+      - "traefik.http.routers.webmodelica-ui.tls.domains[0].main=thmodelica.org"
   traefik:
     restart: unless-stopped
     command:
@@ -32,6 +35,9 @@ services:
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--providers.file.filename=/mnt/traefik-prod.yml"
+      - "--certificatesResolvers.le.acme.httpchallenge.entrypoint=web"
+      - "--certificatesResolvers.le.acme.email=clara.ifland@mni.thm.de"
+      - "--certificatesResolvers.le.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"     # The HTTP port
       - "443:443"
@@ -43,8 +49,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
       - ./config/traefik-prod.yml:/mnt/traefik-prod.yml
       - ./private/usersfile:/mnt/usersfile
-      - /etc/ssl/private:/ssl
-      # - ../private/ssl:/ssl
+      - "/srv/docker/acme:/letsencrypt"
   mongo:
     restart: unless-stopped
   cache:
@@ -52,8 +57,10 @@ services:
   auth-svc:
     restart: unless-stopped
     labels:
-      - "traefik.http.routers.auth-svc.tls"
-      - "traefik.http.routers.auth-svc-redirect.tls"
+      - "traefik.http.routers.auth-svc.tls=true"
+      - "traefik.http.routers.auth-svc.tls.certresolver=le"
+      - "traefik.http.routers.auth-svc-redirect.tls=true"
+      - "traefik.http.routers.auth-svc-redirect.tls.certresolver=le"
       - "traefik.http.routers.auth-svc-redirect.rule=PathPrefix(`/api/v1/auths/identity/register`)"
       - "traefik.http.routers.auth-svc-redirect.middlewares=basic-auth@file"
   user-svc:

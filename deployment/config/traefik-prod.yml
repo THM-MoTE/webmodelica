@@ -8,9 +8,4 @@ http:
       basicAuth:
         usersFile: "/mnt/usersfile"
 
-tls:
-  stores:
-    default:
-      defaultCertificate:
-        certFile: "/ssl/cert.pem"
-        keyFile: "/ssl/server.key"
+
