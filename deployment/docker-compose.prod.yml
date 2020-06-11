@@ -52,6 +52,24 @@ services:
       - "/srv/docker/acme:/letsencrypt"
   mongo:
     restart: unless-stopped
+  db-manager:
+    image: mongo-express:latest
+    depends_on:
+      - mongo
+    env_file:
+      - settings-mongo-express.env  
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.db-man-insecure.rule=(Host(thmodelica.org) && PathPrefix(/mongo/))"
+      - "traefik.http.routers.db-man-insecure.entrypoints=web"
+      - "traefik.http.routers.db-man-insecure.middlewares=redirect-to-https@docker"
+
+      - "traefik.http.routers.db-man.rule=(Host(thmodelica.org) && PathPrefix(/mongo/))"
+      - "traefik.http.routers.db-man.entrypoints=websecure"
+      - "traefik.http.services.db-man-service.loadbalancer.server.port=8081"
+      - "traefik.http.routers.db-man.tls=true"
+      - "traefik.http.routers.db-man.tls.certresolver=le"  
   cache:
     restart: unless-stopped
   auth-svc:
