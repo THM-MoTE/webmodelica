@@ -26,8 +26,6 @@ services:
   traefik:
     restart: unless-stopped
     command:
-      - "--api.insecure=true"
-      - "--providers.docker"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--providers.file.filename=/mnt/traefik-prod.yml"

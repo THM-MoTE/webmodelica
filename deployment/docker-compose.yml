@@ -3,6 +3,7 @@ services:
   traefik:
     image: "traefik:latest"
     command:
+      - "--api=true"
       - "--api.insecure=true"
       - "--providers.docker"
       - "--entrypoints.web.address=:80"
