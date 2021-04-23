@@ -3,8 +3,8 @@ services:
   backend:
     image: "thmmote/webmodelica:0.8.3"
     restart: unless-stopped
-    ports:
-      - 9002:3000
+    # ports:
+      # - 9002:3000
     labels:
       - "traefik.frontend.rule=PathPrefix:/api/v{[0-9]+}/webmodelica"
       - "traefik.backend=webmodelica-backend"
@@ -22,8 +22,8 @@ services:
   ui:
     image: "thmmote/webmodelica-ui:0.8.3"
     restart: unless-stopped
-    ports:
-      - 9003:3000
+    # ports:
+      # - 9003:3000
     labels:
       - "traefik.frontend.rule=PathPrefix:/"
       - "traefik.backend=webmodelica-ui"

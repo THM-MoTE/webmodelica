@@ -17,16 +17,16 @@ services:
     restart: on-failure
     volumes:
       - webmodelica_db:/data/db
-    ports:
-      - 9010:27017
+    # ports:
+    #   - 9010:27017
     labels:
       - "de.thm.webmodelica.name=mongodb"
       - "traefik.enable=false"
   cache:
     image: "redis:5.0.4-alpine"
     restart: on-failure
-    ports:
-      - 9011:6379
+    # ports:
+    #   - 9011:6379
     volumes:
       - redis_cache:/data
     labels:
@@ -36,8 +36,8 @@ services:
     image: "thmmote/mope-server:0.7.1"
     restart: on-failure
     user: openmodelica:openmodelica
-    ports:
-      - 9015:3000
+    # ports:
+    #   - 9015:3000
     labels:
       - "de.thm.webmodelica.name=mope-server"
     volumes:
@@ -46,8 +46,8 @@ services:
   user-svc:
     image: hobbypunk90/mt-services-user:fa26b3d
     restart: on-failure
-    ports:
-      - 9012:3000
+    # ports:
+    #   - 9012:3000
     depends_on:
       - mongo
     environment:
@@ -64,8 +64,8 @@ services:
   auth-svc:
     image: hobbypunk90/mt-services-auth:0.0.3
     restart: on-failure
-    ports:
-      - 9013:3000
+    # ports:
+      # - 9013:3000
     depends_on:
       - mongo
       - user-svc
