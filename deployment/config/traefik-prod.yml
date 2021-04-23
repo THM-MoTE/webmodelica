@@ -1,0 +1,16 @@
+http:
+  middlewares:
+    https-redirect:
+      redirectScheme:
+        scheme: https
+        permanent: true
+    basic-auth:
+      basicAuth:
+        usersFile: "/mnt/usersfile"
+
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: "/ssl/cert.pem"
+        keyFile: "/ssl/server.key"
