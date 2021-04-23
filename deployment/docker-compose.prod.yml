@@ -26,8 +26,8 @@ services:
   traefik:
     restart: unless-stopped
     command:
-      - "--entryPoints.web.address=:80"
-      - "--entryPoints.websecure.address=:443"
+      # - "--entryPoints.web.address=:80"
+      # - "--entryPoints.websecure.address=:443"
       - "--providers.file.filename=/mnt/traefik-prod.yml"
     ports:
       - "80:80"     # The HTTP port
