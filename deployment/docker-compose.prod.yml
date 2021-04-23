@@ -26,7 +26,6 @@ services:
   traefik:
     restart: unless-stopped
     command:
-      - "--log.level=info"
       - "--api.insecure=true"
       - "--providers.docker"
       - "--entrypoints.web.address=:80"
