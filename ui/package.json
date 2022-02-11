@@ -11,7 +11,7 @@
     "brownies": "^3.0.0",
     "date-fns": "^1.30.1",
     "monaco-editor": "^0.15.6",
-    "node-sass": "^4.11.0",
+    "node-sass": "^7.0.0",
     "octicons": "^8.5.0",
     "ramda": "^0.26.1",
     "react": "^16.8.0",
